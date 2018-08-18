@@ -2,7 +2,7 @@
     'use strict';
         
       angular
-        .module('ventronElectron')
+        .module('leitorEstoque')
         .config(
             [
                 '$routeProvider', '$mdThemingProvider',

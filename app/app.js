@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module(
-        'ventronElectron',
+        'leitorEstoque',
         [
             'ngRoute',
             'ngMaterial',
