@@ -4,14 +4,23 @@
     angular
         .module('leitorEstoque')
         .controller('HomeCtrl', HomeController);
-
-    HomeController.$inject = ['$scope', '$mdSidenav', '$mdToast', 'pacoteSrvc'];
-
-    function HomeController($scope, $mdSidenav, $mdToast, pacoteSrvc) {
+    HomeController.$inject = ['$scope', '$interval', '$mdSidenav', '$mdToast', 'pacoteSrvc'];
+    function HomeController($scope, $interval, $mdSidenav, $mdToast, pacoteSrvc) {
         var vm = this;
+        vm.OS = {
+
+        }
         vm.pacote = {
 
         }
+        vm.clock = {
+            time: "",
+            interval: 1000
+        };
+        $interval(function () {
+                vm.clock.time = Date.now();
+            },
+            vm.clock.interval);
         vm.consultaPacote = function (codbar) {
             vm.ERROR = ''
             vm.pacote = {}
@@ -28,7 +37,6 @@
                             vm.ERROR = response
                             vm.pacote = {};
                             $scope.$apply()
-
                         }
                     )
                     break;
@@ -49,8 +57,21 @@
                     )
                     break;
                 case 'O':
-                    console.log(codbar)
-                    break;
+                console.log('operador', codbar)
+                pacoteSrvc.abreOperador(codbar).then(
+                    function (response) {
+                        vm.operador = response;
+                        $scope.$apply()
+                    },
+                    function (response) {
+                        console.log(response)
+                        vm.ERROR = response
+                        vm.pacote = {};
+                        $scope.$apply()
+
+                    }
+                )
+                break;
                 default:
                     console.log(codbar)
             }

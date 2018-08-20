@@ -8,27 +8,47 @@
                     <!-- <div ng-message="required">This is required.</div> -->
                     <!-- <div ng-message="md-maxlength">The description must be less than 30 characters long.</div> -->
                 </div>
-            </md-input-container>
+            </md-input-container>           
         </form>
     </md-content>
     <md-content layout="row" layout-padding layout-wrap layout-fill style="padding-bottom: 32px;">
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
+            <span class="label">DATA</span>
+            <span>{{ vm.clock.time | date:'dd/mm/yy'}}</span>
+        </md-whiteframe>
+        <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
+            <span class="label">HORA</span>
+            <span>{{ vm.clock.time | date:'HH:mm:ss'}}</span>
+        </md-whiteframe>
+        <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
+            <span class="label">DOCUMENTO</span>
+            <span>OS1</span>
+        </md-whiteframe>
+        <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
+            <span class="label">ID</span>
             <span>{{vm.pacote.ID_PRODUTO}}</span>
         </md-whiteframe>
-
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
-            <span>{{vm.pacote.CODBAR}}</span>
+            <span class="label">USUÁRIO</span>
+            <span>{{vm.operador.NOME}}</span>
         </md-whiteframe>
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
+            <span class="label">QUANTIDADE</span>
             <span>{{vm.pacote.SITUACAO}}</span>
         </md-whiteframe>
-        <md-whiteframe class="md-whiteframe-1dp" flex-sm="100" flex-gt-sm="100" flex-gt-md="100" layout layout-align="center center">
+        <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
+            <span class="label">UNIDADE</span>
+            <span>{{vm.pacote.ENDERECO}}</span>
+        </md-whiteframe>
+        <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
+            <span class="label">UNIDADE</span>
+            <span>{{vm.pacote.SITUACAO}}</span>
+        </md-whiteframe>
+        <md-whiteframe ng-if="!vm.ERROR" class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span>{{vm.pacote.DESCRICAO}}</span>
         </md-whiteframe>
-        <md-whiteframe ng-if="vm.ERROR" class="md-whiteframe-1dp md-warn" flex-sm="100" flex-gt-sm="100" flex-gt-md="100" layout
-            layout-align="center center">
+        <md-whiteframe ng-if="vm.ERROR" class="md-whiteframe-1dp md-warn" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span>{{vm.ERROR}}</span>
         </md-whiteframe>
     </md-content>
-
 </section>
