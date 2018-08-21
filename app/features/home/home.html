@@ -14,7 +14,7 @@
     <md-content layout="row" layout-padding layout-wrap layout-fill style="padding-bottom: 32px;">
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span class="label">DATA</span>
-            <span>{{ vm.clock.time | date:'dd/mm/yy'}}</span>
+            <span>{{ vm.clock.time | date:' dd/MM/yy'}}</span>
         </md-whiteframe>
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span class="label">HORA</span>
@@ -22,33 +22,33 @@
         </md-whiteframe>
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span class="label">DOCUMENTO</span>
-            <span>OS1</span>
+            <span>{{vm.servico.transito.ID_TRANSITO?vm.servico.transito.ID_TRANSITO:vm.servico.ordem.ID_OS?'OS'+vm.servico.ordem.ID_OS:''}}</span>
         </md-whiteframe>
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span class="label">ID</span>
-            <span>{{vm.pacote.ID_PRODUTO}}</span>
+            <span>{{vm.servico.pacote.ID_PRODUTO}}</span>
         </md-whiteframe>
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span class="label">USUÁRIO</span>
-            <span>{{vm.operador.NOME}}</span>
+            <span>{{vm.servico.operador.NOME | uppercase}}</span>
         </md-whiteframe>
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span class="label">QUANTIDADE</span>
-            <span>{{vm.pacote.SITUACAO}}</span>
+            <span>{{vm.servico.pacote.SITUACAO}}</span>
         </md-whiteframe>
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span class="label">UNIDADE</span>
-            <span>{{vm.pacote.ENDERECO}}</span>
+            <span>{{vm.servico.endereco.CODBAR}}</span>
         </md-whiteframe>
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span class="label">UNIDADE</span>
-            <span>{{vm.pacote.SITUACAO}}</span>
+            <span>{{vm.servico.pacote.SITUACAO}}</span>
         </md-whiteframe>
-        <md-whiteframe ng-if="!vm.ERROR" class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
-            <span>{{vm.pacote.DESCRICAO}}</span>
+        <md-whiteframe ng-if="!vm.servico.erro.message" class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
+            <span>{{vm.servico.pacote.DESCRICAO}}</span>
         </md-whiteframe>
-        <md-whiteframe ng-if="vm.ERROR" class="md-whiteframe-1dp md-warn" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
-            <span>{{vm.ERROR}}</span>
+        <md-whiteframe ng-if="vm.servico.erro.message" class="md-whiteframe-1dp md-warn" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
+            <span>{{vm.servico.erro.message}}</span>
         </md-whiteframe>
     </md-content>
 </section>
