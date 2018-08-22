@@ -97,7 +97,7 @@
             } else if (identificador === 'A') {
                 // procura pacote
                 console.log('pacote', codbar)
-                pacoteSrvc.consultaSituacao(codbar).then(
+                pacoteSrvc.movePacote(codbar).then(
                     function (response) {
                         vm.servico = response;
                         audioOk();
