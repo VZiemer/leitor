@@ -24,6 +24,7 @@
             'pacoteSrvc', ['$http', function ($http) {
                 var abreOperador = function (CodBarras) {
                     servico.erro = new Error();
+                    servico.pacote = new Pacote();
                     return new Promise((resolve, reject) => {
                         if (servico.endereco.CODBAR) {
                             servico.erro = new Error('FECHE O ENDEREÇO');
@@ -66,6 +67,7 @@
                 }
                 var abreOrdem = function (CodBarras) {
                     servico.erro = new Error();
+                    servico.pacote = new Pacote();
                     return new Promise((resolve, reject) => {
                         if (!servico.operador.CODBAR) {
                             servico.erro = new Error('LEIA O CRACHA DE IDENTIFICAÇÃO');
@@ -118,6 +120,7 @@
                 }
                 var consultaSituacao = function (CodBarras) {
                     servico.erro = new Error();
+                    servico.pacote = new Pacote();
                     return new Promise((resolve, reject) => {
                         Firebird.attach(options, function (err, db) {
                             if (err)
@@ -138,6 +141,7 @@
                 }
                 var abreEndereco = function (CodBarras) {
                     servico.erro = new Error();
+                    servico.pacote = new Pacote();
                     return new Promise((resolve, reject) => {
                         if (!servico.operador.CODBAR) {
                             servico.erro = new Error('LEIA O CRACHA DE IDENTIFICAÇÃO');
@@ -157,47 +161,114 @@
                                 }
                                 db.query("Select E.ID_ENDERECO,E.DESCRICAO,E.CODBAR,E.ID_CRITERIO,C.ID_FORNECEDOR,C.ID_EMPRESA,C.ID_ORDEM_TIPO,C.ID_OS_STATUS,E.ID_OS FROM ENDERECO E INNER JOIN CRITERIO C ON C.ID_CRITERIO = E.ID_CRITERIO WHERE CODBAR= ?", CodBarras, function (err, res) {
                                     // if (err) reject(new Error(err));
-                                    db.detach(function () {
-                                        if (!res.length) {
+                                    if (!res.length) {
+                                        db.detach(function () {
                                             servico.erro = new Error('NÃO EXISTE O ENDEREÇO DIGITADO');
                                             reject(servico);
-                                        } else if (servico.transito.TIPO == 3) { //transito de saida
-                                            if (res[0].ID_ORDEM_TIPO != 3) {
+                                        });
+                                    } else if (res[0].ID_ORDEM_TIPO == 3) { //transito de saida
+                                        if (servico.transito.TIPO != 3) {
+                                            db.detach(function () {
                                                 servico.erro = new Error('ENDEREÇO NÃO ATENDE SAÍDA');
                                                 reject(servico);
-                                            } else {
+                                            });
+                                        } else {
+                                            db.detach(function () {
                                                 servico.endereco = new Endereco(res[0].ID_ENDERECO, res[0].DESCRICAO, res[0].CODBAR, res[0].ID_CRITERIO, res[0].ID_FORNECEDOR, res[0].ID_EMPRESA, res[0].ID_ORDEM_TIPO, res[0].ID_OS_STATUS, res[0].ID_OS);
                                                 resolve(servico);
-                                            }
-                                        } else if (servico.transito.TIPO != 4) { //transito de entrada no defeito
-                                            if (res[0].ID_ORDEM_TIPO != 5) {
+                                            });
+                                        }
+                                    } else if (res[0].ID_ORDEM_TIPO == 5) { //transito de entrada no defeito
+                                        if (servico.transito.TIPO == 4) {
+                                            db.detach(function () {
                                                 servico.erro = new Error('ENDEREÇO NÃO ATENDE ENTRADA DE DEFEITO');
                                                 reject(servico);
-                                            } else {
+                                            });
+                                        } else {
+                                            db.detach(function () {
                                                 servico.endereco = new Endereco(res[0].ID_ENDERECO, res[0].DESCRICAO, res[0].CODBAR, res[0].ID_CRITERIO, res[0].ID_FORNECEDOR, res[0].ID_EMPRESA, res[0].ID_ORDEM_TIPO, res[0].ID_OS_STATUS, res[0].ID_OS);
                                                 resolve(servico);
-                                            }
-                                        } else if ([1, 2, 5, 6].indexOf(servico.transito.TIPO) == !-1) { //transito de entrada
-                                            if (res[0].ID_ORDEM_TIPO != 2 && res[0].ID_ORDEM_TIPO != 0) {
-                                                servico.erro = new Error('ENDEREÇO NÃO ATENDE ENTRADA');
+                                            });
+                                        }
+                                    } else if (res[0].ID_ORDEM_TIPO == 2) { //transito de entrada
+                                        if (servico.transito.ID_TRANSITO) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('FECHE O TRANSITO');
                                                 reject(servico);
-                                            } else {
+                                            });
+                                        } else if (servico.ordem.ID_OS) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('FECHE A OS');
+                                                reject(servico);
+                                            });
+                                        } else {
+                                            db.detach(function () {
                                                 servico.endereco = new Endereco(res[0].ID_ENDERECO, res[0].DESCRICAO, res[0].CODBAR, res[0].ID_CRITERIO, res[0].ID_FORNECEDOR, res[0].ID_EMPRESA, res[0].ID_ORDEM_TIPO, res[0].ID_OS_STATUS, res[0].ID_OS);
                                                 resolve(servico);
-                                            }
+                                            });
+                                        }
+                                    } else if (res[0].ID_ORDEM_TIPO == 0) { //transito de entrada
+                                        if (servico.transito.ID_TRANSITO) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('FECHE O TRANSITO');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.ordem.ID_OS) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('FECHE A OS');
+                                                reject(servico);
+                                            });
+                                        } else {
+                                            db.detach(function () {
+                                                servico.endereco = new Endereco(res[0].ID_ENDERECO, res[0].DESCRICAO, res[0].CODBAR, res[0].ID_CRITERIO, res[0].ID_FORNECEDOR, res[0].ID_EMPRESA, res[0].ID_ORDEM_TIPO, res[0].ID_OS_STATUS, res[0].ID_OS);
+                                                resolve(servico);
+                                            });
+                                        }
+                                    } else if (res[0].ID_ORDEM_TIPO == 99) { //transito de entrada
+                                        if (servico.transito.ID_TRANSITO) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('FECHE O TRANSITO');
+                                                reject(servico);
+                                            });
+                                        } else if (!servico.ordem.ID_OS) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ABRA A OS');
+                                                reject(servico);
+                                            });
+                                        } else if (res[0].ID_OS && servico.ordem.ID_OS != res[0].ID_OS) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ENDEREÇO DE OUTRA OS');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.ordem.ID_OS == res[0].ID_OS) {
+                                            db.detach(function () {
+                                                servico.endereco = new Endereco(res[0].ID_ENDERECO, res[0].DESCRICAO, res[0].CODBAR, res[0].ID_CRITERIO, res[0].ID_FORNECEDOR, res[0].ID_EMPRESA, res[0].ID_ORDEM_TIPO, res[0].ID_OS_STATUS, res[0].ID_OS);
+                                                resolve(servico);
+                                            });
+                                        } else if (!res[0].ID_OS) {
+                                            db.query("UPDATE ENDERECO SET ID_OS = ? WHERE CODBAR = ?", [servico.ordem.ID_OS, CodBarras], function (err, result) {
+                                                db.detach(function () {
+                                                    servico.endereco = new Endereco(res[0].ID_ENDERECO, res[0].DESCRICAO, res[0].CODBAR, res[0].ID_CRITERIO, res[0].ID_FORNECEDOR, res[0].ID_EMPRESA, res[0].ID_ORDEM_TIPO, res[0].ID_OS_STATUS, res[0].ID_OS);
+                                                    resolve(servico);
+                                                });
+                                            })
                                         } else {
                                             servico.erro = new Error('CHAME O SUPORTE');
                                             reject(servico);
                                         }
-
-                                    });
+                                    } else {
+                                        servico.erro = new Error('CHAME O SUPORTE');
+                                        reject(servico);
+                                    }
                                 });
+
                             })
                         }
                     })
                 }
                 var abreTransito = function (CodBarras) {
                     servico.erro = new Error();
+                    servico.pacote = new Pacote();
                     return new Promise((resolve, reject) => {
                         if (!servico.operador.CODBAR) {
                             servico.erro = new Error('LEIA O CRACHA DE IDENTIFICAÇÃO');
@@ -247,6 +318,7 @@
                 }
                 var movePacote = function (CodBarras) {
                     servico.erro = new Error();
+                    servico.pacote = new Pacote();
                     return new Promise((resolve, reject) => {
                         if (!servico.operador.CODBAR) {
                             servico.erro = new Error('LEIA O CRACHA DE IDENTIFICAÇÃO');
@@ -272,7 +344,7 @@
                                         } else {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ?  returning ID_PACOTE,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [0, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res[0].ID_PACOTE, res[0].ID_PRODUTO, res[0].QTD, res[0].UNIDADE, res[0].SITUACAO, res[0].DESCRICAO, res[0].CODINTERNO, res[0].OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
                                                     resolve(servico);
                                                 });
                                             })
@@ -297,7 +369,7 @@
                                             db.detach(function () {
                                                 db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [9, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                     db.detach(function () {
-                                                        servico.pacote = new Pacote(res[0].ID_PACOTE, res[0].ID_PRODUTO, res[0].QTD, res[0].UNIDADE, res[0].SITUACAO, res[0].DESCRICAO, res[0].CODINTERNO, res[0].OS);
+                                                        servico.pacote = new Pacote(res.ID_PACOTE, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
                                                         resolve(servico);
                                                     });
                                                 })
@@ -305,14 +377,14 @@
                                         } else if (servico.endereco.ID_ORDEM_TIPO == 2) {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [1, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res[0].ID_PACOTE, res[0].ID_PRODUTO, res[0].QTD, res[0].UNIDADE, res[0].SITUACAO, res[0].DESCRICAO, res[0].CODINTERNO, res[0].OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
                                                     resolve(servico);
                                                 });
                                             })
                                         } else {
-                                                db.detach(function () {
-                                                    servico.erro = new Error('Erro deconhecido, chame suporte');
-                                                    resolve(servico);
+                                            db.detach(function () {
+                                                servico.erro = new Error('Erro deconhecido, chame suporte');
+                                                resolve(servico);
                                             })
                                         }
                                     } else if (res[0].SITUACAO == 11) { //PACOTE DE ENTRADA DEFEITO
@@ -334,14 +406,14 @@
                                         } else if (servico.endereco.ID_ORDEM_TIPO == 5) {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [4, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res[0].ID_PACOTE, res[0].ID_PRODUTO, res[0].QTD, res[0].UNIDADE, res[0].SITUACAO, res[0].DESCRICAO, res[0].CODINTERNO, res[0].OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
                                                     resolve(servico);
                                                 });
                                             })
                                         } else {
-                                                db.detach(function () {
-                                                    servico.erro = new Error('Erro deconhecido, chame suporte');
-                                                    resolve(servico);
+                                            db.detach(function () {
+                                                servico.erro = new Error('Erro deconhecido, chame suporte');
+                                                resolve(servico);
                                             })
                                         }
                                     } else if (res[0].SITUACAO == 12) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO)
@@ -363,14 +435,14 @@
                                         } else if (servico.endereco.ID_OS == res[0].OS) {
                                             db.query("SELECT IDPCT,IDPROD,CODBARSAIDA,CODINT,QTDPCT,UN,DESCRICAO,POSICAO FROM QUEBRA_PACOTE(?)", [CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res[0].ID_PACOTE, res[0].ID_PRODUTO, res[0].QTD, res[0].UNIDADE, res[0].SITUACAO, res[0].DESCRICAO, res[0].CODINTERNO, res[0].OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
                                                     resolve(servico);
                                                 });
                                             })
                                         } else {
-                                                db.detach(function () {
-                                                    servico.erro = new Error('Erro deconhecido, chame suporte');
-                                                    resolve(servico);
+                                            db.detach(function () {
+                                                servico.erro = new Error('Erro deconhecido, chame suporte');
+                                                resolve(servico);
                                             })
                                         }
                                     } else if (res[0].SITUACAO == 7) { //PACOTE "QUEBRADO"
@@ -392,16 +464,123 @@
                                         } else if (servico.endereco.ID_OS == res[0].OS) {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [13, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res[0].ID_PACOTE, res[0].ID_PRODUTO, res[0].QTD, res[0].UNIDADE, res[0].SITUACAO, res[0].DESCRICAO, res[0].CODINTERNO, res[0].OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
                                                     resolve(servico);
                                                 });
                                             })
                                         } else {
-                                                db.detach(function () {
-                                                    servico.erro = new Error('Erro deconhecido, chame suporte');
-                                                    resolve(servico);
+                                            db.detach(function () {
+                                                servico.erro = new Error('Erro deconhecido, chame suporte');
+                                                resolve(servico);
                                             })
                                         }
+                                    } else if (res[0].SITUACAO == 13) { //VERIFICADO PARA ENTRAR NA EXPEDIÇÃO
+                                        if (servico.ordem.ID_OS) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('FECHE A ORDEM DE SERVIÇO');
+                                                reject(servico);
+                                            });
+                                        } else if (!servico.transito.ID_TRANSITO) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ABRA O TRANSITO');
+                                                reject(servico);
+                                            });
+                                        } else if (!servico.endereco.CODBAR) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ABRA O ENDEREÇO DE SAÍDA');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.transito.OS != res[0].OS) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('PACOTE NÃO PERTENCE A ESTA OS');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.transito.ID_OS == res[0].OS) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [3, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                                db.detach(function () {
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    resolve(servico);
+                                                });
+                                            })
+                                        } else {
+                                            db.detach(function () {
+                                                servico.erro = new Error('Erro deconhecido, chame suporte');
+                                                resolve(servico);
+                                            })
+                                        }
+                                    } else if (res[0].SITUACAO == 2) { //SETOR FGV PARA ENTRAR NO ESTOQUE
+                                        if (servico.ordem.ID_OS) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('FECHE A ORDEM DE SERVIÇO');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.transito.ID_TRANSITO) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('FECHE O TRANSITO');
+                                                reject(servico);
+                                            });
+                                        } else if (!servico.endereco.CODBAR) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ABRA O ENDEREÇO DE SAÍDA');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.endereco.ID_ORDEM_TIPO != 2) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ABRA UM ENDEREÇO DE ENTRADA');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.endereco.ID_ORDEM_TIPO == 2) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [1, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                                db.detach(function () {
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    resolve(servico);
+                                                });
+                                            })
+                                        } else {
+                                            db.detach(function () {
+                                                servico.erro = new Error('Erro deconhecido, chame suporte');
+                                                resolve(servico);
+                                            })
+                                        }
+                                    } else if (res[0].SITUACAO == 1) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO)
+                                        if (!servico.ordem.ID_OS) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ABRA A ORDEM DE SERVIÇO');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.transito.ID_TRANSITO) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('FECHE O TRANSITO');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.endereco.ID_ORDEM_TIPO != 99) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ABRA O ENDEREÇO DE SAÍDA');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.ordem.STATUS != 1) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ORDEM JA SEPARADA');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.endereco.ID_ORDEM_TIPO == 99 && servico.ordem.STATUS == 1) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=?,OS=? WHERE CODBAR= ? returning ID_PACOTE,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [2, servico.endereco.CODBAR, servico.operador.CODIGO, servico.ordem.ID_OS, CodBarras], function (err, res) {
+                                                db.detach(function () {
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    resolve(servico);
+                                                });
+                                            })
+                                        } else {
+                                            db.detach(function () {
+                                                servico.erro = new Error('Erro deconhecido, chame suporte');
+                                                resolve(servico);
+                                            })
+                                        }
+                                    } else {
+                                        db.detach(function () {
+                                            servico.erro = new Error('Erro deconhecido, chame suporte');
+                                            resolve(servico);
+                                        })
                                     }
                                 });
                             })
