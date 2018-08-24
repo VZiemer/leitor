@@ -29,8 +29,8 @@
             <span>{{vm.servico.operador.NOME | uppercase}}</span>
         </md-whiteframe>
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
-            <span class="label">ENDERECO</span>
-            <span>{{vm.servico.endereco.CODBAR}}</span>
+            <span class="label">{{vm.servico.volume.CODBAR?'VOLUME':'ENDERECO'}}</span>
+            <span>{{vm.servico.endereco.CODBAR || vm.servico.volume.CODBAR}}</span>
         </md-whiteframe>
         <md-whiteframe class="md-whiteframe-1dp" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
             <span class="label">ID</span>
