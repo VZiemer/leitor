@@ -6,11 +6,56 @@
     angular
         .module('leitorEstoque')
         .controller('HomeCtrl', HomeController);
-    HomeController.$inject = ['$scope', '$interval', '$mdSidenav', '$mdToast', 'pacoteSrvc'];
+    HomeController.$inject = ['$scope', '$interval', '$mdDialog', 'pacoteSrvc'];
 
-    function HomeController($scope, $interval, $mdSidenav, $mdToast, pacoteSrvc) {
+    function HomeController($scope, $interval, $mdDialog, pacoteSrvc) {
 
-console.log (os.platform())
+        console.log(os.platform())
+
+        var vm = this;
+        vm.servico = {};
+        vm.clock = {
+            time: "",
+            interval: 1000
+        };
+        $interval(function () {
+            vm.clock.time = Date.now();
+        },
+            vm.clock.interval);
+
+
+            //dialog
+            vm.showAdvanced = function(ev) {
+                $mdDialog.show({
+                  controller: DialogController,
+                  templateUrl: './app/features/home/home.mdl.quebra.html',
+                  parent: angular.element(document.body),
+                  targetEvent: ev,
+                  clickOutsideToClose:false,
+                  fullscreen: true // Only for -xs, -sm breakpoints.
+                })
+                .then(function(answer) {
+                  $scope.status = 'You said the information was "' + answer + '".';
+                }, function() {
+                  $scope.status = 'You cancelled the dialog.';
+                });
+              };
+              function DialogController($scope, $mdDialog) {
+                $scope.hide = function() {
+                  $mdDialog.hide();
+                };
+            
+                $scope.cancel = function() {
+                  $mdDialog.cancel();
+                };
+            
+                $scope.answer = function(answer) {
+                  $mdDialog.hide(answer);
+                };
+              }
+
+              //fim dialog
+
         function imprime(id, descricao, codbar, qtd, unidade) {
             console.log('impressão');
             // impressão de pacote
@@ -72,16 +117,7 @@ console.log (os.platform())
             var audio = new Audio('./lib/audio/ok.wav');
             audio.play();
         }
-        var vm = this;
-        vm.servico = {};
-        vm.clock = {
-            time: "",
-            interval: 1000
-        };
-        $interval(function () {
-                vm.clock.time = Date.now();
-            },
-            vm.clock.interval);
+
         vm.consultaPacote = function (codbar) {
             var reg = new RegExp('^[0-9]+$');
             var identificador = codbar.slice(0, 1);
@@ -169,6 +205,6 @@ console.log (os.platform())
 
         ////////////////
 
-        function activate() {}
+        function activate() { }
     }
 })();

@@ -1,4 +1,4 @@
-<section layout="column" flex layout-align="center center" class="login" ng-cloak>
+<section layout="column" flex layout-align="center center" id="leitor" class="login" ng-cloak>
     <md-content layout-padding layout-fill>
         <form name="projectForm" ng-submit="vm.consultaPacote(consulta.input);consulta.input=''" method="POST">
             <md-input-container class="md-block">
@@ -8,7 +8,8 @@
                     <!-- <div ng-message="required">This is required.</div> -->
                     <!-- <div ng-message="md-maxlength">The description must be less than 30 characters long.</div> -->
                 </div>
-            </md-input-container>           
+            </md-input-container>   
+            <md-button ng-click="vm.showAdvanced($event)">teste</md-button>     
         </form>
     </md-content>
     <md-content layout="row" layout-padding layout-wrap layout-fill style="padding-bottom: 32px;">

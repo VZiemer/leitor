@@ -6,8 +6,7 @@
   "scripts": {
     "start": "electron .",
     "release": "build",
-    "distlinux": "electron-builder -mwl",
-    "dist": "electron-builder"
+    "dist": "build -p always"
   },
   "build": {
     "appId": "leitorestoque",
@@ -56,8 +55,8 @@
   },
   "homepage": "https://github.com/electron/electron-quick-start#readme",
   "devDependencies": {
-    "electron": "~1.8.4",
-    "electron-builder": "^20.10.0"
+    "electron": "^2.0.8",
+    "electron-builder": "^20.28.2"
   },
   "dependencies": {
     "node-firebird": "^0.8.6"
