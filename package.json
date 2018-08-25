@@ -1,29 +1,63 @@
 {
-  "name": "electron-quick-start",
+  "name": "leitor-estoque",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Leitor de Pacotes",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "release": "build",
+    "distlinux": "electron-builder -mwl",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "leitorestoque",
+    "productName": "Leitor Estoque",
+    "extraFiles": [],
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "VZiemer",
+      "repo": "leitor"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "nsisWeb": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
+    }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron/electron-quick-start.git"
+    "url": "git+https://github.com/vziemer/leitor.git"
   },
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "keywords": [],
+  "author": {
+    "name": "VZiemer",
+    "email": "vanius@live.com"
+  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/electron/electron-quick-start/issues"
   },
   "homepage": "https://github.com/electron/electron-quick-start#readme",
   "devDependencies": {
-    "electron": "^2.0.7"
+    "electron": "~1.8.4",
+    "electron-builder": "^20.10.0"
   },
   "dependencies": {
     "node-firebird": "^0.8.6"

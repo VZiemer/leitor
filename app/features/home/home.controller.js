@@ -2,6 +2,7 @@
     'use strict';
     const exec = require('child_process').exec;
     const fs = require('fs');
+    const os = require('os');
     angular
         .module('leitorEstoque')
         .controller('HomeCtrl', HomeController);
@@ -9,7 +10,7 @@
 
     function HomeController($scope, $interval, $mdSidenav, $mdToast, pacoteSrvc) {
 
-
+console.log (os.platform())
         function imprime(id, descricao, codbar, qtd, unidade) {
             console.log('impressão');
             // impressão de pacote
@@ -24,24 +25,41 @@
             texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
             texto += 'E\nQ\n'
             //impressão de endereço
-            let texto = 'm\nC0026\nL\nH8\nD11\n'
-            texto += '1W1d5301000900030' + codbar + '\n'
-            texto += '122200001300220' + codbar.slice(6, 6) +' '+ codbar.slice(7, 8)+' '+ codbar.slice(10, 10 )+' '+ codbar.slice(10, 11 )+ '\n'
-            texto += '121100002000345' + codbar + '\n'
-            texto += '121100001400190' + descricao.slice(0, 29) + '\n'
-            texto += '121100001000190' + descricao.slice(30, 59) + '\n'
-            texto += '121100000600190' + descricao.slice(60, 89) + '\n'
-            texto += '121100000200190ID ' + id + '\n'
-            texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
-            texto += 'E\nQ\n'
-
-
+            // let texto = 'm\nC0026\nL\nH8\nD11\n'
+            // texto += '1W1d5301000900030' + codbar + '\n'
+            // texto += '122200001300220' + codbar.slice(6, 6) + ' ' + codbar.slice(7, 8) + ' ' + codbar.slice(10, 10) + ' ' + codbar.slice(10, 11) + '\n'
+            // texto += '121100002000220corr  est   niv   cx\n'
+            // texto += '121100000800220' + descricao.slice(0, 29) + '\n'
+            // texto += '121100001000190' + descricao.slice(30, 59) + '\n'
+            // texto += '121100000600190' + descricao.slice(60, 89) + '\n'
+            // texto += '121100000200190ID ' + id + '\n'
+            // texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
+            // texto += 'E\nQ\n'
+            //impressão de endereço
+            // let texto = 'm\nC0026\nL\nH8\nD11\n'
+            // texto += '1W1d5301000900030' + codbar + '\n'
+            // texto += '122200001300220' + codbar.slice(6, 6) + ' ' + codbar.slice(7, 8) + ' ' + codbar.slice(10, 10) + ' ' + codbar.slice(10, 11) + '\n'
+            // texto += '121100002000220corr  est   niv   cx\n'
+            // texto += '121100000800220' + descricao.slice(0, 29) + '\n'
+            // texto += '121100001000190' + descricao.slice(30, 59) + '\n'
+            // texto += '121100000600190' + descricao.slice(60, 89) + '\n'
+            // texto += '121100000200190ID ' + id + '\n'
+            // texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
+            // texto += 'E\nQ\n'
 
             fs.writeFile('C:\\zzz.txt', texto, function () {
                 // windows print
-                exec('copy c:\\zzz.txt \\\\pc10\\argox', function(error,stdout,stderr) {console.log(stdout)});
+                if (os.platform() === 'win32') {
+                    exec('copy c:\\zzz.txt \\\\pc10\\argox', function (error, stdout, stderr) {
+                        console.log(stdout)
+                    });
+                }
                 //linux print
-                // exec('lp -o raw -d ARGOX zzz.txt', function(error,stdout,stderr) {console.log(stdout)});
+                if (os.platform() === 'linux') {
+                    exec('lp -o raw -d ARGOX zzz.txt', function (error, stdout, stderr) {
+                        console.log(stdout)
+                    });
+                }
             })
         }
 
@@ -133,7 +151,7 @@
                     function (response) {
                         vm.servico = response;
                         audioOk();
-                        imprime(response.pacote.ID_PRODUTO,response.pacote.DESCRICAO,response.pacote.CODBAR,response.pacote.QTD,response.pacote.UNIDADE)
+                        imprime(response.pacote.ID_PRODUTO, response.pacote.DESCRICAO, response.pacote.CODBAR, response.pacote.QTD, response.pacote.UNIDADE)
                     },
                     function (response) {
                         console.log(response)
