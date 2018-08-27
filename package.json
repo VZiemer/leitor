@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "release": "build",
-    "dist": "build -p always"
+    "dist": "build"
   },
   "build": {
     "appId": "leitorestoque",
@@ -22,7 +22,7 @@
       "repo": "leitor"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "deb"
     },
     "win": {
       "target": [
