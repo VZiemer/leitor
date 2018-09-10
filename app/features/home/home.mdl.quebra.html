@@ -1,5 +1,5 @@
-<md-dialog aria-label="LEIA A ETIQUETA DA QUEBRA">
-    <form ng-cloak>
+<md-dialog aria-label="DADOS DO VOLUME">
+    <form ng-submit="ok(volume)" ng-cloak>
       <md-toolbar>
         <div class="md-toolbar-tools">
           <h2>LEIA A ETIQUETA DA QUEBRA</h2>
@@ -9,18 +9,22 @@
       <md-dialog-content>
         <div class="md-dialog-content">
             <md-input-container class="md-block">
-                <label>LEITOR</label>
-                <input required md-no-asterisk name="description" ng-model="consulta.input" autofocus>
-                <div ng-messages="projectForm.description.$error">
-                    <!-- <div ng-message="required">This is required.</div> -->
-                    <!-- <div ng-message="md-maxlength">The description must be less than 30 characters long.</div> -->
-                </div>
+                <label>comprimento</label>
+                <input required md-no-asterisk name="description" ng-model="volume.comprimento" autofocus>
+            </md-input-container> 
+            <md-input-container class="md-block">
+                <label>largura</label>
+                <input required md-no-asterisk name="description" ng-model="volume.largura">
             </md-input-container>  
+            <md-input-container class="md-block">
+                <label>altura</label>
+                <input required md-no-asterisk name="description" ng-model="volume.altura">
+            </md-input-container>   
         </div>
       </md-dialog-content>
       <md-dialog-actions layout="row">
-        <md-button ng-click="answer('useful')">
-          Reimprime
+        <md-button ng-click="ok(volume)">
+          Abrir Volume
         </md-button>
       </md-dialog-actions>
     </form>

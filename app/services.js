@@ -307,10 +307,12 @@
                                         } else if (([1, 2, 4, 5, 6].indexOf(res[0].TIPO) != -1) && ([0, 1].indexOf(res[0].STATUS) == -1)) { //saida em os fora da situacao 3
                                             servico.erro = new Error('DOCUMENTO DE ENTRADA NÃO LIBERADO');
                                             resolve(servico);
-                                        } else if (res[0].TIPO == 3 && res[0].OSSTATUS != 3) {
-                                            servico.erro = new Error('DOCUMENTO DE SAIDA NÃO LIBERADO');
-                                            resolve(servico);
-                                        } else {
+                                        }
+                                        //  else if (res[0].TIPO == 3 && res[0].OSSTATUS != 3) {
+                                        //     servico.erro = new Error('DOCUMENTO DE SAIDA NÃO LIBERADO');
+                                        //     resolve(servico);
+                                        // } 
+                                        else {
                                             servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].TIPOFRETE, res[0].OSSTATUS);
                                             resolve(servico);
                                         }
@@ -321,7 +323,54 @@
                         }
                     })
                 }
-                var abreVolume = function () {
+                var abreVolume = function (CodBarras) {
+                    servico.erro = new Error();
+                    return new Promise((resolve, reject) => {
+                        if (!servico.operador.CODBAR) {
+                            servico.erro = new Error('LEIA O CRACHA DE IDENTIFICAÇÃO');
+                            reject(servico);
+                        } else if (servico.volume.CODBAR && servico.volume.CODBAR !== CodBarras) {
+                            servico.erro = new Error('POR FAVOR FECHE O ENDEREÇO ATUAL');
+                            reject(servico);
+                        } else if (servico.volume.CODBAR && servico.volume.CODBAR === CodBarras) {
+                            servico.endereco = new Endereco();
+                            servico.erro = new Error('ENDERECO FECHADO');
+                            resolve(servico);
+                        } else {
+                            Firebird.attach(options, function (err, db) {
+                                if (err) {
+                                    servico.erro = new Error('ERRO DE CONEXÃO')
+                                    return reject(servico);
+                                }
+                                db.query("update volume set status=1 WHERE CODBAR= ? returning EXPEDICAO,ID_VOLUME,CODBAR,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO", CodBarras, function (err, res) {
+                                    // if (err) reject(new Error(err));
+                                    if (!res.length) {
+                                        db.detach(function () {
+                                            servico.erro = new Error('NÃO EXISTE O VOLUME');
+                                            reject(servico);
+                                        });
+                                    } else if (res[0].EXPEDICAO != servico.transito.EXPEDICAO) { //transito de entrada no defeito
+
+                                        db.detach(function () {
+                                            servico.erro = new Error('VOLUME NÃO É DESTA EXPEDIÇÃO');
+                                            reject(servico);
+                                        });
+                                    } else if (res[0].EXPEDICAO != servico.transito.EXPEDICAO) {
+                                        db.detach(function () {
+                                            servico.endereco = new Endereco(res[0].ID_ENDERECO, res[0].DESCRICAO, res[0].CODBAR, res[0].ID_CRITERIO, res[0].ID_FORNECEDOR, res[0].ID_EMPRESA, res[0].ID_ORDEM_TIPO, res[0].ID_OS_STATUS, res[0].ID_OS);
+                                            resolve(servico);
+                                        });
+                                    } else {
+                                        servico.erro = new Error('CHAME O SUPORTE');
+                                        reject(servico);
+                                    }
+                                });
+
+                            })
+                        }
+                    })
+                }
+                var criaVolume = function (medidas) {
                     servico.erro = new Error();
                     servico.pacote = new Pacote();
                     return new Promise((resolve, reject) => {
@@ -330,11 +379,10 @@
                                 servico.erro = new Error('ERRO DE CONEXÃO')
                                 return reject(servico);
                             }
-                            db.query("insert into VOLUME (expedicao) values (?) returning EXPEDICAO,ID_VOLUME,CODBAR,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO = ?", servico.transito.EXPEDICAO, function (err, res) {
-                                // if (err) reject(new Error(err));
+                            db.query("insert into VOLUME (expedicao,profundidade,largura,altura) values (?,?,?,?) returning EXPEDICAO,ID_VOLUME,CODBAR,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO", [servico.transito.EXPEDICAO, medidas.comprimento, medidas.largura, medidas.altura], function (err, res) {
+                                if (err) reject(new Error(err));
                                 db.detach(function () {
-                                    servico.volume = new Volume(res.ID_VOLUME, res.CODBAR, res.SITUACAO, res.TIPO, res.LARGURA, res.ALTURA, res.PROFUNDIDADE, res.PESO)
-                                    resolve(servico);
+                                    resolve(res);
                                 })
                             });
                         })
@@ -617,7 +665,9 @@
                     abreOperador: abreOperador,
                     abreOrdem: abreOrdem,
                     abreTransito: abreTransito,
-                    movePacote: movePacote
+                    movePacote: movePacote,
+                    criaVolume: criaVolume,
+                    abreVolume: abreVolume
                 }
             }]);
 })();

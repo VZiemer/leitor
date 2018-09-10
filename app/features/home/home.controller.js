@@ -19,75 +19,93 @@
             interval: 1000
         };
         $interval(function () {
-            vm.clock.time = Date.now();
-        },
+                vm.clock.time = Date.now();
+            },
             vm.clock.interval);
 
 
-            //dialog
-            vm.showAdvanced = function(ev) {
-                $mdDialog.show({
-                  controller: DialogController,
-                  templateUrl: './app/features/home/home.mdl.quebra.html',
-                  parent: angular.element(document.body),
-                  targetEvent: ev,
-                  clickOutsideToClose:false,
-                  fullscreen: true // Only for -xs, -sm breakpoints.
+        //dialog
+        vm.modalVolume = function (ev) {
+            $mdDialog.show({
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.quebra.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
                 })
-                .then(function(answer) {
-                  $scope.status = 'You said the information was "' + answer + '".';
-                }, function() {
-                  $scope.status = 'You cancelled the dialog.';
+                .then(function (medidas) {
+                    pacoteSrvc.abreVolume(medidas).then(function (response) {
+                        // vm.servico = response;
+                        imprime('VOLUMESUP', vm.servico,response)
+                    })
+                }, function () {
+                    $scope.status = 'You cancelled the dialog.';
                 });
-              };
-              function DialogController($scope, $mdDialog) {
-                $scope.hide = function() {
-                  $mdDialog.hide();
-                };
-                $scope.cancel = function() {
-                  $mdDialog.cancel();
-                };
-                $scope.answer = function(answer) {
-                  $mdDialog.hide(answer);
-                };
-              }
-              //fim dialog
-        function imprime(id, descricao, codbar, qtd, unidade) {
+        };
+        function DialogController($scope, $mdDialog) {
+            $scope.hide = function () {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
+            $scope.ok = function (volume) {
+                $mdDialog.hide(volume);
+            };
+        }
+        //fim dialog
+        function imprime(tipo, servico,dados) {
             console.log('impressão');
-            // impressão de pacote
-            let texto = 'm\nC0026\nL\nH8\nD11\n'
-            texto += '1W1d5301000900030' + codbar + '\n'
-            texto += '121100002000200' + codbar.slice(2, 6) + '\n'
-            texto += '121100002000345' + codbar + '\n'
-            texto += '121100001400190' + descricao.slice(0, 29) + '\n'
-            texto += '121100001000190' + descricao.slice(30, 59) + '\n'
-            texto += '121100000600190' + descricao.slice(60, 89) + '\n'
-            texto += '121100000200190ID ' + id + '\n'
-            texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
-            texto += 'E\nQ\n'
-            //impressão de endereço
-            // let texto = 'm\nC0026\nL\nH8\nD11\n'
-            // texto += '1W1d5301000900030' + codbar + '\n'
-            // texto += '122200001300220' + codbar.slice(6, 6) + ' ' + codbar.slice(7, 8) + ' ' + codbar.slice(10, 10) + ' ' + codbar.slice(10, 11) + '\n'
-            // texto += '121100002000220corr  est   niv   cx\n'
-            // texto += '121100000800220' + descricao.slice(0, 29) + '\n'
-            // texto += '121100001000190' + descricao.slice(30, 59) + '\n'
-            // texto += '121100000600190' + descricao.slice(60, 89) + '\n'
-            // texto += '121100000200190ID ' + id + '\n'
-            // texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
-            // texto += 'E\nQ\n'
-            //impressão de endereço
-            // let texto = 'm\nC0026\nL\nH8\nD11\n'
-            // texto += '1W1d5301000900030' + codbar + '\n'
-            // texto += '122200001300220' + codbar.slice(6, 6) + ' ' + codbar.slice(7, 8) + ' ' + codbar.slice(10, 10) + ' ' + codbar.slice(10, 11) + '\n'
-            // texto += '121100002000220corr  est   niv   cx\n'
-            // texto += '121100000800220' + descricao.slice(0, 29) + '\n'
-            // texto += '121100001000190' + descricao.slice(30, 59) + '\n'
-            // texto += '121100000600190' + descricao.slice(60, 89) + '\n'
-            // texto += '121100000200190ID ' + id + '\n'
-            // texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
-            // texto += 'E\nQ\n'
+            let texto = '';
+            if (tipo === 'PACOTE') {
+                // impressão de pacote
+                texto = 'm\nC0026\nL\nH8\nD11\n'
+                texto += '1W1d5301000900030' + codbar + '\n'
+                texto += '121100002000200' + codbar.slice(2, 6) + '\n'
+                texto += '121100002000345' + codbar + '\n'
+                texto += '121100001400190' + descricao.slice(0, 29) + '\n'
+                texto += '121100001000190' + descricao.slice(30, 59) + '\n'
+                texto += '121100000600190' + descricao.slice(60, 89) + '\n'
+                texto += '121100000200190ID ' + id + '\n'
+                texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
+                texto += 'E\nQ\n'
+            }
+            if (tipo === 'ENDERECO') {
+                //impressão de endereço
+                texto = 'm\nC0026\nL\nH8\nD11\n'
+                texto += '1W1d5301000900030' + codbar + '\n'
+                texto += '122200001300220' + codbar.slice(6, 6) + ' ' + codbar.slice(7, 8) + ' ' + codbar.slice(10, 10) + ' ' + codbar.slice(10, 11) + '\n'
+                texto += '121100002000220corr  est   niv   cx\n'
+                texto += '121100000800220' + descricao.slice(0, 29) + '\n'
+                texto += '121100001000190' + descricao.slice(30, 59) + '\n'
+                texto += '121100000600190' + descricao.slice(60, 89) + '\n'
+                texto += '121100000200190ID ' + id + '\n'
+                texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
+                texto += 'E\nQ\n'
+            }
 
+            //impressão de volumes (etiqueta superior)
+            if (tipo === 'VOLUMESUP') {
+                texto = 'm\nC0026\nL\nH8\nD11\n'
+                texto += '1E1208001300100' + dados.CODBAR + '\n'
+                texto += '122200000400050' + servico.transito.EXPEDICAO + '\n'
+                if (dados.ALTURA && dados.LARGURA && dados.PROFUNDIDADE) {
+                    texto += '121100000400450'+dados.ALTURA+'x'+dados.LARGURA+'x'+dados.PROFUNDIDADE+'cm\n'
+                }
+                texto += '121100000100030__________________________________________\n'
+                texto += 'E\nQ\n'
+            }
+            //impressão de volumes (etiqueta inferior CONFERÊNCIA)
+            if (tipo === 'VOLUMEINF') {
+                texto = 'm\nC0026\nL\nH8\nD11\n'
+                texto += '121100002300030__________________________________________\n'
+                texto += '123400001100050568412\n'
+                texto += '122300001300440888/888\n'
+                texto += '1e120600018005000000008\n'
+                texto += '12110000040050050.250 Kg\n'
+                texto += 'E\nQ\n'
+            }
             fs.writeFile('C:\\zzz.txt', texto, function () {
                 // windows print
                 if (os.platform() === 'win32') {
@@ -124,6 +142,10 @@
                 pacoteSrvc.abreTransito(codbar).then(
                     function (response) {
                         vm.servico = response;
+                        if (vm.servico.transito.TIPO == 3 && vm.servico.STATUS == 2) {
+                            vm.modalVolume();
+                            // imprime(0,0,V00000,0,0,123456,10)
+                        }
                         audioOk();
                     },
                     function (response) {
@@ -181,9 +203,15 @@
                 console.log('pacote', codbar)
                 pacoteSrvc.movePacote(codbar).then(
                     function (response) {
+                        if (response.pacote.SITUACAO == 7) {
+
+                        }
+                        if (response.pacote.SITUACAO == 20) {
+                            vm.showAdvanced();
+                        }
                         vm.servico = response;
                         audioOk();
-                        imprime(response.pacote.ID_PRODUTO, response.pacote.DESCRICAO, response.pacote.CODBAR, response.pacote.QTD, response.pacote.UNIDADE)
+                        imprime('PACOTE', vm.servico)
                     },
                     function (response) {
                         console.log(response)
@@ -201,6 +229,6 @@
 
         ////////////////
 
-        function activate() { }
+        function activate() {}
     }
 })();

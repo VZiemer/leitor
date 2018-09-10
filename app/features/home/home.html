@@ -5,11 +5,9 @@
                 <label>LEITOR</label>
                 <input required md-no-asterisk name="description" ng-model="consulta.input" autofocus>
                 <div ng-messages="projectForm.description.$error">
-                    <!-- <div ng-message="required">This is required.</div> -->
-                    <!-- <div ng-message="md-maxlength">The description must be less than 30 characters long.</div> -->
                 </div>
             </md-input-container>   
-            <md-button ng-click="vm.showAdvanced($event)">teste</md-button>     
+            <md-button ng-click="vm.modalVolume($event)">teste</md-button>     
         </form>
     </md-content>
     <md-content layout="row" layout-padding layout-wrap layout-fill style="padding-bottom: 32px;">
