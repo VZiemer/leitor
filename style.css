@@ -41,12 +41,19 @@ md-whiteframe {
 
 @media (min-width: 960px) and (max-width: 1279px) {
     md-whiteframe {
-        margin: 20px;
-        height: 90px;
-        background-color: #fcddde;
+        margin: 10px;
+        height: 100px;
+        background-color: #F2FCE2;
+        position: relative;
     }
     md-whiteframe>span {
-        font-size: 0.9em;
+        font-size: 1.8em;
+    }
+    md-whiteframe .label {
+        font-size: 1em;
+        position: absolute;
+        top: 8px;
+        left: 8px;
     }
 }
 
