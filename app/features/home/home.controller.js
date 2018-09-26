@@ -264,7 +264,7 @@
                     }
                     //linux print
                     if (os.platform() === 'linux') {
-                        console('impressão linux')
+                        console.log('impressão linux')
                         exec('lp -o raw -d ARGOX c:\\zzz.txt', function (error, stdout, stderr) {
                             if (error) return reject(error);
                             resolve(stdout);
