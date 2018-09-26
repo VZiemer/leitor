@@ -256,6 +256,7 @@
                 fs.writeFile('C:\\zzz.txt', texto, function () {
                     // windows print
                     if (os.platform() === 'win32') {
+                        console('impressão windows')
                         exec('copy c:\\zzz.txt \\\\pc10\\argox', function (error, stdout, stderr) {
                             if (error) return reject(error);
                             resolve(stdout);
@@ -263,7 +264,8 @@
                     }
                     //linux print
                     if (os.platform() === 'linux') {
-                        exec('lp -o raw -d ARGOX zzz.txt', function (error, stdout, stderr) {
+                        console('impressão linux')
+                        exec('lp -o raw -d ARGOX c:\\zzz.txt', function (error, stdout, stderr) {
                             if (error) return reject(error);
                             resolve(stdout);
                         });
