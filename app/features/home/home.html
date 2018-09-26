@@ -3,11 +3,13 @@
         <form name="projectForm" ng-submit="vm.consultaPacote(consulta.input);consulta.input=''" method="POST">
             <md-input-container class="md-block">
                 <label>LEITOR</label>
-                <input required md-no-asterisk name="description" ng-model="consulta.input" autofocus>
+                <input required md-no-asterisk name="description" ng-model="consulta.input" md-autofocus autofocus>
                 <div ng-messages="projectForm.description.$error">
                 </div>
             </md-input-container>   
-            <md-button ng-click="vm.modalVolume($event)">teste</md-button>     
+            <!-- <md-button ng-disabled="!vm.servico.volume.CODBAR" ng-click="vm.modalExcluiVolume($event)">ExcluiVolume</md-button>     
+            <md-button ng-disabled="vm.servico.volume.CODBAR" ng-click="vm.modalCriaVolume($event)">CriaVolume</md-button>      -->
+
         </form>
     </md-content>
     <md-content layout="row" layout-padding layout-wrap layout-fill style="padding-bottom: 32px;">

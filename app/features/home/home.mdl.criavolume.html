@@ -1,0 +1,31 @@
+<md-dialog aria-label="DADOS DO VOLUME">
+    <form ng-submit="ok(volume)" ng-cloak>
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <h2>LEIA A ETIQUETA DA QUEBRA</h2>
+          <span flex></span>
+        </div>
+      </md-toolbar>
+      <md-dialog-content>
+        <div class="md-dialog-content">
+            <md-input-container class="md-block">
+                <label>comprimento</label>
+                <input required md-no-asterisk name="description" ng-model="volume.comprimento" md-autofocus>
+            </md-input-container> 
+            <md-input-container class="md-block">
+                <label>largura</label>
+                <input required md-no-asterisk name="description" ng-model="volume.largura">
+            </md-input-container>  
+            <md-input-container class="md-block">
+                <label>altura</label>
+                <input required md-no-asterisk name="description" ng-model="volume.altura">
+            </md-input-container>   
+        </div>
+      </md-dialog-content>
+      <md-dialog-actions layout="row">
+        <md-button ng-click="ok(volume)">
+          Abrir Volume
+        </md-button>
+      </md-dialog-actions>
+    </form>
+  </md-dialog>

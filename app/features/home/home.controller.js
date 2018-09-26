@@ -24,26 +24,160 @@
             vm.clock.interval);
 
 
-        //dialog
-        vm.modalVolume = function (ev) {
+        //dialogs
+        vm.modalConfirmaEtiqueta = function (ev, codbar) {
             $mdDialog.show({
                     controller: DialogController,
                     templateUrl: './app/features/home/home.mdl.quebra.html',
                     parent: angular.element(document.body),
                     targetEvent: ev,
+                    locals: {
+                        codbar: codbar
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
+                .then(function () {
+                    pacoteSrvc.abreVolume(vm.servico.volume.CODBAR, '').then(
+                        function (response) {
+                            vm.servico = response;
+                            audioOk();
+                        },
+                        function (response) {
+                            console.log(response)
+                            vm.servico = response;
+                            audioError();
+
+                        }
+                    )
+                }, function () {});
+        };
+        vm.modalEntraPeso = function (ev) {
+            console.log('abriu modal entra peso')
+            $mdDialog.show({
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.peso.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: ''
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
+                .then(function (volume) {
+                    pacoteSrvc.abreVolume(vm.servico.volume.CODBAR, volume.PESO).then(
+                        function (response) {
+                            vm.servico = response;
+                            audioOk();
+                        },
+                        function (response) {
+                            console.log(response)
+                            vm.servico = response;
+                            audioError();
+
+                        }
+                    )
+                }, function () {});
+        };
+
+        vm.modalFechaTransito = function (ev) {
+            console.log('abriu modal fecha transito')
+            $mdDialog.show({
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.peso.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: ''
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
+                .then(function (volume) {
+                    console.log('abrepacote')
+                    pacoteSrvc.abreVolume(vm.servico.volume.CODBAR, volume.PESO).then(
+                        function () {
+                            console.log('abretransito')
+
+                            pacoteSrvc.abreTransito(vm.servico.transito.ID_TRANSITO).then(
+                                function (response) {
+                                    console.log('ok do abretransito')
+
+                                    vm.servico = response;
+                                    audioOk();
+                                },
+                                function (response) {
+                                    vm.servico = response;
+                                    audioError();
+                                })
+                        },
+                        function (response) {
+                            console.log(response)
+                            vm.servico = response;
+                            audioError();
+
+                        }
+                    )
+                }, function () {});
+        };
+
+
+        vm.modalCriaVolume = function (ev) {
+            $mdDialog.show({
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.criavolume.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: ''
+                    },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
                 })
                 .then(function (medidas) {
-                    pacoteSrvc.abreVolume(medidas).then(function (response) {
-                        // vm.servico = response;
-                        imprime('VOLUMESUP', vm.servico,response)
+                    pacoteSrvc.criaVolume(medidas).then(function (response) {
+                        imprime('VOLUMESUP', vm.servico, response).then(function () {
+                            vm.modalConfirmaEtiqueta('', response.CODBAR)
+                        }, function () {
+
+                        })
                     })
                 }, function () {
-                    $scope.status = 'You cancelled the dialog.';
+                    console.log('modal fechado')
+                    // $scope.status = 'You cancelled the dialog.';
                 });
         };
-        function DialogController($scope, $mdDialog) {
+        vm.modalExcluiVolume = function (ev, codbar) {
+            $mdDialog.show({
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.excluivolume.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: codbar
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
+                .then(function (medidas) {
+                    pacoteSrvc.excluiVolume(medidas.CODBAR).then(function (response) {
+                        vm.servico = response;
+                        audioOk();
+                    })
+                }, function () {
+                    vm.servico = response;
+                    audioError();
+                    console.log('modal fechado')
+                    // $scope.status = 'You cancelled the dialog.';
+                });
+        };
+
+        function DialogController($scope, $mdDialog, codbar) {
+            console.log(codbar)
+            if (codbar) {
+                $scope.codbar = codbar;
+            }
             $scope.hide = function () {
                 $mdDialog.hide();
             };
@@ -51,74 +185,90 @@
                 $mdDialog.cancel();
             };
             $scope.ok = function (volume) {
-                $mdDialog.hide(volume);
+                console.log('ok')
+                if (!$scope.codbar) {
+                    console.log('sem codbar')
+                    $mdDialog.hide(volume);
+
+                } else {
+                    console.log('com codbar')
+                    if ($scope.codbar == volume.CODBAR) {
+                        $mdDialog.hide(volume)
+                    } else {
+                        console.log('invalido', $scope.codbar, volume.CODBAR)
+                        $scope.volume.CODBAR = '';
+                    }
+                }
             };
         }
         //fim dialog
-        function imprime(tipo, servico,dados) {
-            console.log('impressão');
-            let texto = '';
-            if (tipo === 'PACOTE') {
-                // impressão de pacote
-                texto = 'm\nC0026\nL\nH8\nD11\n'
-                texto += '1W1d5301000900030' + codbar + '\n'
-                texto += '121100002000200' + codbar.slice(2, 6) + '\n'
-                texto += '121100002000345' + codbar + '\n'
-                texto += '121100001400190' + descricao.slice(0, 29) + '\n'
-                texto += '121100001000190' + descricao.slice(30, 59) + '\n'
-                texto += '121100000600190' + descricao.slice(60, 89) + '\n'
-                texto += '121100000200190ID ' + id + '\n'
-                texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
-                texto += 'E\nQ\n'
-            }
-            if (tipo === 'ENDERECO') {
-                //impressão de endereço
-                texto = 'm\nC0026\nL\nH8\nD11\n'
-                texto += '1W1d5301000900030' + codbar + '\n'
-                texto += '122200001300220' + codbar.slice(6, 6) + ' ' + codbar.slice(7, 8) + ' ' + codbar.slice(10, 10) + ' ' + codbar.slice(10, 11) + '\n'
-                texto += '121100002000220corr  est   niv   cx\n'
-                texto += '121100000800220' + descricao.slice(0, 29) + '\n'
-                texto += '121100001000190' + descricao.slice(30, 59) + '\n'
-                texto += '121100000600190' + descricao.slice(60, 89) + '\n'
-                texto += '121100000200190ID ' + id + '\n'
-                texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
-                texto += 'E\nQ\n'
-            }
-
-            //impressão de volumes (etiqueta superior)
-            if (tipo === 'VOLUMESUP') {
-                texto = 'm\nC0026\nL\nH8\nD11\n'
-                texto += '1E1208001300100' + dados.CODBAR + '\n'
-                texto += '122200000400050' + servico.transito.EXPEDICAO + '\n'
-                if (dados.ALTURA && dados.LARGURA && dados.PROFUNDIDADE) {
-                    texto += '121100000400450'+dados.ALTURA+'x'+dados.LARGURA+'x'+dados.PROFUNDIDADE+'cm\n'
+        function imprime(tipo, servico, dados) {
+            return new Promise((resolve, reject) => {
+                console.log('impressão', dados, servico);
+                let texto = '';
+                if (tipo === 'PACOTE') {
+                    // impressão de pacote
+                    texto = 'm\nC0026\nL\nH8\nD11\n'
+                    texto += '1W1d5301000900030' + dados.pacote.CODBAR + '\n'
+                    texto += '121100002000200' + dados.pacote.CODBAR.slice(2, 6) + '\n'
+                    texto += '121100002000345' + dados.pacote.CODBAR + '\n'
+                    texto += '121100001400190' + dados.pacote.DESCRICAO.slice(0, 29) + '\n'
+                    texto += '121100001000190' + dados.pacote.DESCRICAO.slice(30, 59) + '\n'
+                    texto += '121100000600190' + dados.pacote.DESCRICAO.slice(60, 89) + '\n'
+                    texto += '121100000200190ID ' + dados.pacote.ID_PRODUTO + '\n'
+                    texto += '121100000200030 ' + dados.pacote.QTD + ' ' + dados.pacote.UNIDADE + '\n'
+                    texto += 'E\nQ\n'
                 }
-                texto += '121100000100030__________________________________________\n'
-                texto += 'E\nQ\n'
-            }
-            //impressão de volumes (etiqueta inferior CONFERÊNCIA)
-            if (tipo === 'VOLUMEINF') {
-                texto = 'm\nC0026\nL\nH8\nD11\n'
-                texto += '121100002300030__________________________________________\n'
-                texto += '123400001100050568412\n'
-                texto += '122300001300440888/888\n'
-                texto += '1e120600018005000000008\n'
-                texto += '12110000040050050.250 Kg\n'
-                texto += 'E\nQ\n'
-            }
-            fs.writeFile('C:\\zzz.txt', texto, function () {
-                // windows print
-                if (os.platform() === 'win32') {
-                    exec('copy c:\\zzz.txt \\\\pc10\\argox', function (error, stdout, stderr) {
-                        console.log(stdout)
-                    });
+                if (tipo === 'ENDERECO') {
+                    //impressão de endereço
+                    texto = 'm\nC0026\nL\nH8\nD11\n'
+                    texto += '1W1d5301000900030' + codbar + '\n'
+                    texto += '122200001300220' + codbar.slice(6, 6) + ' ' + codbar.slice(7, 8) + ' ' + codbar.slice(10, 10) + ' ' + codbar.slice(10, 11) + '\n'
+                    texto += '121100002000220corr  est   niv   cx\n'
+                    texto += '121100000800220' + descricao.slice(0, 29) + '\n'
+                    texto += '121100001000190' + descricao.slice(30, 59) + '\n'
+                    texto += '121100000600190' + descricao.slice(60, 89) + '\n'
+                    texto += '121100000200190ID ' + id + '\n'
+                    texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
+                    texto += 'E\nQ\n'
                 }
-                //linux print
-                if (os.platform() === 'linux') {
-                    exec('lp -o raw -d ARGOX zzz.txt', function (error, stdout, stderr) {
-                        console.log(stdout)
-                    });
+                //impressão de volumes (etiqueta superior)
+                if (tipo === 'VOLUMESUP') {
+                    texto = 'm\nC0026\nL\nH8\nD11\n'
+                    texto += '1E1208001300100' + dados.CODBAR + '\n'
+                    texto += '122200000400050' + servico.transito.EXPEDICAO + '\n'
+                    if (dados.ALTURA && dados.LARGURA && dados.PROFUNDIDADE) {
+                        texto += '121100000400450' + dados.ALTURA + 'x' + dados.LARGURA + 'x' + dados.PROFUNDIDADE + 'cm\n'
+                    }
+                    texto += '121100000100030__________________________________________\n'
+                    texto += 'E\nQ\n'
                 }
+                //impressão de volumes (etiqueta inferior CONFERÊNCIA)
+                if (tipo === 'VOLUMEINF') {
+                    texto = 'm\nC0026\nL\nH8\nD11\n'
+                    texto += '121100002300030__________________________________________\n'
+                    texto += '123400001100050568412\n'
+                    texto += '122300001300440888/888\n'
+                    texto += '1e120600018005000000008\n'
+                    texto += '12110000040050050.250 Kg\n'
+                    texto += 'E\nQ\n'
+                }
+                fs.writeFile('C:\\zzz.txt', texto, function () {
+                    // windows print
+                    if (os.platform() === 'win32') {
+                        exec('copy c:\\zzz.txt \\\\pc10\\argox', function (error, stdout, stderr) {
+                            if (error) return reject(error);
+                            resolve(stdout);
+                        });
+                    }
+                    //linux print
+                    if (os.platform() === 'linux') {
+                        exec('lp -o raw -d ARGOX zzz.txt', function (error, stdout, stderr) {
+                            if (error) return reject(error);
+                            resolve(stdout);
+                        });
+                    }
+                })
             })
         }
 
@@ -138,22 +288,31 @@
             var dig2 = codbar.slice(1, 2);
             if (reg.test(identificador)) {
                 // procura transito
-                console.log('transito', codbar)
-                pacoteSrvc.abreTransito(codbar).then(
-                    function (response) {
-                        vm.servico = response;
-                        if (vm.servico.transito.TIPO == 3 && vm.servico.STATUS == 2) {
-                            vm.modalVolume();
-                            // imprime(0,0,V00000,0,0,123456,10)
+                console.log('transito', vm.servico)
+                if (vm.servico.transito && vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 2 && vm.servico.volume.CODBAR) {
+                    vm.modalFechaTransito();
+                    // imprime(0,0,V00000,0,0,123456,10)
+                } else {
+                    pacoteSrvc.abreTransito(codbar).then(
+                        function (response) {
+                            vm.servico = response;
+                            audioOk();
+                            if (vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 2 && !vm.servico.volume.CODBAR) {
+                                vm.modalCriaVolume();
+                                // imprime(0,0,V00000,0,0,123456,10)
+                            } else if (vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 5 && !vm.servico.volume.CODBAR) {
+                                vm.modalCriaVolume();
+                                // imprime(0,0,V00000,0,0,123456,10)
+                            }
+                        },
+                        function (response) {
+                            console.log(response)
+                            vm.servico = response;
+                            audioError()
                         }
-                        audioOk();
-                    },
-                    function (response) {
-                        console.log(response)
-                        vm.servico = response;
-                        audioError()
-                    }
-                )
+                    )
+                }
+
             } else if (identificador === 'O' && dig2 === 'P') {
                 // procura operador
                 console.log('operador', codbar)
@@ -204,14 +363,19 @@
                 pacoteSrvc.movePacote(codbar).then(
                     function (response) {
                         if (response.pacote.SITUACAO == 7) {
-
+                            console.log('situacao 12 p/ 7');
+                            if (response.pacote.codbar !== codbar) {
+                                console.log('houve quebra', response)
+                                imprime('PACOTE', vm.servico, response)
+                            } else if (response.pacote.codbar === codbar) {
+                                console.log('não houve quebra', response)
+                            }
                         }
                         if (response.pacote.SITUACAO == 20) {
-                            vm.showAdvanced();
+                            movePacote(codbar)
                         }
                         vm.servico = response;
                         audioOk();
-                        imprime('PACOTE', vm.servico)
                     },
                     function (response) {
                         console.log(response)
@@ -219,10 +383,36 @@
                         audioError();
                     }
                 )
+            } else if (identificador === 'V') {
+                // procura volume
+                console.log('volume', codbar)
+                if (vm.servico.volume.CODBAR && !vm.servico.volume.PESO) {
+                    vm.modalEntraPeso();
+                } else if (!vm.servico.volume.CODBAR) {
+                    pacoteSrvc.abreVolume(codbar).then(
+                        function (response) {
+                            vm.servico = response;
+                            audioOk();
+                            if (vm.servico.volume.SITUACAO == 1) {
+                                vm.modalExcluiVolume('', vm.servico.volume.CODBAR);
+                            } else if (vm.servico.volume.SITUACAO == 2) {
+
+                            }
+                        },
+                        function (response) {
+                            console.log(response)
+                            vm.servico = response;
+                            audioError();
+
+                        }
+                    )
+                }
+
             } else {
                 audioError();
                 vm.servico.erro = new Error('COMANDO NÃO RECONHECIDO')
             }
+            console.log(vm.servico)
         }
 
 

@@ -2,26 +2,26 @@
     <form ng-submit="ok(volume)" name='controle' ng-cloak>
       <md-toolbar>
         <div class="md-toolbar-tools">
-          <h2>LEIA A ETIQUETA DA QUEBRA</h2>
+          <h2>TEM CERTEZA QUE QUER EXCLUIR O VOLUME?</h2>
           <span flex></span>
         </div>
       </md-toolbar>
       <md-dialog-content>
         <div class="md-dialog-content">
+          <h3>Após a Exclusão todos os pacotes deverão ser lidos em outro volume</h3>
+          <h3>Para confirmar leia o volume novamente, paca cancelar Esc</h3>
+
             <md-input-container class="md-block">
-                <label>Etiqueta</label>
+                <label>Volume</label>
                 <input required md-no-asterisk name="description" ng-model="volume.CODBAR" md-autofocus>
                 <div ng-messages="controle.description.$error" >
-                  <div ng-message="required">falta valor</div>
+                  <div ng-message="required">Leia o Volume</div>
                 </div>
             </md-input-container>    
         </div>
       </md-dialog-content>
       <md-dialog-actions layout="row">
         <input class='hide' type='submit' value='enviar' />
-        <md-button>
-          REIMPRIME
-        </md-button>
       </md-dialog-actions>
     </form>
   </md-dialog>
