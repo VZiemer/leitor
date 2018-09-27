@@ -253,11 +253,11 @@
                     texto += '12110000040050050.250 Kg\n'
                     texto += 'E\nQ\n'
                 }
-                fs.writeFile('C:\\zzz.txt', texto, function () {
+                fs.writeFile('/zzz.txt', texto, function () {
                     // windows print
                     if (os.platform() === 'win32') {
                         console('impressão windows')
-                        exec('copy c:\\zzz.txt \\\\pc10\\argox', function (error, stdout, stderr) {
+                        exec('copy /zzz.txt \\\\pc10\\argox', function (error, stdout, stderr) {
                             if (error) return reject(error);
                             resolve(stdout);
                         });
@@ -265,7 +265,7 @@
                     //linux print
                     if (os.platform() === 'linux') {
                         console.log('impressão linux')
-                        exec('lp -o raw -d ARGOX c:\\zzz.txt', function (error, stdout, stderr) {
+                        exec('lp -o raw -d ARGOX /zzz.txt', function (error, stdout, stderr) {
                             if (error) return reject(error);
                             resolve(stdout);
                         });
