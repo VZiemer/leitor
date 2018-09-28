@@ -377,11 +377,17 @@
                                     });
                                 } else if (servico.volume.SITUACAO == 1) {
                                     console.log('situacao=1')
-                                    db.query("update volume set SITUACAO=?,peso=? WHERE CODBAR= ? returning EXPEDICAO,SITUACAO,ID_VOLUME,CODBAR,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO", [2, peso, CodBarras], function (err, res) {
+                                    db.query("update volume set SITUACAO=?,peso=? WHERE CODBAR= ? returning (select transito.status from transito where id_transito = volume.expedicao)", [2, peso, CodBarras], function (err, res) {
                                         if (err) reject(new Error(err));
                                         db.detach(function () {
+                                            console.log(res)
                                             servico.volume = new Volume();
-                                            servico.erro = new Error('VOLUME FECHADO');
+                                            if (res.STATUS == 6) {
+                                                servico.erro = new Error('VOLUME FECHADO, TERMINADO');
+                                            }
+                                            else {
+                                                servico.erro = new Error('VOLUME FECHADO, PROXIMO');
+                                            }
                                             resolve(servico);
                                         });
                                     });

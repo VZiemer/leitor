@@ -70,6 +70,9 @@
                         function (response) {
                             vm.servico = response;
                             audioOk();
+                            if (response.erro.message == 'VOLUME FECHADO, PROXIMO') {
+                                vm.modalCriaVolume();
+                            }
                         },
                         function (response) {
                             console.log(response)
@@ -256,9 +259,9 @@
                 fs.writeFile('/zzz.txt', texto, function () {
                     // windows print
                     if (os.platform() === 'win32') {
-                        console('impressão windows')
+                        console.log('impressão windows')
                         exec('copy /zzz.txt \\\\pc10\\argox', function (error, stdout, stderr) {
-                            if (error) return reject(error);
+                            if (error) resolve(stderr);
                             resolve(stdout);
                         });
                     }
@@ -266,7 +269,7 @@
                     if (os.platform() === 'linux') {
                         console.log('impressão linux')
                         exec('lp -o raw -d ARGOX /zzz.txt', function (error, stdout, stderr) {
-                            if (error) return reject(error);
+                            if (error) resolve(stderr);
                             resolve(stdout);
                         });
                     }
