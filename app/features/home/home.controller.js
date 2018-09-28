@@ -250,10 +250,10 @@
                 if (tipo === 'VOLUMEINF') {
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '121100002300030__________________________________________\n'
-                    texto += '123400001100050568412\n'
-                    texto += '122300001300440888/888\n'
+                    texto += '123400001100050' + servico.transito.EXPEDICAO + '\n'
+                    texto += '122300001300440' + servico.volume.POSICAO + '/' + servico.volume.TOTAL + '\n'
                     texto += '1e120600018005000000008\n'
-                    texto += '12110000040050050.250 Kg\n'
+                    texto += '121100000400500' + servico.volume.PESO + ' Kg\n'
                     texto += 'E\nQ\n'
                 }
                 fs.writeFile('/zzz.txt', texto, function () {
@@ -401,7 +401,9 @@
                             if (vm.servico.volume.SITUACAO == 1) {
                                 vm.modalExcluiVolume('', vm.servico.volume.CODBAR);
                             } else if (vm.servico.volume.SITUACAO == 2) {
-
+                                imprime('VOLUMEINF', vm.servico, response).then(function () {
+                                    vm.modalConfirmaEtiqueta('', response.CODBAR)
+                                })
                             }
                         },
                         function (response) {

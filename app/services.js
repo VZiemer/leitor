@@ -384,10 +384,19 @@
                                             servico.volume = new Volume();
                                             if (res.STATUS == 6) {
                                                 servico.erro = new Error('VOLUME FECHADO, TERMINADO');
-                                            }
-                                            else {
+                                            } else {
                                                 servico.erro = new Error('VOLUME FECHADO, PROXIMO');
                                             }
+                                            resolve(servico);
+                                        });
+                                    });
+                                } else if (!servico.volume.SITUACAO) {
+                                    db.query("select EXPEDICAO,SITUACAO,ID_VOLUME,CODBAR,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO,POSICAO,TOTAL from volume where CODBAR = ?", [CodBarras], function (err, res) {
+                                        if (err) reject(new Error(err));
+                                        db.detach(function () {
+                                            servico.volume = new Volume(res[0].ID_VOLUME, res[0].CODBAR, res[0].SITUACAO, res[0].TIPO, res[0].LARGURA, res[0].ALTURA, res[0].PROFUNDIDADE, res[0].PESO, res[0].POSICAO, res[0].TOTAL)
+                                            servico.erro = ' AGUARDANDO SEGUNDA ETIQUETA';
+                                            console.log(servico)
                                             resolve(servico);
                                         });
                                     });
@@ -750,17 +759,6 @@
                                                 reject(servico);
                                             });
                                         }
-                                    } else if (res[0].SITUACAO == 21) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO)
-                                        db.detach(function () {
-                                            servico.erro = new Error('PACOTE DENTRO DE VOLUME');
-                                            reject(servico);
-                                        });
-
-                                    } else if (res[0].SITUACAO == 22) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO)
-                                        db.detach(function () {
-                                            servico.erro = new Error('PACOTE DENTRO DE VOLUME');
-                                            reject(servico);
-                                        });
                                     } else {
                                         db.detach(function () {
                                             servico.erro = new Error('Erro deconhecido, chame suporte');
