@@ -390,23 +390,13 @@
                                             resolve(servico);
                                         });
                                     });
-                                }else if (servico.volume.SITUACAO == 2) {
-                                    console.log('situacao=2')
-                                    db.query("update volume set SITUACAO=? WHERE CODBAR= ? ", [3, CodBarras], function (err, res) {
-                                        if (err) reject(new Error(err));
-                                        db.detach(function () {
-                                            console.log(res)
-                                            servico.volume = new Volume();
-                                                servico.erro = new Error('VOLUME FECHADO');
-                                            resolve(servico);
-                                        });
-                                    });
                                 } else if (!servico.volume.SITUACAO) {
                                     db.query("select EXPEDICAO,SITUACAO,ID_VOLUME,CODBAR,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO,POSICAO,TOTALVOLUMES from volume where CODBAR = ?", [CodBarras], function (err, res) {
                                         if (err) reject(new Error(err));
+                                        console.log('segunda etiqueta')
                                         db.detach(function () {
                                             servico.volume = new Volume(res[0].ID_VOLUME, res[0].CODBAR, res[0].SITUACAO, res[0].TIPO, res[0].LARGURA, res[0].ALTURA, res[0].PROFUNDIDADE, res[0].PESO, res[0].POSICAO, res[0].TOTALVOLUMES)
-                                            servico.erro = ' AGUARDANDO SEGUNDA ETIQUETA';
+                                            servico.erro = 'AGUARDANDO SEGUNDA ETIQUETA';
                                             console.log(servico)
                                             resolve(servico);
                                         });
