@@ -402,7 +402,7 @@
                                 vm.modalExcluiVolume('', vm.servico.volume.CODBAR);
                             } else if (vm.servico.volume.SITUACAO == 2) {
                                 imprime('VOLUMEINF', vm.servico, response).then(function () {
-                                    vm.modalConfirmaEtiqueta('', response.CODBAR)
+                                    vm.modalConfirmaEtiqueta('', response.EXPEDICAO)
                                 })
                             }
                         },
