@@ -249,6 +249,7 @@
                 console.log('impressão', dados, servico);
                 let texto = '';
                 if (tipo === 'PACOTE') {
+                    console.log('impressão pacote');
                     // impressão de pacote
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '1W1d5301000900030' + dados.pacote.CODBAR + '\n'
@@ -263,6 +264,8 @@
                 }
                 if (tipo === 'ENDERECO') {
                     //impressão de endereço
+                    console.log('impressão endereco');
+
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '1W1d5301000900030' + codbar + '\n'
                     texto += '122200001300220' + codbar.slice(6, 6) + ' ' + codbar.slice(7, 8) + ' ' + codbar.slice(10, 10) + ' ' + codbar.slice(10, 11) + '\n'
@@ -276,6 +279,8 @@
                 }
                 //impressão de volumes (etiqueta superior)
                 if (tipo === 'VOLUMESUP') {
+                    console.log('impressão volume sup');
+
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '1E1208001300100' + dados.CODBAR + '\n'
                     texto += '122200000400050' + servico.transito.EXPEDICAO + '\n'
@@ -287,6 +292,8 @@
                 }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
                 if (tipo === 'VOLUMEINF') {
+                    console.log('impressão volumeinf');
+
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '121100002300030__________________________________________\n'
                     texto += '123400001100050' + servico.transito.EXPEDICAO + '\n'
@@ -295,7 +302,7 @@
                     texto += '121100000400500' + servico.volume.PESO + ' Kg\n'
                     texto += 'E\nQ\n'
                 }
-                fs.writeFile('zzz.txt', texto, function () {
+                fs.writeFile('/zzz.txt', texto, function () {
                     // windows print
                     if (os.platform() === 'win32') {
                         console.log('impressão windows')
