@@ -325,8 +325,9 @@
                                                 SENTIDO: '20 => 20'
                                             };
                                             resolve(servico);
-                                        } else if (res[0].TIPO == 3 && res[0].STATUS == 7) {
+                                        } else if (res[0].TIPO == 3 && res[0].STATUS == 6) {
                                             servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS);
+                                            servico.erro = new Error('LEIA O VOLUME PARA SEGUNDA ETIQUETA')
                                             servico.setor = {
                                                 DESCRICAO: 'SEGUNDA ETIQUETA',
                                                 COR: 'blue',
@@ -347,6 +348,7 @@
                 var abreVolume = function (CodBarras, peso) {
                     console.log('abrevolume', CodBarras)
                     servico.erro = new Error();
+                    servico.pacote = new Pacote();
                     return new Promise((resolve, reject) => {
                         if (!servico.operador.CODBAR) {
                             servico.erro = new Error('LEIA O CRACHA DE IDENTIFICAÇÃO');
@@ -390,13 +392,13 @@
                                             resolve(servico);
                                         });
                                     });
-                                } else if (!servico.volume.SITUACAO) {
-                                    db.query("select EXPEDICAO,SITUACAO,ID_VOLUME,CODBAR,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO,POSICAO,TOTALVOLUMES from volume where CODBAR = ?", [CodBarras], function (err, res) {
+                                }else if (servico.volume.SITUACAO == 2) {
+                                    console.log('situacao=2')
+                                    db.query("update volume set SITUACAO=? WHERE CODBAR= ? returning EXPEDICAO,SITUACAO,ID_VOLUME,CODBAR,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO", [3, CodBarras], function (err, res) {
                                         if (err) reject(new Error(err));
-                                        console.log('segunda etiqueta')
                                         db.detach(function () {
-                                            servico.volume = new Volume(res[0].ID_VOLUME, res[0].CODBAR, res[0].SITUACAO, res[0].TIPO, res[0].LARGURA, res[0].ALTURA, res[0].PROFUNDIDADE, res[0].PESO, res[0].POSICAO, res[0].TOTALVOLUMES)
-                                            servico.erro = 'AGUARDANDO SEGUNDA ETIQUETA';
+                                            servico.volume = new Volume()
+                                            servico.erro = new Error('VOLUME PRONTO');
                                             console.log(servico)
                                             resolve(servico);
                                         });
@@ -413,7 +415,7 @@
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);
                                 }
-                                db.query("select EXPEDICAO,ID_VOLUME,CODBAR,SITUACAO,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO from volume WHERE CODBAR= ? ", [CodBarras], function (err, res) {
+                                db.query("select EXPEDICAO,ID_VOLUME,CODBAR,SITUACAO,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO,POSICAO,TOTALVOLUMES from volume WHERE CODBAR= ? ", [CodBarras], function (err, res) {
                                     if (err) return reject(new Error(err));
                                     db.detach(function () {
                                         console.log(res)
@@ -424,7 +426,7 @@
                                             servico.erro = new Error('VOLUME NÃO PERTENCE A ESTA EXPEDIÇÃO');
                                             return reject(servico);
                                         } else if (servico.transito.EXPEDICAO == res[0].EXPEDICAO) {
-                                            servico.volume = new Volume(res[0].ID_VOLUME, res[0].CODBAR, res[0].SITUACAO, res[0].TIPO, res[0].LARGURA, res[0].ALTURA, res[0].PROFUNDIDADE, res[0].PESO,res[0].POSICAO,res[0].TOTAL)
+                                            servico.volume = new Volume(res[0].ID_VOLUME, res[0].CODBAR, res[0].SITUACAO, res[0].TIPO, res[0].LARGURA, res[0].ALTURA, res[0].PROFUNDIDADE, res[0].PESO,res[0].POSICAO,res[0].TOTALVOLUMES)
                                             resolve(servico);
                                         } else {
                                             servico.erro = new Error('CHAME O SUPORTE')
@@ -736,7 +738,8 @@
                                                 resolve(servico);
                                             })
                                         }
-                                    } else if (res[0].SITUACAO == 20) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO)
+                                    } else if (res[0].SITUACAO == 20 || res[0].SITUACAO == 3 ) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO) 
+                                        // TODO: PROVISÓRIO SIT 3 AQUI
                                         if (!servico.transito.EXPEDICAO) {
                                             db.detach(function () {
                                                 servico.erro = new Error('ABRA UM TRANSITO');

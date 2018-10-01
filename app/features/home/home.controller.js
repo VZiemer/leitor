@@ -3,6 +3,10 @@
     const exec = require('child_process').exec;
     const fs = require('fs');
     const os = require('os');
+    function zeroEsq(valor, comprimento, digito) {
+        var length = comprimento - valor.toString().length + 1;
+        return Array(length).join(digito || '0') + valor;
+      };
     angular
         .module('leitorEstoque')
         .controller('HomeCtrl', HomeController);
@@ -25,6 +29,29 @@
 
 
         //dialogs
+
+        vm.modalConfirmaErro = function (ev) {
+            $mdDialog.show({
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.confirmaerro.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: 'SIM',
+                        erro: vm.servico.erro.message
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
+                .then(function () {
+                    audioOk();
+                }, function () {
+                    audioError();
+                    vm.modalConfirmaErro();
+
+                });
+        };
+
         vm.modalConfirmaEtiqueta = function (ev, codbar) {
             $mdDialog.show({
                     controller: DialogController,
@@ -46,6 +73,7 @@
                         function (response) {
                             console.log(response)
                             vm.servico = response;
+                            vm.modalConfirmaErro();
                             audioError();
 
                         }
@@ -77,6 +105,7 @@
                         function (response) {
                             console.log(response)
                             vm.servico = response;
+                            vm.modalConfirmaErro();
                             audioError();
 
                         }
@@ -112,12 +141,14 @@
                                 },
                                 function (response) {
                                     vm.servico = response;
+                                    vm.modalConfirmaErro();
                                     audioError();
                                 })
                         },
                         function (response) {
                             console.log(response)
                             vm.servico = response;
+                            vm.modalConfirmaErro();
                             audioError();
 
                         }
@@ -170,16 +201,20 @@
                     })
                 }, function () {
                     vm.servico = response;
+                    vm.modalConfirmaErro();
                     audioError();
                     console.log('modal fechado')
                     // $scope.status = 'You cancelled the dialog.';
                 });
         };
 
-        function DialogController($scope, $mdDialog, codbar) {
+        function DialogController($scope, $mdDialog, codbar,erro) {
             console.log(codbar)
             if (codbar) {
                 $scope.codbar = codbar;
+            }
+            if (erro) {
+                $scope.erro = erro;
             }
             $scope.hide = function () {
                 $mdDialog.hide();
@@ -251,16 +286,16 @@
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '121100002300030__________________________________________\n'
                     texto += '123400001100050' + servico.transito.EXPEDICAO + '\n'
-                    texto += '122300001300440' + servico.volume.POSICAO + '/' + servico.volume.TOTAL + '\n'
-                    texto += '1e120600018005000000008\n'
+                    texto += '122300001300440' + zeroEsq(servico.volume.POSICAO,2,0) + '/' + zeroEsq(servico.volume.TOTAL,2,0) + '\n'
+                    texto += '1e1206000180050'+zeroEsq(servico.volume.ID_VOLUME,8,0)+'\n'
                     texto += '121100000400500' + servico.volume.PESO + ' Kg\n'
                     texto += 'E\nQ\n'
                 }
-                fs.writeFile('/zzz.txt', texto, function () {
+                fs.writeFile('zzz.txt', texto, function () {
                     // windows print
                     if (os.platform() === 'win32') {
                         console.log('impressão windows')
-                        exec('copy /zzz.txt \\\\pc10\\argox', function (error, stdout, stderr) {
+                        exec('copy zzz.txt \\\\pc10\\argox', function (error, stdout, stderr) {
                             if (error) resolve(stderr);
                             resolve(stdout);
                         });
@@ -343,6 +378,7 @@
                     function (response) {
                         console.log(response)
                         vm.servico = response;
+                        vm.modalConfirmaErro();
                         audioError();
                     }
                 )
@@ -358,6 +394,7 @@
                     function (response) {
                         console.log(response)
                         vm.servico = response;
+                        vm.modalConfirmaErro();
                         audioError();
 
                     }
@@ -376,15 +413,13 @@
                                 console.log('não houve quebra', response)
                             }
                         }
-                        if (response.pacote.SITUACAO == 20) {
-                            movePacote(codbar)
-                        }
                         vm.servico = response;
                         audioOk();
                     },
                     function (response) {
                         console.log(response)
                         vm.servico = response;
+                        vm.modalConfirmaErro();
                         audioError();
                     }
                 )
@@ -402,13 +437,14 @@
                                 vm.modalExcluiVolume('', vm.servico.volume.CODBAR);
                             } else if (vm.servico.volume.SITUACAO == 2) {
                                 imprime('VOLUMEINF', vm.servico, response).then(function () {
-                                    vm.modalConfirmaEtiqueta('', response.EXPEDICAO)
+                                    vm.modalConfirmaEtiqueta('', vm.servico.volume.ID_VOLUME)
                                 })
                             }
                         },
                         function (response) {
                             console.log(response)
                             vm.servico = response;
+                            vm.modalConfirmaErro();
                             audioError();
 
                         }
