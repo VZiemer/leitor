@@ -59,7 +59,8 @@
                     parent: angular.element(document.body),
                     targetEvent: ev,
                     locals: {
-                        codbar: codbar
+                        codbar: codbar,
+                        erro:''
                     },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
@@ -88,7 +89,8 @@
                     parent: angular.element(document.body),
                     targetEvent: ev,
                     locals: {
-                        codbar: ''
+                        codbar: '',
+                        erro:''
                     },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
@@ -121,7 +123,8 @@
                     parent: angular.element(document.body),
                     targetEvent: ev,
                     locals: {
-                        codbar: ''
+                        codbar: '',
+                        erro:''
                     },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
@@ -141,7 +144,6 @@
                                 },
                                 function (response) {
                                     vm.servico = response;
-                                    vm.modalConfirmaErro();
                                     audioError();
                                 })
                         },
@@ -164,7 +166,8 @@
                     parent: angular.element(document.body),
                     targetEvent: ev,
                     locals: {
-                        codbar: ''
+                        codbar: '',
+                        erro:''
                     },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
@@ -189,7 +192,8 @@
                     parent: angular.element(document.body),
                     targetEvent: ev,
                     locals: {
-                        codbar: codbar
+                        codbar: codbar,
+                        erro:''
                     },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
@@ -337,7 +341,7 @@
                         function (response) {
                             vm.servico = response;
                             audioOk();
-                            if (vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 2 && !vm.servico.volume.CODBAR) {
+                            if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 ||vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR) {
                                 vm.modalCriaVolume();
                                 // imprime(0,0,V00000,0,0,123456,10)
                             } else if (vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 5 && !vm.servico.volume.CODBAR) {

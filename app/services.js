@@ -319,6 +319,7 @@
                                             resolve(servico);
                                         } else if (res[0].TIPO == 3 && (res[0].STATUS == 5 || res[0].STATUS == 2)) {
                                             servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS);
+                                            servico.erro = new Error('CRIAÇÃO DO PRIMEIRO VOLUME')
                                             servico.setor = {
                                                 DESCRICAO: 'CRIAÇÃO DE VOLUME',
                                                 COR: 'blue',
@@ -336,6 +337,7 @@
                                             resolve(servico);
                                         } else {
                                             servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS);
+                                            servico.erro = new Error('TESTE X')
                                             resolve(servico);
                                         }
 
