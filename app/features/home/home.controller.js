@@ -437,7 +437,7 @@
             } else if (identificador === 'V') {
                 // procura volume
                 console.log('volume', codbar)
-                if (vm.servico.volume.CODBAR && !vm.servico.volume.PESO) {
+                if (vm.servico.volume.CODBAR==codbar && !vm.servico.volume.PESO) {
                     vm.modalEntraPeso();
                 } else if (!vm.servico.volume.CODBAR) {
                     pacoteSrvc.abreVolume(codbar).then(
