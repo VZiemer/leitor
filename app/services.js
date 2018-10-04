@@ -747,9 +747,19 @@
                                                 servico.erro = new Error('ABRA UM TRANSITO');
                                                 reject(servico);
                                             });
+                                        } else if (servico.transito.ID_TRANSITO != res[0].ID_TRANSITO_S) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('PACOTE DE OUTRO TRANSITO');
+                                                reject(servico);
+                                            });
                                         } else if (!servico.volume.CODBAR) {
                                             db.detach(function () {
                                                 servico.erro = new Error('ABRA UM VOLUME');
+                                                reject(servico);
+                                            });
+                                        } else if (res[0].ID_VOLUME) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('PACOTE DE OUTRO VOLUME ID:'+res[0].ID_VOLUME);
                                                 reject(servico);
                                             });
                                         } else if (servico.volume.CODBAR && servico.transito.EXPEDICAO) {
