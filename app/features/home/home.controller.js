@@ -3,10 +3,11 @@
     const exec = require('child_process').exec;
     const fs = require('fs');
     const os = require('os');
+
     function zeroEsq(valor, comprimento, digito) {
         var length = comprimento - valor.toString().length + 1;
         return Array(length).join(digito || '0') + valor;
-      };
+    };
     angular
         .module('leitorEstoque')
         .controller('HomeCtrl', HomeController);
@@ -60,7 +61,7 @@
                     targetEvent: ev,
                     locals: {
                         codbar: codbar,
-                        erro:''
+                        erro: ''
                     },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
@@ -90,7 +91,7 @@
                     targetEvent: ev,
                     locals: {
                         codbar: '',
-                        erro:''
+                        erro: ''
                     },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
@@ -124,7 +125,7 @@
                     targetEvent: ev,
                     locals: {
                         codbar: '',
-                        erro:''
+                        erro: ''
                     },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
@@ -167,7 +168,7 @@
                     targetEvent: ev,
                     locals: {
                         codbar: '',
-                        erro:''
+                        erro: ''
                     },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
@@ -193,7 +194,7 @@
                     targetEvent: ev,
                     locals: {
                         codbar: codbar,
-                        erro:''
+                        erro: ''
                     },
                     clickOutsideToClose: false,
                     fullscreen: true // Only for -xs, -sm breakpoints.
@@ -212,7 +213,7 @@
                 });
         };
 
-        function DialogController($scope, $mdDialog, codbar,erro) {
+        function DialogController($scope, $mdDialog, codbar, erro) {
             console.log(codbar)
             if (codbar) {
                 $scope.codbar = codbar;
@@ -297,8 +298,8 @@
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '121100002300030__________________________________________\n'
                     texto += '123400001100050' + servico.transito.EXPEDICAO + '\n'
-                    texto += '122300001300440' + zeroEsq(servico.volume.POSICAO,2,0) + '/' + zeroEsq(servico.volume.TOTAL,2,0) + '\n'
-                    texto += '1e1206000180050'+zeroEsq(servico.volume.ID_VOLUME,8,0)+'\n'
+                    texto += '122300001300440' + zeroEsq(servico.volume.POSICAO, 2, 0) + '/' + zeroEsq(servico.volume.TOTAL, 2, 0) + '\n'
+                    texto += '1e1206000180050' + zeroEsq(servico.volume.ID_VOLUME, 8, 0) + '\n'
                     texto += '121100000400500' + servico.volume.PESO + ' Kg\n'
                     texto += 'E\nQ\n'
                 }
@@ -348,7 +349,7 @@
                         function (response) {
                             vm.servico = response;
                             audioOk();
-                            if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 ||vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR) {
+                            if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR) {
                                 vm.modalCriaVolume();
                                 // imprime(0,0,V00000,0,0,123456,10)
                             } else if (vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 5 && !vm.servico.volume.CODBAR) {
@@ -437,8 +438,19 @@
             } else if (identificador === 'V') {
                 // procura volume
                 console.log('volume', codbar)
-                if (vm.servico.volume.CODBAR==codbar && !vm.servico.volume.PESO) {
+                if (vm.servico.volume.CODBAR == codbar && !vm.servico.volume.PESO) {
                     vm.modalEntraPeso();
+                }
+                if (vm.servico.volume.CODBAR && vm.servico.volume.CODBAR != codbar) {
+                    pacoteSrvc.abreVolume(codbar).then(
+                        function () {
+                            vm.servico = response;
+                            audioOk();
+                        },
+                        function () {
+                            vm.servico = response;
+                            audioError();
+                        });
                 } else if (!vm.servico.volume.CODBAR) {
                     pacoteSrvc.abreVolume(codbar).then(
                         function (response) {

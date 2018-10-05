@@ -10,7 +10,7 @@
         <div class="md-dialog-content">
             <md-input-container class="md-block">
                 <label>Peso</label>
-                <input required md-no-asterisk type="number" name="description" ng-model="volume.PESO" md-autofocus>
+                <input required md-no-asterisk step=".01" type="number" name="description" ng-model="volume.PESO" md-autofocus>
                 <div ng-messages="controle.description.$error" >
                   <div ng-message="required">falta valor</div>
                 </div>
