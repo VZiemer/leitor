@@ -3,7 +3,7 @@
         <form name="projectForm" ng-submit="vm.consultaPacote(consulta.input);consulta.input=''" method="POST">
             <md-input-container class="md-block">
                 <label>LEITOR</label>
-                <input required md-no-asterisk name="description" ng-model="consulta.input" md-autofocus autofocus>
+                <input id="leitor" required md-no-asterisk name="description" ng-model="consulta.input" md-autofocus autofocus>
                 <div ng-messages="projectForm.description.$error">
                 </div>
             </md-input-container>   

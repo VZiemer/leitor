@@ -46,6 +46,7 @@
                 })
                 .then(function () {
                     audioOk();
+                    document.getElementById("leitor").focus();
                 }, function () {
                     audioError();
                     vm.modalConfirmaErro();
@@ -71,12 +72,14 @@
                         function (response) {
                             vm.servico = response;
                             audioOk();
+                            document.getElementById("leitor").focus();
                         },
                         function (response) {
                             console.log(response)
                             vm.servico = response;
                             vm.modalConfirmaErro();
                             audioError();
+                            document.getElementById("leitor").focus();
 
                         }
                     )
@@ -101,6 +104,7 @@
                         function (response) {
                             vm.servico = response;
                             audioOk();
+                            document.getElementById("leitor").focus();
                             if (response.erro.message == 'VOLUME FECHADO, PROXIMO') {
                                 vm.modalCriaVolume();
                             }
@@ -110,6 +114,7 @@
                             vm.servico = response;
                             vm.modalConfirmaErro();
                             audioError();
+                            document.getElementById("leitor").focus();
 
                         }
                     )
@@ -297,7 +302,7 @@
 
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '121100002300030__________________________________________\n'
-                    texto += '123400001100050' + servico.transito.EXPEDICAO + '\n'
+                    texto += '123400001100050' + servico.transito.DOCUMENTO + '\n'
                     texto += '122300001300440' + zeroEsq(servico.volume.POSICAO, 2, 0) + '/' + zeroEsq(servico.volume.TOTAL, 2, 0) + '\n'
                     texto += '1e1206000180050' + zeroEsq(servico.volume.ID_VOLUME, 8, 0) + '\n'
                     texto += '121100000400500' + servico.volume.PESO + ' Kg\n'
@@ -473,7 +478,6 @@
                         }
                     )
                 }
-
             } else {
                 audioError();
                 vm.servico.erro = new Error('COMANDO NÃO RECONHECIDO')
