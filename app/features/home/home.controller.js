@@ -120,7 +120,6 @@
                     )
                 }, function () {});
         };
-
         vm.modalFechaTransito = function (ev) {
             console.log('abriu modal fecha transito')
             $mdDialog.show({
