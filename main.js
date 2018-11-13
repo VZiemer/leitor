@@ -1,6 +1,11 @@
 const electron = require('electron')
 // Módulo para controlar a vida da aplicação.
 const app = electron.app
+
+
+
+
+
 // Módulo para criar janela do navegador da nossa aplicação.
 const BrowserWindow = electron.BrowserWindow
 

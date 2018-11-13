@@ -304,7 +304,7 @@
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);
                                 }
-                                db.query("Select T.ID_TRANSITO,T.EXPEDICAO,T.ID_EMPRESA,T.DOCUMENTO,T.TIPO,T.STATUS,T.OS,T.TIPOFRETE,OS.STATUS as OSSTATUS FROM TRANSITO T full outer JOIN OS ON OS.ID_OS=T.OS WHERE T.ID_TRANSITO= ?", CodBarras, function (err, res) {
+                                db.query("Select T.ID_TRANSITO,T.EXPEDICAO,T.ID_EMPRESA,T.DOCUMENTO,T.TIPO,T.STATUS,T.OS,T.TIPOFRETE,OS.STATUS as OSSTATUS,T.CODTRANSP FROM TRANSITO T full outer JOIN OS ON OS.ID_OS=T.OS WHERE T.ID_TRANSITO= ?", CodBarras, function (err, res) {
                                     if (err) reject(new Error(err));
                                     console.log(res)
                                     db.detach(function () {
@@ -318,7 +318,7 @@
                                             servico.erro = new Error('DOCUMENTO DE SAIDA NÃO LIBERADO');
                                             resolve(servico);
                                         } else if (res[0].TIPO == 3 && (res[0].STATUS == 5 || res[0].STATUS == 2)) {
-                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS);
+                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS,res[0].CODTRANSP);
                                             servico.erro = new Error('CRIAÇÃO DO PRIMEIRO VOLUME')
                                             servico.setor = {
                                                 DESCRICAO: 'CRIAÇÃO DE VOLUME',
@@ -327,7 +327,7 @@
                                             };
                                             resolve(servico);
                                         } else if (res[0].TIPO == 3 && res[0].STATUS == 6) {
-                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS);
+                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS,res[0].CODTRANSP);
                                             servico.erro = new Error('LEIA O VOLUME PARA SEGUNDA ETIQUETA')
                                             servico.setor = {
                                                 DESCRICAO: 'SEGUNDA ETIQUETA',
@@ -336,7 +336,7 @@
                                             };
                                             resolve(servico);
                                         } else {
-                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS);
+                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS,res[0].CODTRANSP);
                                             servico.erro = new Error('TESTE X')
                                             resolve(servico);
                                         }

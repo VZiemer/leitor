@@ -1,5 +1,6 @@
 (function () {
     'use strict';
+
     const exec = require('child_process').exec;
     const fs = require('fs');
     const os = require('os');
@@ -14,9 +15,7 @@
     HomeController.$inject = ['$scope', '$interval', '$mdDialog', 'pacoteSrvc'];
 
     function HomeController($scope, $interval, $mdDialog, pacoteSrvc) {
-
         console.log(os.platform())
-
         var vm = this;
         vm.servico = {};
         vm.clock = {
@@ -307,7 +306,7 @@
                     texto += '121100000400500' + servico.volume.PESO + ' Kg\n'
                     texto += 'E\nQ\n'
                 }
-                fs.writeFile('/zzz.txt', texto, function () {
+                fs.writeFile('zzz.txt', texto, function () {
                     // windows print
                     if (os.platform() === 'win32') {
                         console.log('impressão windows')
@@ -338,6 +337,9 @@
             audio.play();
         }
 
+
+
+
         vm.consultaPacote = function (codbar) {
             var reg = new RegExp('^[0-9]+$');
             var identificador = codbar.slice(0, 1);
@@ -354,6 +356,7 @@
                             vm.servico = response;
                             audioOk();
                             if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR) {
+                               
                                 vm.modalCriaVolume();
                                 // imprime(0,0,V00000,0,0,123456,10)
                             } else if (vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 5 && !vm.servico.volume.CODBAR) {
