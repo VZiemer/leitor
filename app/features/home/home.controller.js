@@ -300,7 +300,7 @@
 
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '121100002300030__________________________________________\n'
-                    texto += '123400001100050' + servico.transito.DOCUMENTO + '\n'
+                    texto += '123400001100050' + (servico.transito.NFE? 'NF '+servico.transito.NFE  : servico.transito.DOCUMENTO) + '\n'
                     texto += '122300001300440' + zeroEsq(servico.volume.POSICAO, 2, 0) + '/' + zeroEsq(servico.volume.TOTAL, 2, 0) + '\n'
                     texto += '1e1206000180050' + zeroEsq(servico.volume.ID_VOLUME, 8, 0) + '\n'
                     texto += '121100000400500' + servico.volume.PESO + ' Kg\n'
