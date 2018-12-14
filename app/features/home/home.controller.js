@@ -44,6 +44,7 @@
         console.log(os.platform())
         var vm = this;
         vm.servico = {};
+        $scope.focusInput=true;
         vm.clock = {
             time: "",
             interval: 1000
