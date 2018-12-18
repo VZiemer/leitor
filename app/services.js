@@ -542,7 +542,7 @@
                                             db.detach(function () {
                                                 db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [9, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                     db.detach(function () {
-                                                        servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                        servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
                                                         resolve(servico);
                                                     });
                                                 })
@@ -550,7 +550,7 @@
                                         } else if (servico.endereco.ID_ORDEM_TIPO == 2) {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [1, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -579,7 +579,7 @@
                                         } else if (servico.endereco.ID_ORDEM_TIPO == 5) {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [4, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -608,7 +608,7 @@
                                         } else if (servico.endereco.ID_OS == res[0].OS) {
                                             db.query("SELECT IDPCT,IDPROD,CODBARSAIDA,CODINT,QTDPCT,UN,DESCRICAO,POSICAO FROM QUEBRA_PACOTE(?)", [CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -637,7 +637,7 @@
                                         } else if (servico.endereco.ID_OS == res[0].OS) {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [13, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -671,7 +671,7 @@
                                         } else if (servico.transito.OS == res[0].OS) {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [3, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -705,7 +705,7 @@
                                         } else if (servico.endereco.ID_ORDEM_TIPO == 2) {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [1, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -739,7 +739,7 @@
                                         } else if (servico.endereco.ID_ORDEM_TIPO == 99 && servico.ordem.STATUS == 1) {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=?,OS=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [2, servico.endereco.CODBAR, servico.operador.CODIGO, servico.ordem.ID_OS, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })

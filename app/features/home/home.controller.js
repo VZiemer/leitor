@@ -474,9 +474,9 @@
                                 console.log('não houve quebra', response)
                             }
                         }
-                        if (response.pacote.SITUACAO == 20) {
+                        if (response.pacote.SITUACAO == 20 && response.pacote.IMAGEM) {
                             console.log('situacao 3 p/ 20');
-                            // vm.modalDemonstrativo();
+                            vm.modalDemonstrativo();
                         }
                         vm.servico = response;
                         audioOk();
