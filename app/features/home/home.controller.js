@@ -44,7 +44,7 @@
         console.log(os.platform())
         var vm = this;
         vm.servico = {};
-        $scope.focusInput=true;
+        $scope.focusInput = true;
         vm.clock = {
             time: "",
             interval: 1000
@@ -157,7 +157,7 @@
                             console.log(response)
                             vm.servico = response;
                             vm.modalConfirmaErro();
-                            audioError();                          
+                            audioError();
                         }
                     )
                 }, function () {});
@@ -186,7 +186,7 @@
                                     console.log('ok do abretransito')
                                     vm.servico = response;
                                     audioOk();
-                                    $scope.focusInput=true;
+                                    $scope.focusInput = true;
                                 },
                                 function (response) {
                                     vm.servico = response;
@@ -247,7 +247,7 @@
                     pacoteSrvc.excluiVolume(medidas.CODBAR).then(function (response) {
                         vm.servico = response;
                         audioOk();
-                        $scope.focusInput=true;
+                        $scope.focusInput = true;
                     })
                 }, function () {
                     vm.servico = response;
@@ -390,15 +390,18 @@
                 // procura transito
                 console.log('transito', vm.servico)
                 if (vm.servico.transito && vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 2 && vm.servico.volume.CODBAR) {
-                    vm.modalFechaTransito();
-                    // imprime(0,0,V00000,0,0,123456,10)
+                    if (vm.servico.transito.ID_TRANSITO == codbar) {
+                        vm.modalFechaTransito();
+                    } else {
+                        vm.erro = new Error('LEIA UM PACOTE');
+                        audioError();
+                    }
                 } else {
                     pacoteSrvc.abreTransito(codbar).then(
                         function (response) {
                             vm.servico = response;
                             audioOk();
                             if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR) {
-
                                 vm.modalCriaVolume();
                                 // imprime(0,0,V00000,0,0,123456,10)
                             } else if (vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 5 && !vm.servico.volume.CODBAR) {
@@ -408,8 +411,9 @@
                         },
                         function (response) {
                             console.log(response)
+                            console.log('blabla')
                             vm.servico = response;
-                            audioError()
+                            audioError();
                         }
                     )
                 }
@@ -460,6 +464,7 @@
 
                     }
                 )
+
             } else if (identificador === 'A') {
                 // procura pacote
                 console.log('pacote', codbar)
@@ -491,7 +496,7 @@
             } else if (identificador === 'V') {
                 // procura volume
                 console.log('volume', codbar)
-                if (vm.servico.volume.CODBAR == codbar && !vm.servico.volume.PESO) {
+                if (vm.servico.volume.CODBAR == codbar && vm.servico.volume.SITUACAO == 1 && !vm.servico.volume.PESO) {
                     vm.modalEntraPeso();
                 }
                 if (vm.servico.volume.CODBAR && vm.servico.volume.CODBAR != codbar) {
@@ -507,14 +512,18 @@
                 } else if (!vm.servico.volume.CODBAR) {
                     pacoteSrvc.abreVolume(codbar).then(
                         function (response) {
-                            vm.servico = response;
-                            audioOk();
-                            if (vm.servico.volume.SITUACAO == 1) {
+
+                            if (vm.servico.volume.SITUACAO == 2 && vm.servico.transito.STATUS == 2) {
                                 vm.modalExcluiVolume('', vm.servico.volume.CODBAR);
-                            } else if (vm.servico.volume.SITUACAO == 2) {
+                            } else if (vm.servico.volume.SITUACAO == 2 && vm.servico.transito.STATUS == 6) {
                                 imprime('VOLUMEINF', vm.servico, response).then(function () {
                                     vm.modalConfirmaEtiqueta('', vm.servico.volume.ID_VOLUME)
+                                    vm.servico = response;
+                                    audioOk();
                                 })
+                            } else if (vm.servico.volume.SITUACAO == 3) {
+                                vm.modalConfirmaErro();
+                                audioError();
                             }
                         },
                         function (response) {
@@ -532,8 +541,6 @@
             }
             console.log(vm.servico)
         }
-
-
 
         ////////////////
 

@@ -396,6 +396,7 @@
                                             console.log(res)
                                             servico.volume = new Volume();
                                             if (res.STATUS == 6) {
+                                                servico.transito.STATUS=res.STATUS;
                                                 servico.erro = new Error('VOLUME FECHADO, TERMINADO');
                                             } else {
                                                 servico.erro = new Error('VOLUME FECHADO, PROXIMO');
@@ -517,7 +518,7 @@
                                         } else {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ?  returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [0, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -774,7 +775,7 @@
                                         } else if (servico.volume.CODBAR && servico.transito.EXPEDICAO) {
                                             db.query("UPDATE PACOTE SET SITUACAO=?,OPERADOR=?,ID_VOLUME=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [20, servico.operador.CODIGO, servico.volume.ID_VOLUME, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
