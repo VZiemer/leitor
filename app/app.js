@@ -6,7 +6,8 @@
         [
             'ngRoute',
             'ngMaterial',
-            'ngAnimate'
+            'ngAnimate',
+            'md.data.table'
         ]
     );    
 })();

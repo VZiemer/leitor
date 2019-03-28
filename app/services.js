@@ -304,7 +304,7 @@
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);
                                 }
-                                db.query("Select T.ID_TRANSITO,T.EXPEDICAO,T.ID_EMPRESA,T.DOCUMENTO,T.TIPO,T.STATUS,T.OS,T.TIPOFRETE,OS.STATUS as OSSTATUS,T.CODTRANSP,T.NFE FROM TRANSITO T full outer JOIN OS ON OS.ID_OS=T.OS WHERE T.ID_TRANSITO= ?", CodBarras, function (err, res) {
+                                db.query("Select T.ID_TRANSITO,T.EXPEDICAO,T.ID_EMPRESA,T.DOCUMENTO,T.TIPO,T.STATUS,T.OS,T.TIPOFRETE,OS.STATUS as OSSTATUS,OS.TIPO as OSTIPO,T.CODTRANSP,T.NFE FROM TRANSITO T full outer JOIN OS ON OS.ID_OS=T.OS WHERE T.ID_TRANSITO= ?", CodBarras, function (err, res) {
                                     if (err) reject(new Error(err));
                                     console.log(res)
                                     db.detach(function () {
@@ -318,8 +318,8 @@
                                             servico.erro = new Error('DOCUMENTO DE SAIDA NÃO LIBERADO');
                                             resolve(servico);
                                         } else if (res[0].TIPO == 3 && (res[0].STATUS == 5 || res[0].STATUS == 2)) {
-                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS,res[0].CODTRANSP,res[0].NFE);
-                                            servico.erro = new Error('CRIAÇÃO DO PRIMEIRO VOLUME')
+                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS, res[0].CODTRANSP, res[0].NFE,res[0].OSTIPO);
+                                            servico.erro = new Error(servico.transito.OSTIPO + ' PRIMEIRO VOLUME')
                                             servico.setor = {
                                                 DESCRICAO: 'CRIAÇÃO DE VOLUME',
                                                 COR: 'blue',
@@ -327,8 +327,8 @@
                                             };
                                             resolve(servico);
                                         } else if (res[0].TIPO == 3 && res[0].STATUS == 6) {
-                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS,res[0].CODTRANSP,res[0].NFE);
-                                            servico.erro = new Error('LEIA O VOLUME PARA SEGUNDA ETIQUETA')
+                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS, res[0].CODTRANSP, res[0].NFE,res[0].OSTIPO);
+                                            servico.erro = new Error(servico.transito.OSTIPO + 'LEIA O VOLUME PARA SEGUNDA ETIQUETA')
                                             servico.setor = {
                                                 DESCRICAO: 'SEGUNDA ETIQUETA',
                                                 COR: 'blue',
@@ -396,7 +396,7 @@
                                             console.log(res)
                                             servico.volume = new Volume();
                                             if (res.STATUS == 6) {
-                                                servico.transito.STATUS=res.STATUS;
+                                                servico.transito.STATUS = res.STATUS;
                                                 servico.erro = new Error('VOLUME FECHADO, TERMINADO');
                                             } else {
                                                 servico.erro = new Error('VOLUME FECHADO, PROXIMO');
@@ -404,7 +404,7 @@
                                             resolve(servico);
                                         });
                                     });
-                                }else if (servico.volume.SITUACAO == 2) {
+                                } else if (servico.volume.SITUACAO == 2) {
                                     console.log('situacao=2')
                                     db.query("update volume set SITUACAO=? WHERE CODBAR= ? returning EXPEDICAO,SITUACAO,ID_VOLUME,CODBAR,TIPO,LARGURA,ALTURA,PROFUNDIDADE,PESO", [3, CodBarras], function (err, res) {
                                         if (err) reject(new Error(err));
@@ -438,7 +438,7 @@
                                             servico.erro = new Error('VOLUME NÃO PERTENCE A ESTA EXPEDIÇÃO');
                                             return reject(servico);
                                         } else if (servico.transito.EXPEDICAO == res[0].EXPEDICAO) {
-                                            servico.volume = new Volume(res[0].ID_VOLUME, res[0].CODBAR, res[0].SITUACAO, res[0].TIPO, res[0].LARGURA, res[0].ALTURA, res[0].PROFUNDIDADE, res[0].PESO,res[0].POSICAO,res[0].TOTALVOLUMES)
+                                            servico.volume = new Volume(res[0].ID_VOLUME, res[0].CODBAR, res[0].SITUACAO, res[0].TIPO, res[0].LARGURA, res[0].ALTURA, res[0].PROFUNDIDADE, res[0].PESO, res[0].POSICAO, res[0].TOTALVOLUMES)
                                             resolve(servico);
                                         } else {
                                             servico.erro = new Error('CHAME O SUPORTE')
@@ -516,9 +516,9 @@
                                                 reject(servico);
                                             });
                                         } else {
-                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ?  returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [0, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ?  returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [0, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -541,17 +541,17 @@
                                             });
                                         } else if (servico.endereco.CODBAR === 'E0101ZZ010A01') {
                                             db.detach(function () {
-                                                db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [9, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                                db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [9, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                     db.detach(function () {
-                                                        servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
+                                                        servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
                                                         resolve(servico);
                                                     });
                                                 })
                                             });
                                         } else if (servico.endereco.ID_ORDEM_TIPO == 2) {
-                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [1, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [1, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -578,9 +578,9 @@
                                                 reject(servico);
                                             });
                                         } else if (servico.endereco.ID_ORDEM_TIPO == 5) {
-                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [4, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [4, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -609,7 +609,7 @@
                                         } else if (servico.endereco.ID_OS == res[0].OS) {
                                             db.query("SELECT IDPCT,IDPROD,CODBARSAIDA,CODINT,QTDPCT,UN,DESCRICAO,POSICAO FROM QUEBRA_PACOTE(?)", [CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -636,9 +636,9 @@
                                                 reject(servico);
                                             });
                                         } else if (servico.endereco.ID_OS == res[0].OS) {
-                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [13, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [13, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -670,9 +670,9 @@
                                                 reject(servico);
                                             });
                                         } else if (servico.transito.OS == res[0].OS) {
-                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [3, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [3, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -704,9 +704,9 @@
                                                 reject(servico);
                                             });
                                         } else if (servico.endereco.ID_ORDEM_TIPO == 2) {
-                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [1, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [1, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -738,9 +738,9 @@
                                                 reject(servico);
                                             });
                                         } else if (servico.endereco.ID_ORDEM_TIPO == 99 && servico.ordem.STATUS == 1) {
-                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=?,OS=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [2, servico.endereco.CODBAR, servico.operador.CODIGO, servico.ordem.ID_OS, CodBarras], function (err, res) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=?,OS=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [2, servico.endereco.CODBAR, servico.operador.CODIGO, servico.ordem.ID_OS, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -750,7 +750,7 @@
                                                 resolve(servico);
                                             })
                                         }
-                                    } else if (res[0].SITUACAO == 20 || res[0].SITUACAO == 3 ) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO) 
+                                    } else if (res[0].SITUACAO == 20 || res[0].SITUACAO == 3) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO) 
                                         // TODO: PROVISÓRIO SIT 3 AQUI
                                         if (!servico.transito.EXPEDICAO) {
                                             db.detach(function () {
@@ -769,13 +769,13 @@
                                             });
                                         } else if (res[0].ID_VOLUME) {
                                             db.detach(function () {
-                                                servico.erro = new Error('PACOTE DE OUTRO VOLUME ID:'+res[0].ID_VOLUME);
+                                                servico.erro = new Error('PACOTE DE OUTRO VOLUME ID:' + res[0].ID_VOLUME);
                                                 reject(servico);
                                             });
                                         } else if (servico.volume.CODBAR && servico.transito.EXPEDICAO) {
-                                            db.query("UPDATE PACOTE SET SITUACAO=?,OPERADOR=?,ID_VOLUME=? WHERE CODBAR= ? returning ID_PACOTE,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [20, servico.operador.CODIGO, servico.volume.ID_VOLUME, CodBarras], function (err, res) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,OPERADOR=?,ID_VOLUME=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [20, servico.operador.CODIGO, servico.volume.ID_VOLUME, CodBarras], function (err, res) {
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO,res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM,res.MULT_QTD);
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })

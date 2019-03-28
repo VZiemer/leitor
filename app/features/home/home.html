@@ -6,7 +6,10 @@
                 <input id="leitor" required md-no-asterisk name="description" ng-model="consulta.input"  focus-me="focusInput">
                 <div ng-messages="projectForm.description.$error">
                 </div>
-            </md-input-container>   
+            </md-input-container>  
+            <md-button ng-click="vm.modalDemonstrativo()">testeDemo</md-button> 
+            <md-button ng-click="vm.modalListaPacotes()">testeDemo</md-button> 
+
             <!-- <md-button ng-disabled="!vm.servico.volume.CODBAR" ng-click="vm.modalExcluiVolume($event)">ExcluiVolume</md-button>     
             <md-button ng-disabled="vm.servico.volume.CODBAR" ng-click="vm.modalCriaVolume($event)">CriaVolume</md-button>      -->
 

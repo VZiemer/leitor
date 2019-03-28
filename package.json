@@ -1,6 +1,6 @@
 {
   "name": "leitor-estoque",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Leitor de Pacotes",
   "main": "main.js",
   "scripts": {
