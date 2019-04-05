@@ -150,6 +150,27 @@
                         })
                     })
                 }
+                var listaPacotes = function (transito) {
+                    servico.erro = new Error();
+                    // servico.pacote = new Pacote();
+                    return new Promise((resolve, reject) => {
+                        Firebird.attach(options, function (err, db) {
+                            if (err)
+                                reject(new Error(err));
+                            db.query("select id_produto,situacao,codbar, descricao,qtd,unidade from pacote where id_transito_s=?", transito, function (err, res) {
+                                if (err) {
+                                    servico.erro = new Error('ERRO DE CONEXÃO')
+                                    return reject(servico);
+                                }
+                                if (!res.length) reject(new Error('Pacote Inexistente'));
+                                console.log(res)
+                                db.detach(function () {
+                                    resolve(res);
+                                });
+                            });
+                        })
+                    })
+                }
                 var abreEndereco = function (CodBarras) {
                     servico.erro = new Error();
                     servico.pacote = new Pacote();
@@ -317,8 +338,17 @@
                                         } else if (res[0].TIPO == 3 && res[0].STATUS == 1) {
                                             servico.erro = new Error('DOCUMENTO DE SAIDA NÃO LIBERADO');
                                             resolve(servico);
+                                        } else if (res[0].TIPO == 7 && res[0].STATUS == 1) {
+                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS, res[0].CODTRANSP, res[0].NFE, res[0].OSTIPO);
+                                            servico.erro = new Error(servico.transito.OSTIPO + ' DEVOLUÇÃO')
+                                            servico.setor = {
+                                                DESCRICAO: 'LEIA O PACOTE',
+                                                COR: 'blue',
+                                                SENTIDO: '20 => 20'
+                                            };
+                                            resolve(servico);
                                         } else if (res[0].TIPO == 3 && (res[0].STATUS == 5 || res[0].STATUS == 2)) {
-                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS, res[0].CODTRANSP, res[0].NFE,res[0].OSTIPO);
+                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS, res[0].CODTRANSP, res[0].NFE, res[0].OSTIPO);
                                             servico.erro = new Error(servico.transito.OSTIPO + ' PRIMEIRO VOLUME')
                                             servico.setor = {
                                                 DESCRICAO: 'CRIAÇÃO DE VOLUME',
@@ -327,7 +357,7 @@
                                             };
                                             resolve(servico);
                                         } else if (res[0].TIPO == 3 && res[0].STATUS == 6) {
-                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS, res[0].CODTRANSP, res[0].NFE,res[0].OSTIPO);
+                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS, res[0].CODTRANSP, res[0].NFE, res[0].OSTIPO);
                                             servico.erro = new Error(servico.transito.OSTIPO + 'LEIA O VOLUME PARA SEGUNDA ETIQUETA')
                                             servico.setor = {
                                                 DESCRICAO: 'SEGUNDA ETIQUETA',
@@ -561,29 +591,39 @@
                                                 resolve(servico);
                                             })
                                         }
-                                    } else if (res[0].SITUACAO == 11) { //PACOTE DE ENTRADA DEFEITO
+                                    } else if (res[0].SITUACAO == 11) { //PACOTE DE DEFEITO CHECADO E PRONTO PRA SAÍDA
                                         if (servico.ordem.ID_OS) {
                                             db.detach(function () {
-                                                servico.erro = new Error('Feche a OS para guardar o Pacote de entrada');
+                                                servico.erro = new Error('Feche a OS para sair o Pacote de defeito');
                                                 reject(servico);
                                             });
-                                        } else if (!servico.endereco.CODBAR) {
+                                        } else if (!servico.transito.ID_TRANSITO) {
                                             db.detach(function () {
-                                                servico.erro = new Error('Por favor insira o endereço para entrar este pacote!');
+                                                servico.erro = new Error('Por favor abra o transito de saida');
                                                 reject(servico);
                                             });
-                                        } else if (servico.endereco.ID_ORDEM_TIPO != 5) {
+                                        } else if (!servico.transito.TIPO != 7) {
                                             db.detach(function () {
-                                                servico.erro = new Error('Endereço não atende entrada de Mercadoria');
+                                                servico.erro = new Error('Por favor abra o transito de defeito');
                                                 reject(servico);
                                             });
-                                        } else if (servico.endereco.ID_ORDEM_TIPO == 5) {
-                                            db.query("UPDATE PACOTE SET SITUACAO=?,ID_ENDERECO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [4, servico.endereco.CODBAR, servico.operador.CODIGO, CodBarras], function (err, res) {
-                                                db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
-                                                    resolve(servico);
-                                                });
+                                        } else if (servico.transito.TIPO == 7) {
+
+                                            db.query("SELECT CODPRO,QTD,QTD_OK FROM PRODVENDA WHERE CODVENDA=? AND CODPRO =? and QTD <> QTD_OK", [servico.transito.DOCUMENTO, res.ID_PRODUTO], function (err, res1) {
+                                                if (err) {
+                                                    servico.erro = new Error('Pacote não pertence a esse pedido');
+                                                    reject(servico);
+                                                }
+                                                if (res1[0].CODPRO) {
+                                                    db.query("UPDATE PACOTE SET SITUACAO=?,ID_TRANSITO_S=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [4, servico.transito.ID_TRANSITO, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                                        db.detach(function () {
+                                                            servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
+                                                            resolve(servico);
+                                                        });
+                                                    })
+                                                }
                                             })
+
                                         } else {
                                             db.detach(function () {
                                                 servico.erro = new Error('Erro deconhecido, chame suporte');
@@ -798,6 +838,7 @@
                 }
                 return {
                     consultaSituacao: consultaSituacao,
+                    listaPacotes: listaPacotes,
                     abreEndereco: abreEndereco,
                     abreOperador: abreOperador,
                     abreOrdem: abreOrdem,
