@@ -171,6 +171,27 @@
                         })
                     })
                 }
+                var listaProdvenda = function (transito) {
+                    servico.erro = new Error();
+                    // servico.pacote = new Pacote();
+                    return new Promise((resolve, reject) => {
+                        Firebird.attach(options, function (err, db) {
+                            if (err)
+                                reject(new Error(err));
+                            db.query("select id_produto,situacao,codbar, descricao,qtd,unidade from pacote where id_transito_s=?", transito, function (err, res) {
+                                if (err) {
+                                    servico.erro = new Error('ERRO DE CONEXÃO')
+                                    return reject(servico);
+                                }
+                                if (!res.length) reject(new Error('Pacote Inexistente'));
+                                console.log(res)
+                                db.detach(function () {
+                                    resolve(res);
+                                });
+                            });
+                        })
+                    })
+                }                
                 var abreEndereco = function (CodBarras) {
                     servico.erro = new Error();
                     servico.pacote = new Pacote();
