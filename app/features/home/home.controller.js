@@ -4,6 +4,7 @@
     const exec = require('child_process').exec;
     const fs = require('fs');
     const os = require('os');
+    const electron = require('electron');
 
     function zeroEsq(valor, comprimento, digito) {
         var length = comprimento - valor.toString().length + 1;
@@ -34,6 +35,30 @@
     HomeController.$inject = ['$scope', '$interval', '$mdDialog', 'pacoteSrvc'];
 
     function HomeController($scope, $interval, $mdDialog, pacoteSrvc) {
+        const screenElectron = electron.screen;
+        $scope.mainScreen = screenElectron.getPrimaryDisplay().workAreaSize.height;
+        $scope.selected = [];
+        $scope.limitOptions = [5, 10, 15];
+        $scope.options = {
+            rowSelection: true,
+            multiSelect: false,
+            autoSelect: true,
+            decapitate: true,
+            largeEditDialog: false,
+            boundaryLinks: false,
+            limitSelect: true,
+            pageSelect: true
+        };
+        $scope.query = {
+            order: 'name',
+            limit: 5,
+            page: 1
+        };
+        $scope.desserts = {
+            "count": 1,
+            "data": []
+        };
+
         console.log(os.platform())
         var vm = this;
         vm.servico = {};
@@ -427,196 +452,170 @@
             };
         }
 
-        function DialogListaController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, codbar, erro) {
-            console.log(codbar)
-            //data-table-example
+        // function DialogListaController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, codbar, erro) {
+        //     console.log(codbar)
+        //     //data-table-example
+        //     $scope.selected = [];
+        //     $scope.limitOptions = [5, 10, 15];
+        //     $scope.options = {
+        //         rowSelection: true,
+        //         multiSelect: false,
+        //         autoSelect: true,
+        //         decapitate: true,
+        //         largeEditDialog: false,
+        //         boundaryLinks: false,
+        //         limitSelect: true,
+        //         pageSelect: true
+        //     };
+        //     $scope.query = {
+        //         order: 'name',
+        //         limit: 5,
+        //         page: 1
+        //     };
+        //     $scope.desserts = {
+        //         "count": 1,
+        //         "data": []
+        //     };
+        //     pacoteSrvc.listaPacotes(vm.servico.transito.ID_TRANSITO).then(function (res) {
+        //         $scope.desserts.data = res;
+        //         console.log($scope.desserts)
+        //     });
 
-            $scope.selected = [];
-            $scope.limitOptions = [5, 10, 15];
+        //     $scope.editComment = function (event, dessert) {
+        //         event.stopPropagation(); // in case autoselect is enabled
+        //         var editDialog = {
+        //             modelValue: dessert.comment,
+        //             placeholder: 'Add a comment',
+        //             save: function (input) {
+        //                 if (input.$modelValue === 'Donald Trump') {
+        //                     input.$invalid = true;
+        //                     return $q.reject();
+        //                 }
+        //                 if (input.$modelValue === 'Bernie Sanders') {
+        //                     return dessert.comment = 'FEEL THE BERN!'
+        //                 }
+        //                 dessert.comment = input.$modelValue;
+        //             },
+        //             targetEvent: event,
+        //             title: 'Add a comment',
+        //             validators: {
+        //                 'md-maxlength': 30
+        //             }
+        //         };
 
-            $scope.options = {
-                rowSelection: true,
-                multiSelect: false,
-                autoSelect: true,
-                decapitate: true,
-                largeEditDialog: false,
-                boundaryLinks: false,
-                limitSelect: true,
-                pageSelect: true
-            };
+        //         var promise;
 
-            $scope.query = {
-                order: 'name',
-                limit: 5,
-                page: 1
-            };
+        //         if ($scope.options.largeEditDialog) {
+        //             promise = $mdEditDialog.large(editDialog);
+        //         } else {
+        //             promise = $mdEditDialog.small(editDialog);
+        //         }
 
-            $scope.desserts = {
-                "count": 1,
-                "data": [
-                    {
-                        "DESCRICAO": "DOBRADIÇA FGVV CURVA 110º PEÇA",
-                        "IDPRODUTO": "441",
-                        "QUANTIDADE": 35,
-                        "UNIDADE": "PC",
-                        "MULTIPLICADOR": 1,
-                        "comment": ""
-                    },
-                    {
-                        "DESCRICAO": "DOBRADIÇA FGVV CURVA 110º PACOTE",
-                        "IDPRODUTO": "21917",
-                        "QUANTIDADE": 5,
-                        "UNIDADE": "PT",
-                        "MULTIPLICADOR": 10,
-                        "comment": ""
-                    },
-                    {
-                        "DESCRICAO": "DOBRADIÇA FGVV CURVA 110º CAIXA",
-                        "IDPRODUTO": "21918",
-                        "QUANTIDADE": 2,
-                        "UNIDADE": "CX",
-                        "MULTIPLICADOR": 250,
-                        "comment": ""
-                    }
-                ]
-            };
+        //         promise.then(function (ctrl) {
+        //             var input = ctrl.getInput();
 
-            $scope.editComment = function (event, dessert) {
-                event.stopPropagation(); // in case autoselect is enabled
+        //             input.$viewChangeListeners.push(function () {
+        //                 input.$setValidity('test', input.$modelValue !== 'test');
+        //             });
+        //         });
+        //     };
 
-                var editDialog = {
-                    modelValue: dessert.comment,
-                    placeholder: 'Add a comment',
-                    save: function (input) {
-                        if (input.$modelValue === 'Donald Trump') {
-                            input.$invalid = true;
-                            return $q.reject();
-                        }
-                        if (input.$modelValue === 'Bernie Sanders') {
-                            return dessert.comment = 'FEEL THE BERN!'
-                        }
-                        dessert.comment = input.$modelValue;
-                    },
-                    targetEvent: event,
-                    title: 'Add a comment',
-                    validators: {
-                        'md-maxlength': 30
-                    }
-                };
+        //     $scope.toggleLimitOptions = function () {
+        //         $scope.limitOptions = $scope.limitOptions ? undefined : [5, 10, 15];
+        //     };
 
-                var promise;
+        //     $scope.getTypes = function () {
+        //         return ['Candy', 'Ice cream', 'Other', 'Pastry'];
+        //     };
 
-                if ($scope.options.largeEditDialog) {
-                    promise = $mdEditDialog.large(editDialog);
-                } else {
-                    promise = $mdEditDialog.small(editDialog);
-                }
+        //     $scope.loadStuff = function () {
+        //         $scope.promise = $timeout(function () {
+        //             // loading
+        //         }, 2000);
+        //     }
 
-                promise.then(function (ctrl) {
-                    var input = ctrl.getInput();
+        //     $scope.logItem = function (item) {
+        //         console.log(item.name, 'was selected');
+        //     };
 
-                    input.$viewChangeListeners.push(function () {
-                        input.$setValidity('test', input.$modelValue !== 'test');
-                    });
-                });
-            };
+        //     $scope.logOrder = function (order) {
+        //         console.log('order: ', order);
+        //     };
 
-            $scope.toggleLimitOptions = function () {
-                $scope.limitOptions = $scope.limitOptions ? undefined : [5, 10, 15];
-            };
-
-            $scope.getTypes = function () {
-                return ['Candy', 'Ice cream', 'Other', 'Pastry'];
-            };
-
-            $scope.loadStuff = function () {
-                $scope.promise = $timeout(function () {
-                    // loading
-                }, 2000);
-            }
-
-            $scope.logItem = function (item) {
-                console.log(item.name, 'was selected');
-            };
-
-            $scope.logOrder = function (order) {
-                console.log('order: ', order);
-            };
-
-            $scope.logPagination = function (page, limit) {
-                console.log('page: ', page);
-                console.log('limit: ', limit);
-            }
+        //     $scope.logPagination = function (page, limit) {
+        //         console.log('page: ', page);
+        //         console.log('limit: ', limit);
+        //     }
 
 
-            //fim do data-table
+        //     //fim do data-table
 
 
 
 
 
 
-            if (codbar) {
-                $scope.codbar = codbar;
-            }
-            if (erro) {
-                $scope.erro = erro;
-            }
-            $scope.hide = function () {
-                $mdDialog.hide();
-            };
-            $scope.cancel = function () {
-                $mdDialog.cancel();
-            };
-            $scope.ok = function (volume) {
-                console.log('ok')
-                if (!$scope.codbar) {
-                    console.log('sem codbar')
-                    $mdDialog.hide(volume);
+        //     if (codbar) {
+        //         $scope.codbar = codbar;
+        //     }
+        //     if (erro) {
+        //         $scope.erro = erro;
+        //     }
+        //     $scope.hide = function () {
+        //         $mdDialog.hide();
+        //     };
+        //     $scope.cancel = function () {
+        //         $mdDialog.cancel();
+        //     };
+        //     $scope.ok = function (volume) {
+        //         console.log('ok')
+        //         if (!$scope.codbar) {
+        //             console.log('sem codbar')
+        //             $mdDialog.hide(volume);
 
-                } else {
-                    console.log('com codbar')
-                    if ($scope.codbar == volume.CODBAR) {
-                        $mdDialog.hide(volume)
-                    } else {
-                        console.log('invalido', $scope.codbar, volume.CODBAR)
-                        $scope.volume.CODBAR = '';
-                    }
-                }
-            };
-        }
+        //         } else {
+        //             console.log('com codbar')
+        //             if ($scope.codbar == volume.CODBAR) {
+        //                 $mdDialog.hide(volume)
+        //             } else {
+        //                 console.log('invalido', $scope.codbar, volume.CODBAR)
+        //                 $scope.volume.CODBAR = '';
+        //             }
+        //         }
+        //     };
+        // }
 
-        function DialogController($scope, $mdDialog, codbar, erro) {
-            console.log(codbar)
-            if (codbar) {
-                $scope.codbar = codbar;
-            }
-            if (erro) {
-                $scope.erro = erro;
-            }
-            $scope.hide = function () {
-                $mdDialog.hide();
-            };
-            $scope.cancel = function () {
-                $mdDialog.cancel();
-            };
-            $scope.ok = function (volume) {
-                console.log('ok')
-                if (!$scope.codbar) {
-                    console.log('sem codbar')
-                    $mdDialog.hide(volume);
+        // function DialogController($scope, $mdDialog, codbar, erro) {
+        //     console.log(codbar)
+        //     if (codbar) {
+        //         $scope.codbar = codbar;
+        //     }
+        //     if (erro) {
+        //         $scope.erro = erro;
+        //     }
+        //     $scope.hide = function () {
+        //         $mdDialog.hide();
+        //     };
+        //     $scope.cancel = function () {
+        //         $mdDialog.cancel();
+        //     };
+        //     $scope.ok = function (volume) {
+        //         console.log('ok')
+        //         if (!$scope.codbar) {
+        //             console.log('sem codbar')
+        //             $mdDialog.hide(volume);
 
-                } else {
-                    console.log('com codbar')
-                    if ($scope.codbar == volume.CODBAR) {
-                        $mdDialog.hide(volume)
-                    } else {
-                        console.log('invalido', $scope.codbar, volume.CODBAR)
-                        $scope.volume.CODBAR = '';
-                    }
-                }
-            };
-        }
+        //         } else {
+        //             console.log('com codbar')
+        //             if ($scope.codbar == volume.CODBAR) {
+        //                 $mdDialog.hide(volume)
+        //             } else {
+        //                 console.log('invalido', $scope.codbar, volume.CODBAR)
+        //                 $scope.volume.CODBAR = '';
+        //             }
+        //         }
+        //     };
+        // }
         //fim dialog
         function imprime(tipo, servico, dados) {
             return new Promise((resolve, reject) => {
@@ -725,21 +724,29 @@
                     pacoteSrvc.abreTransito(codbar).then(
                         function (response) {
                             vm.servico = response;
+                            pacoteSrvc.listaPacotes(vm.servico.transito.ID_TRANSITO).then(function (res) {
+                                $scope.desserts.data = res;
+                                console.log($scope.desserts)
+                            });
                             audioOk();
-                            if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO =='ENTREGA') {
+                            if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'ENTREGA') {
                                 vm.modalCriaVolume();
                                 // imprime(0,0,V00000,0,0,123456,10)
-                            } else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO =='RETIRA') {
-
-                                pacoteSrvc.criaVolume({'comprimento':1,'largura':1,'altura':1}).then(function (response) {
+                            }
+                            else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'RETIRA') {
+                                pacoteSrvc.criaVolume({ 'comprimento': 1, 'largura': 1, 'altura': 1 }).then(function (response) {
                                     imprime('VOLUMESUP', vm.servico, response).then(function () {
                                         vm.modalConfirmaEtiqueta('', response.CODBAR)
                                     }, function () {
-            
+
                                     })
                                 })
                                 // imprime(0,0,V00000,0,0,123456,10)
                             }
+                            else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'RETIRA') {
+
+                            }
+
                         },
                         function (response) {
                             console.log(response)
@@ -749,7 +756,6 @@
                         }
                     )
                 }
-
             } else if (identificador === 'O' && dig2 === 'P') {
                 // procura operador
                 console.log('operador', codbar)

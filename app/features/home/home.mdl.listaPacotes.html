@@ -5,27 +5,42 @@
         <h2>INSTRUÇÕES DA EMBALAGEM</h2>
         <span flex></span>
       </div>
-    </md-toolbar> -->
-    <md-dialog-content>
+    </md-toolbar> --> 
+    <md-dialog-content>    
       <div class="md-dialog-content" layout='column'>
+          <md-card layout='row' layout-align="center center">
+              <form name="projectForm" ng-submit="vm.consultaPacote(consulta.input);consulta.input=''" method="POST" layout-padding>
+                  <md-input-container class="md-block" flex>
+                      <label>LEITOR</label>
+                      <input id="leitor" required md-no-asterisk name="description" ng-model="consulta.input"  focus-me="focusInput">
+                      <div ng-messages="projectForm.description.$error">
+                      </div>
+                  </md-input-container>  
+                  <!-- <md-button ng-disabled="!vm.servico.volume.CODBAR" ng-click="vm.modalExcluiVolume($event)">ExcluiVolume</md-button>     
+                  <md-button ng-disabled="vm.servico.volume.CODBAR" ng-click="vm.modalCriaVolume($event)">CriaVolume</md-button>      -->
+              </form>
+          </md-card>   
         <md-card layout='row' flex>
-          <div layout="column" flex='80'>
+          <div layout="column" flex>
             <md-table-container>
               <table md-table md-row-select ng-model="selected" md-progress="promise">
                 <thead md-head md-order="query.order" md-on-reorder="getDesserts">
                   <tr md-row>
-                    <th md-column md-order-by="IDPRODUTO"><span>ID</span></th>
+                      <th md-column md-order-by="SITUACAO"><span>SIT</span></th>
+                    <th md-column md-order-by="ID_PRODUTO"><span>ID</span></th>
+                    <th md-column md-order-by="CODBARRAS"><span>CODBARRAS</span></th>
                     <th md-column md-numeric>QTD / UN</th>
                     <th md-column colspan="4" md-order-by="DESCRICAO"><span>Descrição</span></th>
-
                     <!-- <th md-column>Comentarios</th> -->
                   </tr>
                 </thead>
                 <tbody md-body>
                   <tr md-row md-select="dessert" md-select-id="name" md-auto-select
                     ng-repeat="dessert in desserts.data">
-                    <td md-cell>{{dessert.IDPRODUTO}}</td>
-                    <td md-cell>{{dessert.QUANTIDADE | number: 1}} {{dessert.UNIDADE}}</td>
+                    <td md-cell>{{dessert.SITUACAO}}  </td>
+                    <td md-cell>{{dessert.ID_PRODUTO}}</td>
+                    <td md-cell>{{dessert.CODBAR}}</td>
+                    <td md-cell>{{dessert.QTS | number: 1}} {{dessert.UNIDADE}}</td>
                     <td md-cell colspan="4">{{dessert.DESCRICAO}}</td>
                     <!-- <td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">
                     {{dessert.comment || 'Add a comment'}}
@@ -35,16 +50,6 @@
               </table>
             </md-table-container>
           </div>
-          <div layout="column" flex='20'>
-            <md-input-container>
-              <label>Novo Valor</label>
-              <input type="text" ui-money-mask="R$" ng-model="produto.VALOR.valor" md-autofocus>
-            </md-input-container>
-            <md-button class="md-raised md-primary">IMPRIMIR</md-button>
-          </div>
-        </md-card>
-        <md-card layout="row" layout-align="center center">
-          <img src='./{{selected[0].IDPRODUTO}}.jpg'>
         </md-card>
     </md-dialog-content>
   </form>

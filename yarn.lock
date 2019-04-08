@@ -32,6 +32,43 @@ ajv@^6.5.2:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
+angular-animate@~1.5.8:
+  version "1.5.11"
+  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.5.11.tgz#1baa43c303d1b93c4e6aa89453b39114b7a1c669"
+  integrity sha1-G6pDwwPRuTxOaqiUU7ORFLehxmk=
+
+angular-aria@~1.5.8:
+  version "1.5.11"
+  resolved "https://registry.yarnpkg.com/angular-aria/-/angular-aria-1.5.11.tgz#26963ac336891ced7b199e59afd7e9b25e53d6a6"
+  integrity sha1-JpY6wzaJHO17GZ5Zr9fpsl5T1qY=
+
+angular-material-icons@~v0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/angular-material-icons/-/angular-material-icons-0.6.0.tgz#6ef28ead1ecb79993937ac4b5b48aaee907e1b63"
+  integrity sha1-bvKOrR7LeZk5N6xLW0iq7pB+G2M=
+  dependencies:
+    angular ">1.3.x"
+
+angular-material@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/angular-material/-/angular-material-1.1.1.tgz#ed12f394ba71a9189d664115624f6787a7439af2"
+  integrity sha1-7RLzlLpxqRidZkEVYk9nh6dDmvI=
+
+angular-sanitize@~1.5.8:
+  version "1.5.11"
+  resolved "https://registry.yarnpkg.com/angular-sanitize/-/angular-sanitize-1.5.11.tgz#ebfb3f343e543f9b2ef050fb4c2e9ee048d1772f"
+  integrity sha1-6/s/ND5UP5su8FD7TC6e4EjRdy8=
+
+angular@>1.3.x:
+  version "1.7.8"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.7.8.tgz#b77ede272ce1b261e3be30c1451a0b346905a3c9"
+  integrity sha512-wtef/y4COxM7ZVhddd7JtAAhyYObq9YXKar9tsW7558BImeVYteJiTxCKeJOL45lJ/+7B4wrAC49j8gTFYEthg==
+
+angular@~1.5.8:
+  version "1.5.11"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.11.tgz#8c5ba7386f15965c9acf3429f6881553aada30d6"
+  integrity sha1-jFunOG8VllyazzQp9ogVU6raMNY=
+
 ansi-align@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-2.0.0.tgz#c36aeccba563b89ceb556f3690f0b1d9e3547f7f"
@@ -577,6 +614,11 @@ find-up@^3.0.0:
   dependencies:
     locate-path "^3.0.0"
 
+font-awesome@^4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/font-awesome/-/font-awesome-4.7.0.tgz#8fa8cf0411a1a31afd07b06d2902bb9fc815a133"
+  integrity sha1-j6jPBBGhoxr9B7BtKQK7n8gVoTM=
+
 forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
@@ -838,6 +880,11 @@ isstream@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
 
+jquery@~2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-2.1.4.tgz#228bde698a0c61431dc2630a6a154f15890d2317"
+  integrity sha1-IoveaYoMYUMdwmMKahVPFYkNIxc=
+
 js-yaml@^3.12.0:
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.0.tgz#eaed656ec8344f10f527c6bfa1b6e2244de167d1"
@@ -931,6 +978,11 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
+lodash@~3.10.1:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
+  integrity sha1-W/Rejkm6QYnhfUgnid/RW9FAt7Y=
+
 long@^2.2.5:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/long/-/long-2.4.0.tgz#9fa180bb1d9500cdc29c4156766a1995e1f4524f"
@@ -962,6 +1014,20 @@ make-dir@^1.0.0:
 map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
+
+md-data-table@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/md-data-table/-/md-data-table-2.2.0.tgz#f425529e10094bdb94bfa56a331a9b94a2e512f1"
+  integrity sha1-9CVSnhAJS9uUv6VqMxqblKLlEvE=
+  dependencies:
+    angular "~1.5.8"
+    angular-animate "~1.5.8"
+    angular-aria "~1.5.8"
+    angular-material "1.1.1"
+    angular-material-icons "~v0.6.0"
+    angular-sanitize "~1.5.8"
+    jquery "~2.1.4"
+    lodash "~3.10.1"
 
 mem@^1.1.0:
   version "1.1.0"

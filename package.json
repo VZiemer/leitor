@@ -59,6 +59,8 @@
     "electron-builder": "^20.28.2"
   },
   "dependencies": {
+    "font-awesome": "^4.7.0",
+    "md-data-table": "^2.2.0",
     "node-firebird": "^0.8.6"
   }
 }

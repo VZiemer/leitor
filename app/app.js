@@ -7,7 +7,8 @@
             'ngRoute',
             'ngMaterial',
             'ngAnimate',
-            'md.data.table'
+            'md.data.table',
+            'fixed.table.header'
         ]
-    );    
+    );
 })();

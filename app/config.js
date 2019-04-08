@@ -1,12 +1,15 @@
 (function () {
     'use strict';
-        
-      angular
+
+    angular
         .module('leitorEstoque')
         .config(
             [
-                '$routeProvider', '$mdThemingProvider',
-                function ($routeProvider, $mdThemingProvider) {
+                '$routeProvider', '$mdThemingProvider', '$mdIconProvider',
+                function ($routeProvider, $mdThemingProvider, $mdIconProvider) {
+                    $mdIconProvider
+                    .defaultFontSet('FontAwesome')
+                    .fontSet('fa', 'FontAwesome');
                     $mdThemingProvider.theme('default').primaryPalette('indigo');
 
                     $routeProvider.when(
@@ -18,7 +21,8 @@
 
                         }
                     );
-                    $routeProvider.otherwise({redirectTo: '/home'});
+                    $routeProvider.otherwise({ redirectTo: '/home' });
+
                 }
             ]
         );
