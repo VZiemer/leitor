@@ -56,10 +56,8 @@
                             <table md-table ng-model="selected" md-progress="promise">
                                 <thead md-head fix-head md-order="query.order" md-on-reorder="getDesserts">
                                     <tr md-row>
-                                        <th md-column md-order-by="SITUACAO"><span>SIT</span></th>
-                                        <th md-column md-order-by="ID_PRODUTO"><span>ID</span></th>
-                                        <th md-column md-order-by="CODBARRAS"><span>CODBARRAS</span></th>
-                                        <th md-column md-numeric>QTD / UN</th>
+                                        <th md-column  md-numeric><span>ID</span></th>
+                                        <th md-column md-numeric>QTD / OK </th>
                                         <th md-column colspan="4" md-order-by="DESCRICAO"><span>Descrição</span></th>
                                         <!-- <th md-column>Comentarios</th> -->
                                     </tr>
@@ -67,10 +65,8 @@
                                 <tbody md-body>
                                     <tr md-row md-select="dessert" md-select-id="name" md-auto-select
                                         ng-repeat="dessert in desserts.data">
-                                        <td md-cell>{{dessert.SITUACAO}} </td>
-                                        <td md-cell>{{dessert.ID_PRODUTO}}</td>
-                                        <td md-cell>{{dessert.CODBAR}}</td>
-                                        <td md-cell>{{dessert.QTD | number: 0}} {{dessert.UNIDADE}}</td>
+                                        <td md-cell>{{dessert.CODPRO | number: 0}}</td>
+                                        <td md-cell>{{dessert.QTD | number: 0}} / {{dessert.QTDOK}}</td>
                                         <td md-cell colspan="4">{{dessert.DESCRICAO}}</td>
                                         <!-- <td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">
                               {{dessert.comment || 'Add a comment'}}

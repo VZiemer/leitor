@@ -157,7 +157,7 @@
                         Firebird.attach(options, function (err, db) {
                             if (err)
                                 reject(new Error(err));
-                            db.query("select id_produto,situacao,codbar, descricao,qtd,unidade from pacote where id_transito_s=?", transito, function (err, res) {
+                            db.query("select * from OS_STATUS_1 where OS=?", transito.OS, function (err, res) {
                                 if (err) {
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);
@@ -178,7 +178,7 @@
                         Firebird.attach(options, function (err, db) {
                             if (err)
                                 reject(new Error(err));
-                            db.query("select id_produto,situacao,codbar, descricao,qtd,unidade from pacote where id_transito_s=?", transito, function (err, res) {
+                            db.query("select id_produto,situacao,codbar, descricao,qtd,unidade from pacote where id_transito_s=?", transito.ID_TRANSITO, function (err, res) {
                                 if (err) {
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);
@@ -191,7 +191,7 @@
                             });
                         })
                     })
-                }                
+                }
                 var abreEndereco = function (CodBarras) {
                     servico.erro = new Error();
                     servico.pacote = new Pacote();
@@ -623,27 +623,59 @@
                                                 servico.erro = new Error('Por favor abra o transito de saida');
                                                 reject(servico);
                                             });
-                                        } else if (!servico.transito.TIPO != 7) {
+                                        } else if (servico.transito.TIPO != 7) {
                                             db.detach(function () {
                                                 servico.erro = new Error('Por favor abra o transito de defeito');
                                                 reject(servico);
                                             });
                                         } else if (servico.transito.TIPO == 7) {
+                                            console.log ('transito TIPO ',7)
+                                            db.query("SELECT IDPCT,IDPROD,CODBARSAIDA,CODINT,QTDPCT,UN,DESCRICAO,POSICAO FROM SEPARA_DEFEITO(?,?)", [servico.transito.ID_TRANSITO, CodBarras], function (err, res) {
+                                                console.log(res)
+                                                db.detach(function () {
+                                                    servico.pacote = new Pacote(res[0].ID_PACOTE, res[0].CODBAR, res[0].ID_PRODUTO, res[0].CODIGO_FISCAL, res[0].QTD, res[0].UNIDADE, res[0].SITUACAO, res[0].DESCRICAO, res[0].CODINTERNO, res[0].OS, res[0].IMAGEM, res[0].MULT_QTD);
+                                                    resolve(servico);
+                                                });
+                                                // if (err) {
+                                                //     db.detach(function () {
+                                                //         servico.erro = new Error('ERRO DE COMUNICAÇÃO');
+                                                //         reject(servico);
+                                                //     });
+                                                // } else if (!res.length) {
+                                                //     db.detach(function () {
+                                                //         servico.erro = new Error('PACOTE NÃO PERTENCE A ESTE TRANSITO');
+                                                //         reject(servico);
+                                                //     });
+                                                // } else {
+                                                //     db.detach(function () {
+                                                //         servico.pacote = new Pacote(res[0].ID_PACOTE, res[0].CODBAR, res[0].ID_PRODUTO, res[0].CODIGO_FISCAL, res[0].QTD, res[0].UNIDADE, res[0].SITUACAO, res[0].DESCRICAO, res[0].CODINTERNO, res[0].OS, res[0].IMAGEM, res[0].MULT_QTD);
+                                                //         resolve(servico);
+                                                //     });
+                                                // }
 
-                                            db.query("SELECT CODPRO,QTD,QTD_OK FROM PRODVENDA WHERE CODVENDA=? AND CODPRO =? and QTD <> QTD_OK", [servico.transito.DOCUMENTO, res.ID_PRODUTO], function (err, res1) {
-                                                if (err) {
-                                                    servico.erro = new Error('Pacote não pertence a esse pedido');
-                                                    reject(servico);
-                                                }
-                                                if (res1[0].CODPRO) {
-                                                    db.query("UPDATE PACOTE SET SITUACAO=?,ID_TRANSITO_S=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [4, servico.transito.ID_TRANSITO, servico.operador.CODIGO, CodBarras], function (err, res) {
-                                                        db.detach(function () {
-                                                            servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
-                                                            resolve(servico);
-                                                        });
-                                                    })
-                                                }
                                             })
+                                            // db.query("SELECT CODPRO,QTD,QTD_OK FROM PRODVENDA WHERE CODVENDA=? AND CODPRO =? and QTD <> QTD_OK", [servico.transito.DOCUMENTO, res[0].ID_PRODUTO], function (err, res1) {
+                                            //     console.log(res1)
+                                            //     if (err) {
+                                            //         servico.erro = new Error('Pacote não pertence a esse pedido');
+                                            //         reject(servico);
+                                            //     } else if (!res1.length) {
+                                            //         servico.erro = new Error('Pacote não pertence a esse pedido');
+                                            //         reject(servico);
+                                            //     } else {
+                                            //         db.query("UPDATE PACOTE SET SITUACAO=?,ID_TRANSITO_S=?,OS=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [4, servico.transito.ID_TRANSITO, servico.transito.OS, servico.operador.CODIGO, CodBarras], function (err, res2) {
+                                            //             if (err) {
+                                            //                 servico.erro = new Error('Pacote não pertence a esse pedido');
+                                            //                 reject(servico);
+                                            //             }
+                                            //             db.detach(function () {
+                                            //                 console.log(res2)
+                                            //                 servico.pacote = new Pacote(res2.ID_PACOTE, res2.CODBAR, res2.ID_PRODUTO, res2.CODIGO_FISCAL, res2.QTD, res2.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
+                                            //                 resolve(servico);
+                                            //             });
+                                            //         })
+                                            //     }
+                                            // })
 
                                         } else {
                                             db.detach(function () {
@@ -860,6 +892,7 @@
                 return {
                     consultaSituacao: consultaSituacao,
                     listaPacotes: listaPacotes,
+                    listaProdvenda: listaProdvenda,
                     abreEndereco: abreEndereco,
                     abreOperador: abreOperador,
                     abreOrdem: abreOrdem,

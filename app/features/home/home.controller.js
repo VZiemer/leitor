@@ -68,26 +68,26 @@
             interval: 1000
         };
         $interval(function () {
-            vm.clock.time = Date.now();
-        },
+                vm.clock.time = Date.now();
+            },
             vm.clock.interval);
 
         //dialogs
         vm.modalListaPacotes = function (ev) {
             console.log("modal demo")
             $mdDialog.show({
-                controller: DialogListaController,
-                templateUrl: './app/features/home/home.mdl.listaPacotes.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                locals: {
-                    codbar: 'ok',
-                    // erro: vm.servico.erro.message || ''
-                    erro: ''
-                },
-                clickOutsideToClose: false,
-                fullscreen: true // Only for -xs, -sm breakpoints.
-            })
+                    controller: DialogListaController,
+                    templateUrl: './app/features/home/home.mdl.listaPacotes.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: 'ok',
+                        // erro: vm.servico.erro.message || ''
+                        erro: ''
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
                 .then(function () {
                     $scope.focusInput = true;
                 }, function () {
@@ -97,18 +97,18 @@
         vm.modalDemonstrativo = function (ev) {
             console.log("modal demo")
             $mdDialog.show({
-                controller: DialogDemoController,
-                templateUrl: './app/features/home/home.mdl.demonstrativo.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                locals: {
-                    codbar: 'ok',
-                    // erro: vm.servico.erro.message || ''
-                    erro: ''
-                },
-                clickOutsideToClose: false,
-                fullscreen: true // Only for -xs, -sm breakpoints.
-            })
+                    controller: DialogDemoController,
+                    templateUrl: './app/features/home/home.mdl.demonstrativo.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: 'ok',
+                        // erro: vm.servico.erro.message || ''
+                        erro: ''
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
                 .then(function () {
                     $scope.focusInput = true;
                 }, function () {
@@ -117,17 +117,17 @@
         };
         vm.modalConfirmaErro = function (ev) {
             $mdDialog.show({
-                controller: DialogController,
-                templateUrl: './app/features/home/home.mdl.confirmaerro.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                locals: {
-                    codbar: 'SIM',
-                    erro: vm.servico.erro.message
-                },
-                clickOutsideToClose: false,
-                fullscreen: true // Only for -xs, -sm breakpoints.
-            })
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.confirmaerro.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: 'SIM',
+                        erro: vm.servico.erro.message
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
                 .then(function () {
                     audioOk();
                     $scope.focusInput = true;
@@ -139,17 +139,17 @@
         };
         vm.modalConfirmaEtiqueta = function (ev, codbar) {
             $mdDialog.show({
-                controller: DialogController,
-                templateUrl: './app/features/home/home.mdl.quebra.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                locals: {
-                    codbar: codbar,
-                    erro: ''
-                },
-                clickOutsideToClose: false,
-                fullscreen: true // Only for -xs, -sm breakpoints.
-            })
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.quebra.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: codbar,
+                        erro: ''
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
                 .then(function () {
                     pacoteSrvc.abreVolume(vm.servico.volume.CODBAR, '').then(
                         function (response) {
@@ -164,22 +164,22 @@
                             audioError();
                         }
                     )
-                }, function () { });
+                }, function () {});
         };
         vm.modalEntraPeso = function (ev) {
             console.log('abriu modal entra peso')
             $mdDialog.show({
-                controller: DialogController,
-                templateUrl: './app/features/home/home.mdl.peso.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                locals: {
-                    codbar: '',
-                    erro: ''
-                },
-                clickOutsideToClose: false,
-                fullscreen: true // Only for -xs, -sm breakpoints.
-            })
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.peso.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: '',
+                        erro: ''
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
                 .then(function (volume) {
                     pacoteSrvc.abreVolume(vm.servico.volume.CODBAR, volume.PESO).then(
                         function (response) {
@@ -197,22 +197,22 @@
                             audioError();
                         }
                     )
-                }, function () { });
+                }, function () {});
         };
         vm.modalFechaTransito = function (ev) {
             console.log('abriu modal fecha transito')
             $mdDialog.show({
-                controller: DialogController,
-                templateUrl: './app/features/home/home.mdl.peso.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                locals: {
-                    codbar: '',
-                    erro: ''
-                },
-                clickOutsideToClose: false,
-                fullscreen: true // Only for -xs, -sm breakpoints.
-            })
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.peso.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: '',
+                        erro: ''
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
                 .then(function (volume) {
                     console.log('abrepacote')
                     pacoteSrvc.abreVolume(vm.servico.volume.CODBAR, volume.PESO).then(
@@ -237,21 +237,21 @@
                             audioError();
                         }
                     )
-                }, function () { });
+                }, function () {});
         };
         vm.modalCriaVolume = function (ev) {
             $mdDialog.show({
-                controller: DialogController,
-                templateUrl: './app/features/home/home.mdl.criavolume.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                locals: {
-                    codbar: '',
-                    erro: ''
-                },
-                clickOutsideToClose: false,
-                fullscreen: true // Only for -xs, -sm breakpoints.
-            })
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.criavolume.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: '',
+                        erro: ''
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
                 .then(function (medidas) {
                     pacoteSrvc.criaVolume(medidas).then(function (response) {
                         imprime('VOLUMESUP', vm.servico, response).then(function () {
@@ -267,17 +267,17 @@
         };
         vm.modalExcluiVolume = function (ev, codbar) {
             $mdDialog.show({
-                controller: DialogController,
-                templateUrl: './app/features/home/home.mdl.excluivolume.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                locals: {
-                    codbar: codbar,
-                    erro: ''
-                },
-                clickOutsideToClose: false,
-                fullscreen: true // Only for -xs, -sm breakpoints.
-            })
+                    controller: DialogController,
+                    templateUrl: './app/features/home/home.mdl.excluivolume.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    locals: {
+                        codbar: codbar,
+                        erro: ''
+                    },
+                    clickOutsideToClose: false,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                })
                 .then(function (medidas) {
                     pacoteSrvc.excluiVolume(medidas.CODBAR).then(function (response) {
                         vm.servico = response;
@@ -319,8 +319,7 @@
 
             $scope.desserts = {
                 "count": 1,
-                "data": [
-                    {
+                "data": [{
                         "DESCRICAO": "DOBRADIÇA FGVV CURVA 110º PEÇA",
                         "IDPRODUTO": "441",
                         "QUANTIDADE": 35,
@@ -585,37 +584,37 @@
         //     };
         // }
 
-        // function DialogController($scope, $mdDialog, codbar, erro) {
-        //     console.log(codbar)
-        //     if (codbar) {
-        //         $scope.codbar = codbar;
-        //     }
-        //     if (erro) {
-        //         $scope.erro = erro;
-        //     }
-        //     $scope.hide = function () {
-        //         $mdDialog.hide();
-        //     };
-        //     $scope.cancel = function () {
-        //         $mdDialog.cancel();
-        //     };
-        //     $scope.ok = function (volume) {
-        //         console.log('ok')
-        //         if (!$scope.codbar) {
-        //             console.log('sem codbar')
-        //             $mdDialog.hide(volume);
+        function DialogController($scope, $mdDialog, codbar, erro) {
+            console.log(codbar)
+            if (codbar) {
+                $scope.codbar = codbar;
+            }
+            if (erro) {
+                $scope.erro = erro;
+            }
+            $scope.hide = function () {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
+            $scope.ok = function (volume) {
+                console.log('ok')
+                if (!$scope.codbar) {
+                    console.log('sem codbar')
+                    $mdDialog.hide(volume);
 
-        //         } else {
-        //             console.log('com codbar')
-        //             if ($scope.codbar == volume.CODBAR) {
-        //                 $mdDialog.hide(volume)
-        //             } else {
-        //                 console.log('invalido', $scope.codbar, volume.CODBAR)
-        //                 $scope.volume.CODBAR = '';
-        //             }
-        //         }
-        //     };
-        // }
+                } else {
+                    console.log('com codbar')
+                    if ($scope.codbar == volume.CODBAR) {
+                        $mdDialog.hide(volume)
+                    } else {
+                        console.log('invalido', $scope.codbar, volume.CODBAR)
+                        $scope.volume.CODBAR = '';
+                    }
+                }
+            };
+        }
         //fim dialog
         function imprime(tipo, servico, dados) {
             return new Promise((resolve, reject) => {
@@ -724,17 +723,28 @@
                     pacoteSrvc.abreTransito(codbar).then(
                         function (response) {
                             vm.servico = response;
-                            pacoteSrvc.listaPacotes(vm.servico.transito.ID_TRANSITO).then(function (res) {
-                                $scope.desserts.data = res;
-                                console.log($scope.desserts)
-                            });
+                            if (vm.servico.transito.TIPO == 7) {
+                                pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                                    $scope.desserts.data = res;
+                                    console.log($scope.desserts)
+                                });
+                            }
+                            if (vm.servico.transito.TIPO == 3) {
+                                pacoteSrvc.listaProdvenda(vm.servico.transito).then(function (res) {
+                                    $scope.desserts.data = res;
+                                    console.log($scope.desserts)
+                                });
+                            }
                             audioOk();
                             if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'ENTREGA') {
                                 vm.modalCriaVolume();
                                 // imprime(0,0,V00000,0,0,123456,10)
-                            }
-                            else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'RETIRA') {
-                                pacoteSrvc.criaVolume({ 'comprimento': 1, 'largura': 1, 'altura': 1 }).then(function (response) {
+                            } else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO != 'ENTREGA ') {
+                                pacoteSrvc.criaVolume({
+                                    'comprimento': 1,
+                                    'largura': 1,
+                                    'altura': 1
+                                }).then(function (response) {
                                     imprime('VOLUMESUP', vm.servico, response).then(function () {
                                         vm.modalConfirmaEtiqueta('', response.CODBAR)
                                     }, function () {
@@ -742,8 +752,7 @@
                                     })
                                 })
                                 // imprime(0,0,V00000,0,0,123456,10)
-                            }
-                            else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'RETIRA') {
+                            } else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'RETIRA') {
 
                             }
 
@@ -882,6 +891,6 @@
 
         ////////////////
 
-        function activate() { }
+        function activate() {}
     }
 })();
