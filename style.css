@@ -37,7 +37,7 @@ md-whiteframe {
         background-color: #c8e4fa;
     }
     md-whiteframe>span {
-        font-size: 0.4em;
+        font-size: 0.8em;
     }
 }
 
@@ -59,7 +59,7 @@ md-whiteframe {
         position: relative;
     }
     md-whiteframe>span {
-        font-size: 1.8em;
+        font-size: 1em;
     }
     md-whiteframe .label {
         font-size: 1em;
@@ -77,7 +77,7 @@ md-whiteframe {
         position: relative;
     }
     md-whiteframe>span {
-        font-size: 1.8em;
+        font-size: 1.3em;
     }
     md-whiteframe .label {
         font-size: 1em;

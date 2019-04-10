@@ -187,7 +187,25 @@
                             audioOk();
                             $scope.focusInput = true;
                             if (response.erro.message == 'VOLUME FECHADO, PROXIMO') {
-                                vm.modalCriaVolume();
+                                if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'ENTREGA') {
+                                    vm.modalCriaVolume();
+                                    // imprime(0,0,V00000,0,0,123456,10)
+                                } else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO != 'ENTREGA ') {
+                                    pacoteSrvc.criaVolume({
+                                        'comprimento': 1,
+                                        'largura': 1,
+                                        'altura': 1
+                                    }).then(function (response) {
+                                        imprime('VOLUMESUP', vm.servico, response).then(function () {
+                                            vm.modalConfirmaEtiqueta('', response.CODBAR)
+                                        }, function () {
+    
+                                        })
+                                    })
+                                    // imprime(0,0,V00000,0,0,123456,10)
+                                } else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'RETIRA') {
+    
+                                }
                             }
                         },
                         function (response) {
@@ -237,7 +255,9 @@
                             audioError();
                         }
                     )
-                }, function () {});
+                }, function () {
+                    $scope.desserts.data = [];
+                });
         };
         vm.modalCriaVolume = function (ev) {
             $mdDialog.show({
@@ -831,6 +851,10 @@
                             vm.modalDemonstrativo();
                         }
                         vm.servico = response;
+                        pacoteSrvc.listaProdvenda(vm.servico.transito).then(function (res) {
+                            $scope.desserts.data = res;
+                            console.log($scope.desserts)
+                        });
                         audioOk();
                     },
                     function (response) {
