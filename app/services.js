@@ -629,7 +629,7 @@
                                                 reject(servico);
                                             });
                                         } else if (servico.transito.TIPO == 7) {
-                                            console.log ('transito TIPO ',7)
+                                            console.log('transito TIPO ', 7)
                                             db.query("SELECT IDPCT,IDPROD,CODBARSAIDA,CODINT,QTDPCT,UN,DESCRICAO,POSICAO FROM SEPARA_DEFEITO(?,?)", [servico.transito.ID_TRANSITO, CodBarras], function (err, res) {
                                                 console.log(res)
                                                 db.detach(function () {
@@ -843,8 +843,17 @@
                                                 resolve(servico);
                                             })
                                         }
-                                    } else if (res[0].SITUACAO == 20 || res[0].SITUACAO == 3) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO) 
-                                        // TODO: PROVISÓRIO SIT 3 AQUI
+                                    } else if (res[0].SITUACAO == 3) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO) 
+                                        db.detach(function () {
+                                            servico.erro = new Error('PACOTE 3 DENTRO DE VOLUME');
+                                            reject(servico);
+                                        });
+                                    } else if (res[0].SITUACAO == 20) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO) 
+                                        db.detach(function () {
+                                            servico.erro = new Error('PACOTE 20 DENTRO DE VOLUME');
+                                            reject(servico);
+                                        });
+                                    } else if (res[0].SITUACAO == 21) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO) 
                                         if (!servico.transito.EXPEDICAO) {
                                             db.detach(function () {
                                                 servico.erro = new Error('ABRA UM TRANSITO');
