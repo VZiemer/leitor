@@ -750,7 +750,7 @@
                                 });
                             }
                             if (vm.servico.transito.TIPO == 3) {
-                                pacoteSrvc.listaProdvenda(vm.servico.transito).then(function (res) {
+                                pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
                                     $scope.desserts.data = res;
                                     console.log($scope.desserts)
                                 });
