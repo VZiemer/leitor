@@ -157,7 +157,7 @@
                         Firebird.attach(options, function (err, db) {
                             if (err)
                                 reject(new Error(err));
-                            db.query("select * from OS_STATUS_1 where OS=? and QTD20 >0", transito.OS, function (err, res) {
+                            db.query("select QTD20,CODPRO,DESCRICAO from OS_STATUS_1 where OS=? and QTD20 >0", transito.OS, function (err, res) {
                                 if (err) {
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);

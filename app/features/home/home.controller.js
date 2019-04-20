@@ -73,27 +73,27 @@
             vm.clock.interval);
 
         //dialogs
-        vm.modalListaPacotes = function (ev) {
-            console.log("modal demo")
-            $mdDialog.show({
-                    controller: DialogListaController,
-                    templateUrl: './app/features/home/home.mdl.listaPacotes.html',
-                    parent: angular.element(document.body),
-                    targetEvent: ev,
-                    locals: {
-                        codbar: 'ok',
-                        // erro: vm.servico.erro.message || ''
-                        erro: ''
-                    },
-                    clickOutsideToClose: false,
-                    fullscreen: true // Only for -xs, -sm breakpoints.
-                })
-                .then(function () {
-                    $scope.focusInput = true;
-                }, function () {
-                    $scope.focusInput = true;
-                });
-        };
+        // vm.modalListaPacotes = function (ev) {
+        //     console.log("modal demo")
+        //     $mdDialog.show({
+        //             controller: DialogListaController,
+        //             templateUrl: './app/features/home/home.mdl.listaPacotes.html',
+        //             parent: angular.element(document.body),
+        //             targetEvent: ev,
+        //             locals: {
+        //                 codbar: 'ok',
+        //                 // erro: vm.servico.erro.message || ''
+        //                 erro: ''
+        //             },
+        //             clickOutsideToClose: false,
+        //             fullscreen: true // Only for -xs, -sm breakpoints.
+        //         })
+        //         .then(function () {
+        //             $scope.focusInput = true;
+        //         }, function () {
+        //             $scope.focusInput = true;
+        //         });
+        // };
         vm.modalDemonstrativo = function (ev) {
             console.log("modal demo")
             $mdDialog.show({
@@ -746,13 +746,13 @@
                             if (vm.servico.transito.TIPO == 7) {
                                 pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
                                     $scope.desserts.data = res;
-                                    console.log($scope.desserts)
+                                    console.log($scope.desserts.data)
                                 });
                             }
                             if (vm.servico.transito.TIPO == 3) {
                                 pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
                                     $scope.desserts.data = res;
-                                    console.log($scope.desserts)
+                                    console.log($scope.desserts.data)
                                 });
                             }
                             audioOk();
@@ -851,7 +851,7 @@
                             vm.modalDemonstrativo();
                         }
                         vm.servico = response;
-                        pacoteSrvc.listaProdvenda(vm.servico.transito).then(function (res) {
+                        pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
                             $scope.desserts.data = res;
                             console.log($scope.desserts)
                         });
