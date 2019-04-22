@@ -1,106 +1,86 @@
-<section ng-cloak>
-    <md-content layout-fill layout-align="center center">
-        <md-card md-theme="{{ showDarkTheme ? 'dark-orange' : 'default' }}" md-theme-watch>
-            <md-card-content layout="row">
-                <div class="card-media" flex>
-                    <form name="projectForm" ng-submit="vm.consultaPacote(consulta.input);consulta.input=''"
-                        method="POST">
-                        <md-input-container flex>
-                            <label>LEITOR</label>
-                            <input id="leitor" required md-no-asterisk name="description" ng-model="consulta.input"
-                                focus-me="focusInput">
-                            <div ng-messages="projectForm.description.$error">
-                            </div>
-                        </md-input-container>
-                        <md-input-container flex>
-                            <label>OPERADOR</label>
-                            <input ng-model="vm.servico.operador.NOME" readonly="readonly">
-                        </md-input-container>
-                        <md-input-container flex>
-                            <label>TRANSITO</label>
-                            <input ng-model="vm.servico.transito.ID_TRANSITO" readonly="readonly">
-                        </md-input-container>
-                        <md-input-container flex>
-                            <label>PEDIDO</label>
-                            <input ng-model="vm.servico.transito.DOCUMENTO" readonly="readonly">
-                        </md-input-container>
-                        <input type='submit' class="hide" />
-                    </form>
-
-                </div>
-            </md-card-content>
-        </md-card>
-
-
-        <!-- <md-button ng-click="vm.modalDemonstrativo()">testeDemo</md-button> 
-                        <md-button ng-click="vm.modalListaPacotes()">testeDemo</md-button>  -->
+<section ng-cloak layout="column" layout-fill>
+    <md-content layout layout-align="space-between center" flex="18">
+        <!-- conteudo superior -->
+        <md-whiteframe class="md-whiteframe-5dp" layout layout-align="center center" ng-if="!vm.servico.erro.message" flex layout-padding>
+            <span class="label">ID</span>
+            <span>{{vm.servico.pacote.ID_PRODUTO}}</span>
+        </md-whiteframe>
+        <md-whiteframe class="md-whiteframe-5dp" layout layout-align="center center" ng-if="!vm.servico.erro.message" flex layout-padding>
+            <span class="label">QUANTIDADE</span>
+            <span>{{vm.servico.pacote.QTD}} {{vm.servico.pacote.UNIDADE}}</span>
+        </md-whiteframe>
+        <md-whiteframe class="md-whiteframe-5dp" layout layout-align="center center" ng-if="!vm.servico.erro.message" flex="60" layout-padding>
+            <span class="label">DESCRIÇÃO</span>
+            <span>{{vm.servico.pacote.DESCRICAO}}</span>
+        </md-whiteframe>
+        <md-whiteframe class="md-whiteframe-5dp" layout layout-align="center center" ng-if="vm.servico.erro.message" flex layout-padding>
+                <span class="label">DESCRIÇÃO</span>
+                <span>{{vm.servico.erro.message}}</span>
+            </md-whiteframe>
     </md-content>
-    <md-content flex layout-fill layout-align="center center">
-
-        <!-- <md-button ng-click="vm.modalDemonstrativo()">testeDemo</md-button> 
-                <md-button ng-click="vm.modalListaPacotes()">testeDemo</md-button>  -->
+    <md-content layout-align="center center" layout layout-fill flex>
+        <!-- conteudo central flexivel -->
+        <div layout="column" layout-fill flex>
+            <!-- bloco de lista -->
+            <md-table-container style="overflow-y: scroll;overflow-x: auto;">
+                <table md-table ng-model="selected" md-progress="promise">
+                    <thead md-head fix-head md-order="query.order" md-on-reorder="getDesserts">
+                        <tr md-row>
+                            <th md-column md-numeric><span>ID</span></th>
+                            <th md-column md-numeric>QTD </th>
+                            <th md-column colspan="4" md-order-by="DESCRICAO"><span>Descrição</span></th>
+                            <!-- <th md-column>Comentarios</th> -->
+                        </tr>
+                    </thead>
+                    <tbody md-body>
+                        <tr md-row md-select="dessert" md-select-id="name" md-auto-select
+                            ng-repeat="dessert in desserts.data">
+                            <td md-cell>{{dessert.CODPRO}}</td>
+                            <td md-cell>{{dessert.QTD20}}</td>
+                            <td md-cell colspan="4">{{dessert.DESCRICAO}}</td>
+                            <!-- <td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">
+              {{dessert.comment || 'Add a comment'}}
+            </td> -->
+                        </tr>
+                    </tbody>
+                </table>
+            </md-table-container>
+        </div>
+        <div layout-align="space-between" layout="column" flex="20" md-colors="{background: 'white'}" layout-fill>
+            <!-- bloco lateral direito -->
+            <md-whiteframe class="md-whiteframe-5dp" layout layout-align="center center" flex layout-padding>
+                    <span class="label">TRANSITO</span>
+                    <span>{{vm.servico.transito.ID_TRANSITO}}</span>
+            </md-whiteframe>
+            <md-whiteframe class="md-whiteframe-5dp" layout layout-align="center center" flex layout-padding>
+                    <span class="label">PEDIDO</span>
+                    <span>{{vm.servico.transito.DOCUMENTO}}</span>
+            </md-whiteframe>
+            <md-whiteframe class="md-whiteframe-5dp" layout layout-align="center center" flex layout-padding>
+                    <span class="label">{{vm.servico.volume.CODBAR?'VOLUME':'ENDERECO'}}</span>
+                    <span>{{vm.servico.endereco.CODBAR || vm.servico.volume.CODBAR}}</span>
+            </md-whiteframe>
+        </div>
     </md-content>
-    <md-content layout-fill layout-xs="column" layout="row">
-        <div flex-xs flex-gt-xs="70" layout="column">
-            <md-card md-theme="{{ showDarkTheme ? 'dark-orange' : 'default' }}" md-theme-watch>
-                <md-card-content layout="column" flex>
-                    <div class="card-media">
-                        <md-table-container style="overflow-y: scroll;overflow-x: auto;"
-                            ng-style="{'height':mainScreen-287+'px'}">
-                            <table md-table ng-model="selected" md-progress="promise">
-                                <thead md-head fix-head md-order="query.order" md-on-reorder="getDesserts">
-                                    <tr md-row>
-                                        <th md-column  md-numeric><span>ID</span></th>
-                                        <th md-column md-numeric>QTD / OK </th>
-                                        <th md-column colspan="4" md-order-by="DESCRICAO"><span>Descrição</span></th>
-                                        <!-- <th md-column>Comentarios</th> -->
-                                    </tr>
-                                </thead>
-                                <tbody md-body>
-                                    <tr md-row md-select="dessert" md-select-id="name" md-auto-select
-                                        ng-repeat="dessert in desserts.data">
-                                        <td md-cell>{{dessert.CODPRO | number: 0}}</td>
-                                        <td md-cell>{{dessert.QTD | number: 0}} / {{dessert.QTDOK}}</td>
-                                        <td md-cell colspan="4">{{dessert.DESCRICAO}}</td>
-                                        <!-- <td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">
-                              {{dessert.comment || 'Add a comment'}}
-                            </td> -->
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </md-table-container>
+    <md-content layout-align="center center" flex="4">
+        <!-- conteúdo inferior -->
+        <form name="projectForm" layout layout-margin ng-submit="vm.consultaPacote(consulta.input);consulta.input=''" method="POST">
+            <div layout layout-align="center end" flex >
+                <md-input-container flex>
+                    <label>LEITOR</label>
+                    <input id="leitor" required md-no-asterisk name="description" ng-model="consulta.input"
+                        focus-me="focusInput">
+                    <div ng-messages="projectForm.description.$error">
                     </div>
-                    <!-- <md-card-actions layout="column">
-                    </md-card-actions> -->
-                </md-card-content>
-            </md-card>
-        </div>
-        <div flex-xs flex-gt-xs="30" layout="column">
-            <md-card md-theme="{{ showDarkTheme ? 'dark-purple' : 'default' }}" md-theme-watch>
-                <md-card-content layout="column" layout-align="space-between">
-                    <md-whiteframe class="md-whiteframe-1dp" flex layout layout-align="center center">
-                        <span class="label">{{vm.servico.volume.CODBAR?'VOLUME':'ENDERECO'}}</span>
-                        <span>{{vm.servico.endereco.CODBAR || vm.servico.volume.CODBAR}}</span>
-                    </md-whiteframe>
-                    <md-whiteframe class="md-whiteframe-1dp" flex layout layout-align="center center">
-                        <span class="label">ID</span>
-                        <span>{{vm.servico.pacote.ID_PRODUTO}}</span>
-                    </md-whiteframe>
-                    <md-whiteframe class="md-whiteframe-1dp" flex layout layout-align="center center">
-                        <span class="label">QTD | UN</span>
-                        <span>{{vm.servico.pacote.QTD}} {{vm.servico.pacote.UNIDADE}}</span>
-                    </md-whiteframe>
-                    <md-whiteframe ng-if="!vm.servico.erro.message" class="md-whiteframe-1dp md-primary" flex layout
-                        layout-align="center center">
-                        <span class="label">DESCRIÇÃO</span>
-                        <span>{{vm.servico.pacote.DESCRICAO}}llallalalalal</span>
-                    </md-whiteframe>
-                    <md-whiteframe class="md-whiteframe-1dp md-warn" flex layout
-                        layout-align="center center">
-                        <span>{{vm.servico.erro.message}}</span>
-                    </md-whiteframe>
-                </md-card-content>
-            </md-card>
-        </div>
+                </md-input-container>
+            </div>
+            <div layout layout-align="center end" flex>
+                <md-input-container flex>
+                    <label>OPERADOR</label>
+                    <input ng-model="vm.servico.operador.NOME" readonly="readonly">
+                </md-input-container>
+                <input type='submit' class="hide" />
+            </div>
+        </form>
     </md-content>
 </section>

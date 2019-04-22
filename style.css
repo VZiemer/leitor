@@ -29,6 +29,17 @@ md-whiteframe {
     margin: 3px;
     height: 100px;
 }
+md-whiteframe>span {
+    font-size: 1em;
+    color: black;
+}
+md-whiteframe .label {
+    font-size: 0.8em;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    color: black;
+}
 
 @media (max-width: 599px) {
     md-whiteframe {
@@ -36,18 +47,12 @@ md-whiteframe {
         height: 50px;
         background-color: #c8e4fa;
     }
-    md-whiteframe>span {
-        font-size: 0.8em;
-    }
 }
 
 @media (min-width: 600px) and (max-width: 959px) {
     md-whiteframe {
         margin: 3px;
         height: 75px;
-    }
-    md-whiteframe>span {
-        font-size: 0.6em;
     }
 }
 
@@ -58,15 +63,6 @@ md-whiteframe {
         background-color: #F2FCE2;
         position: relative;
     }
-    md-whiteframe>span {
-        font-size: 1em;
-    }
-    md-whiteframe .label {
-        font-size: 1em;
-        position: absolute;
-        top: 8px;
-        left: 8px;
-    }
 }
 
 @media (min-width: 1280px) {
@@ -75,15 +71,6 @@ md-whiteframe {
         height: 100px;
         background-color: #F2FCE2;
         position: relative;
-    }
-    md-whiteframe>span {
-        font-size: 1.3em;
-    }
-    md-whiteframe .label {
-        font-size: 1em;
-        position: absolute;
-        top: 8px;
-        left: 8px;
     }
 
 }
