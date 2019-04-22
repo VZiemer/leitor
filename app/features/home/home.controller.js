@@ -743,16 +743,29 @@
                     pacoteSrvc.abreTransito(codbar).then(
                         function (response) {
                             vm.servico = response;
+                            if (!vm.servico.transito.ID_TRANSITO) {
+                                    $scope.desserts.data = [];             
+                            }
                             if (vm.servico.transito.TIPO == 7) {
                                 pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
-                                    $scope.desserts.data = res;
-                                    console.log($scope.desserts.data)
+                                    if(res) {
+                                        $scope.desserts.data = res;
+                                        console.log($scope.desserts)
+                                    }
+                                    else {
+                                        $scope.desserts.data = [];
+                                    }
                                 });
                             }
                             if (vm.servico.transito.TIPO == 3) {
                                 pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
-                                    $scope.desserts.data = res;
-                                    console.log($scope.desserts.data)
+                                    if(res) {
+                                        $scope.desserts.data = res;
+                                        console.log($scope.desserts)
+                                    }
+                                    else {
+                                        $scope.desserts.data = [];
+                                    }
                                 });
                             }
                             audioOk();
@@ -835,8 +848,18 @@
             } else if (identificador === 'A') {
                 // procura pacote
                 console.log('pacote', codbar)
+
                 pacoteSrvc.movePacote(codbar).then(
                     function (response) {
+                        pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                            if(res) {
+                                $scope.desserts.data = res;
+                                console.log($scope.desserts)
+                            }
+                            else {
+                                $scope.desserts.data = [];
+                            }
+                        });
                         if (response.pacote.SITUACAO == 7) {
                             console.log('situacao 12 p/ 7');
                             if (response.pacote.codbar !== codbar) {
@@ -851,10 +874,6 @@
                             vm.modalDemonstrativo();
                         }
                         vm.servico = response;
-                        pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
-                            $scope.desserts.data = res;
-                            console.log($scope.desserts)
-                        });
                         audioOk();
                     },
                     function (response) {
@@ -883,7 +902,15 @@
                 } else if (!vm.servico.volume.CODBAR) {
                     pacoteSrvc.abreVolume(codbar).then(
                         function (response) {
-
+                            pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                                if(res) {
+                                    $scope.desserts.data = res;
+                                    console.log($scope.desserts)
+                                }
+                                else {
+                                    $scope.desserts.data = [];
+                                }
+                            });
                             if (vm.servico.volume.SITUACAO == 2 && vm.servico.transito.STATUS == 2) {
                                 vm.modalExcluiVolume('', vm.servico.volume.CODBAR);
                             } else if (vm.servico.volume.SITUACAO == 2 && vm.servico.transito.STATUS == 6) {

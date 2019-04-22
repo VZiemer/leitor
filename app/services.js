@@ -157,12 +157,11 @@
                         Firebird.attach(options, function (err, db) {
                             if (err)
                                 reject(new Error(err));
-                            db.query("select QTD20,CODPRO,DESCRICAO from OS_STATUS_1 where OS=? and QTD20 >0", transito.OS, function (err, res) {
+                            db.query("select QTD21,CODPRO,DESCRICAO from OS_STATUS_1 where OS=? and QTD21 >0", transito.OS, function (err, res) {
                                 if (err) {
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);
                                 }
-                                if (!res.length) reject(new Error('Pacote Inexistente'));
                                 console.log(res)
                                 db.detach(function () {
                                     resolve(res);
@@ -338,6 +337,8 @@
                             resolve(servico);
                         } else if (servico.transito.ID_TRANSITO && servico.transito.ID_TRANSITO == CodBarras) {
                             servico.transito = new Transito();
+                            servico.endereco = new Endereco();
+                            servico.volume = new Volume();
                             servico.erro = new Error('TRANSITO FECHADO');
                             resolve(servico);
                         } else {
