@@ -24,8 +24,8 @@
                 <tbody md-body>
                   <tr md-row md-select="dessert" md-select-id="name" md-auto-select
                     ng-repeat="dessert in desserts.data">
-                    <td md-cell>{{dessert.IDPRODUTO}}</td>
-                    <td md-cell>{{dessert.QUANTIDADE | number: 1}} {{dessert.UNIDADE}}</td>
+                    <td md-cell>{{dessert.CODPRO}}</td>
+                    <td md-cell>{{dessert.QTD | number: 1}} {{dessert.UNIDADE}}</td>
                     <td md-cell colspan="4">{{dessert.DESCRICAO}}</td>
                     <!-- <td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">
                     {{dessert.comment || 'Add a comment'}}
@@ -38,13 +38,13 @@
           <div layout="column" flex='20'>
             <md-input-container>
               <label>Novo Valor</label>
-              <input type="text" ui-money-mask="R$" ng-model="produto.VALOR.valor" md-autofocus>
+              <input type="number"  ng-model="produto.VALOR.valor" md-autofocus>
             </md-input-container>
             <md-button class="md-raised md-primary">IMPRIMIR</md-button>
           </div>
         </md-card>
-        <md-card layout="row" layout-align="center center">
-          <img src='./{{selected[0].IDPRODUTO}}.jpg'>
+        <md-card layout="row" flex layout-fill layout-align="center center">
+          <img  src='./{{selected[0].CODPRO}}.jpg'>
         </md-card>
     </md-dialog-content>
   </form>

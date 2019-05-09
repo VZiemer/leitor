@@ -68,47 +68,47 @@
             interval: 1000
         };
         $interval(function () {
-                vm.clock.time = Date.now();
-            },
+            vm.clock.time = Date.now();
+        },
             vm.clock.interval);
 
         //dialogs
-        // vm.modalListaPacotes = function (ev) {
-        //     console.log("modal demo")
-        //     $mdDialog.show({
-        //             controller: DialogListaController,
-        //             templateUrl: './app/features/home/home.mdl.listaPacotes.html',
-        //             parent: angular.element(document.body),
-        //             targetEvent: ev,
-        //             locals: {
-        //                 codbar: 'ok',
-        //                 // erro: vm.servico.erro.message || ''
-        //                 erro: ''
-        //             },
-        //             clickOutsideToClose: false,
-        //             fullscreen: true // Only for -xs, -sm breakpoints.
-        //         })
-        //         .then(function () {
-        //             $scope.focusInput = true;
-        //         }, function () {
-        //             $scope.focusInput = true;
-        //         });
-        // };
-        vm.modalDemonstrativo = function (ev) {
+        vm.modalListaPacotes = function (ev, codfiscal) {
             console.log("modal demo")
             $mdDialog.show({
-                    controller: DialogDemoController,
-                    templateUrl: './app/features/home/home.mdl.demonstrativo.html',
-                    parent: angular.element(document.body),
-                    targetEvent: ev,
-                    locals: {
-                        codbar: 'ok',
-                        // erro: vm.servico.erro.message || ''
-                        erro: ''
-                    },
-                    clickOutsideToClose: false,
-                    fullscreen: true // Only for -xs, -sm breakpoints.
-                })
+                controller: DialogListaController,
+                templateUrl: './app/features/home/home.mdl.listaPacotes.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                locals: {
+                    codfiscal: codfiscal,
+                    // erro: vm.servico.erro.message || ''
+                    erro: ''
+                },
+                clickOutsideToClose: false,
+                fullscreen: true // Only for -xs, -sm breakpoints.
+            })
+                .then(function () {
+                    // vm.modalDemonstrativo() //CANCEL
+                }, function () {
+                    vm.modalDemonstrativo() //HIDE
+                });
+        };
+        vm.modalDemonstrativo = function (ev, produtos) {
+            console.log("modal demo")
+            $mdDialog.show({
+                controller: DialogDemoController,
+                templateUrl: './app/features/home/home.mdl.demonstrativo.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                locals: {
+                    codbar: 'ok',
+                    // erro: vm.servico.erro.message || ''
+                    erro: ''
+                },
+                clickOutsideToClose: false,
+                fullscreen: true // Only for -xs, -sm breakpoints.
+            })
                 .then(function () {
                     $scope.focusInput = true;
                 }, function () {
@@ -117,17 +117,17 @@
         };
         vm.modalConfirmaErro = function (ev) {
             $mdDialog.show({
-                    controller: DialogController,
-                    templateUrl: './app/features/home/home.mdl.confirmaerro.html',
-                    parent: angular.element(document.body),
-                    targetEvent: ev,
-                    locals: {
-                        codbar: 'SIM',
-                        erro: vm.servico.erro.message
-                    },
-                    clickOutsideToClose: false,
-                    fullscreen: true // Only for -xs, -sm breakpoints.
-                })
+                controller: DialogController,
+                templateUrl: './app/features/home/home.mdl.confirmaerro.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                locals: {
+                    codbar: 'SIM',
+                    erro: vm.servico.erro.message
+                },
+                clickOutsideToClose: false,
+                fullscreen: true // Only for -xs, -sm breakpoints.
+            })
                 .then(function () {
                     audioOk();
                     $scope.focusInput = true;
@@ -139,17 +139,17 @@
         };
         vm.modalConfirmaEtiqueta = function (ev, codbar) {
             $mdDialog.show({
-                    controller: DialogController,
-                    templateUrl: './app/features/home/home.mdl.quebra.html',
-                    parent: angular.element(document.body),
-                    targetEvent: ev,
-                    locals: {
-                        codbar: codbar,
-                        erro: ''
-                    },
-                    clickOutsideToClose: false,
-                    fullscreen: true // Only for -xs, -sm breakpoints.
-                })
+                controller: DialogController,
+                templateUrl: './app/features/home/home.mdl.quebra.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                locals: {
+                    codbar: codbar,
+                    erro: ''
+                },
+                clickOutsideToClose: false,
+                fullscreen: true // Only for -xs, -sm breakpoints.
+            })
                 .then(function () {
                     pacoteSrvc.abreVolume(vm.servico.volume.CODBAR, '').then(
                         function (response) {
@@ -164,22 +164,22 @@
                             audioError();
                         }
                     )
-                }, function () {});
+                }, function () { });
         };
         vm.modalEntraPeso = function (ev) {
             console.log('abriu modal entra peso')
             $mdDialog.show({
-                    controller: DialogController,
-                    templateUrl: './app/features/home/home.mdl.peso.html',
-                    parent: angular.element(document.body),
-                    targetEvent: ev,
-                    locals: {
-                        codbar: '',
-                        erro: ''
-                    },
-                    clickOutsideToClose: false,
-                    fullscreen: true // Only for -xs, -sm breakpoints.
-                })
+                controller: DialogController,
+                templateUrl: './app/features/home/home.mdl.peso.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                locals: {
+                    codbar: '',
+                    erro: ''
+                },
+                clickOutsideToClose: false,
+                fullscreen: true // Only for -xs, -sm breakpoints.
+            })
                 .then(function (volume) {
                     pacoteSrvc.abreVolume(vm.servico.volume.CODBAR, volume.PESO).then(
                         function (response) {
@@ -199,12 +199,12 @@
                                         imprime('VOLUMESUP', vm.servico, response).then(function () {
                                             vm.modalConfirmaEtiqueta('', response.CODBAR)
                                         }, function () {
-    
+
                                         })
                                     })
                                     // imprime(0,0,V00000,0,0,123456,10)
                                 } else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'RETIRA') {
-    
+
                                 }
                             }
                         },
@@ -215,22 +215,22 @@
                             audioError();
                         }
                     )
-                }, function () {});
+                }, function () { });
         };
         vm.modalFechaTransito = function (ev) {
             console.log('abriu modal fecha transito')
             $mdDialog.show({
-                    controller: DialogController,
-                    templateUrl: './app/features/home/home.mdl.peso.html',
-                    parent: angular.element(document.body),
-                    targetEvent: ev,
-                    locals: {
-                        codbar: '',
-                        erro: ''
-                    },
-                    clickOutsideToClose: false,
-                    fullscreen: true // Only for -xs, -sm breakpoints.
-                })
+                controller: DialogController,
+                templateUrl: './app/features/home/home.mdl.peso.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                locals: {
+                    codbar: '',
+                    erro: ''
+                },
+                clickOutsideToClose: false,
+                fullscreen: true // Only for -xs, -sm breakpoints.
+            })
                 .then(function (volume) {
                     console.log('abrepacote')
                     pacoteSrvc.abreVolume(vm.servico.volume.CODBAR, volume.PESO).then(
@@ -261,17 +261,17 @@
         };
         vm.modalCriaVolume = function (ev) {
             $mdDialog.show({
-                    controller: DialogController,
-                    templateUrl: './app/features/home/home.mdl.criavolume.html',
-                    parent: angular.element(document.body),
-                    targetEvent: ev,
-                    locals: {
-                        codbar: '',
-                        erro: ''
-                    },
-                    clickOutsideToClose: false,
-                    fullscreen: true // Only for -xs, -sm breakpoints.
-                })
+                controller: DialogController,
+                templateUrl: './app/features/home/home.mdl.criavolume.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                locals: {
+                    codbar: '',
+                    erro: ''
+                },
+                clickOutsideToClose: false,
+                fullscreen: true // Only for -xs, -sm breakpoints.
+            })
                 .then(function (medidas) {
                     pacoteSrvc.criaVolume(medidas).then(function (response) {
                         imprime('VOLUMESUP', vm.servico, response).then(function () {
@@ -287,17 +287,17 @@
         };
         vm.modalExcluiVolume = function (ev, codbar) {
             $mdDialog.show({
-                    controller: DialogController,
-                    templateUrl: './app/features/home/home.mdl.excluivolume.html',
-                    parent: angular.element(document.body),
-                    targetEvent: ev,
-                    locals: {
-                        codbar: codbar,
-                        erro: ''
-                    },
-                    clickOutsideToClose: false,
-                    fullscreen: true // Only for -xs, -sm breakpoints.
-                })
+                controller: DialogController,
+                templateUrl: './app/features/home/home.mdl.excluivolume.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                locals: {
+                    codbar: codbar,
+                    erro: ''
+                },
+                clickOutsideToClose: false,
+                fullscreen: true // Only for -xs, -sm breakpoints.
+            })
                 .then(function (medidas) {
                     pacoteSrvc.excluiVolume(medidas.CODBAR).then(function (response) {
                         vm.servico = response;
@@ -316,7 +316,6 @@
         function DialogDemoController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, codbar, erro) {
             console.log(codbar)
             //data-table-example
-
             $scope.selected = [];
             $scope.limitOptions = [5, 10, 15];
 
@@ -339,33 +338,12 @@
 
             $scope.desserts = {
                 "count": 1,
-                "data": [{
-                        "DESCRICAO": "DOBRADIÇA FGVV CURVA 110º PEÇA",
-                        "IDPRODUTO": "441",
-                        "QUANTIDADE": 35,
-                        "UNIDADE": "PC",
-                        "MULTIPLICADOR": 1,
-                        "comment": ""
-                    },
-                    {
-                        "DESCRICAO": "DOBRADIÇA FGVV CURVA 110º PACOTE",
-                        "IDPRODUTO": "21917",
-                        "QUANTIDADE": 5,
-                        "UNIDADE": "PT",
-                        "MULTIPLICADOR": 10,
-                        "comment": ""
-                    },
-                    {
-                        "DESCRICAO": "DOBRADIÇA FGVV CURVA 110º CAIXA",
-                        "IDPRODUTO": "21918",
-                        "QUANTIDADE": 2,
-                        "UNIDADE": "CX",
-                        "MULTIPLICADOR": 250,
-                        "comment": ""
-                    }
-                ]
+                "data": []
             };
-
+            pacoteSrvc.listaPacotes24(vm.servico.transito).then(function (res) {
+                $scope.desserts.data = res;
+                console.log($scope.desserts)
+            });
             $scope.editComment = function (event, dessert) {
                 event.stopPropagation(); // in case autoselect is enabled
 
@@ -471,138 +449,141 @@
             };
         }
 
-        // function DialogListaController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, codbar, erro) {
-        //     console.log(codbar)
-        //     //data-table-example
-        //     $scope.selected = [];
-        //     $scope.limitOptions = [5, 10, 15];
-        //     $scope.options = {
-        //         rowSelection: true,
-        //         multiSelect: false,
-        //         autoSelect: true,
-        //         decapitate: true,
-        //         largeEditDialog: false,
-        //         boundaryLinks: false,
-        //         limitSelect: true,
-        //         pageSelect: true
-        //     };
-        //     $scope.query = {
-        //         order: 'name',
-        //         limit: 5,
-        //         page: 1
-        //     };
-        //     $scope.desserts = {
-        //         "count": 1,
-        //         "data": []
-        //     };
-        //     pacoteSrvc.listaPacotes(vm.servico.transito.ID_TRANSITO).then(function (res) {
-        //         $scope.desserts.data = res;
-        //         console.log($scope.desserts)
-        //     });
+        function DialogListaController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, codfiscal, erro) {
+            console.log(codfiscal)
+            //data-table-example
+            $scope.selected = [];
+            $scope.limitOptions = [5, 10, 15];
+            $scope.options = {
+                rowSelection: true,
+                multiSelect: false,
+                autoSelect: true,
+                decapitate: true,
+                largeEditDialog: false,
+                boundaryLinks: false,
+                limitSelect: true,
+                pageSelect: true
+            };
+            $scope.query = {
+                order: 'name',
+                limit: 5,
+                page: 1
+            };
+            $scope.desserts = {
+                "count": 1,
+                "data": []
+            };
+            pacoteSrvc.listaPacotes23(vm.servico.transito, codfiscal).then(function (res) {
+                $scope.desserts.data = res;
+                if (!res.length) {
+                    $mdDialog.hide()
+                }
+                console.log($scope.desserts)
+            });
+            $scope.consultaPacote = function () {
+                if (identificador === 'A') {
+                    // procura pacote
+                    console.log('pacote', codbar)
+                    pacoteSrvc.movePacote(codbar).then(
+                        function (response) {
+                            console.log('movepacoteres', response)
+                            pacoteSrvc.listaPacotes23(vm.servico.transito, codfiscal).then(function (res) {
+                                $scope.desserts.data = res;
+                                if (!res.length) {
+                                    $mdDialog.hide()
+                                }
+                                console.log($scope.desserts)
+                            });
 
-        //     $scope.editComment = function (event, dessert) {
-        //         event.stopPropagation(); // in case autoselect is enabled
-        //         var editDialog = {
-        //             modelValue: dessert.comment,
-        //             placeholder: 'Add a comment',
-        //             save: function (input) {
-        //                 if (input.$modelValue === 'Donald Trump') {
-        //                     input.$invalid = true;
-        //                     return $q.reject();
-        //                 }
-        //                 if (input.$modelValue === 'Bernie Sanders') {
-        //                     return dessert.comment = 'FEEL THE BERN!'
-        //                 }
-        //                 dessert.comment = input.$modelValue;
-        //             },
-        //             targetEvent: event,
-        //             title: 'Add a comment',
-        //             validators: {
-        //                 'md-maxlength': 30
-        //             }
-        //         };
+                            vm.servico = response;
+                            audioOk();
+                        },
+                        function (response) {
+                            console.log(response)
+                            vm.servico = response;
+                            vm.modalConfirmaErro();
+                            audioError();
+                        }
+                    )
+                }
+            }
+            $scope.editComment = function (event, dessert) {
+                event.stopPropagation(); // in case autoselect is enabled
+                var editDialog = {
+                    modelValue: dessert.comment,
+                    placeholder: 'Add a comment',
+                    save: function (input) {
+                        // if (input.$modelValue === 'Donald Trump') {
+                        //     input.$invalid = true;
+                        //     return $q.reject();
+                        // }
+                        // if (input.$modelValue === 'Bernie Sanders') {
+                        //     return dessert.comment = 'FEEL THE BERN!'
+                        // }
+                        // dessert.comment = input.$modelValue;
+                    },
+                    targetEvent: event,
+                    title: 'Add a comment',
+                    validators: {
+                        'md-maxlength': 30
+                    }
+                };
 
-        //         var promise;
+                var promise;
 
-        //         if ($scope.options.largeEditDialog) {
-        //             promise = $mdEditDialog.large(editDialog);
-        //         } else {
-        //             promise = $mdEditDialog.small(editDialog);
-        //         }
+                if ($scope.options.largeEditDialog) {
+                    promise = $mdEditDialog.large(editDialog);
+                } else {
+                    promise = $mdEditDialog.small(editDialog);
+                }
 
-        //         promise.then(function (ctrl) {
-        //             var input = ctrl.getInput();
+                promise.then(function (ctrl) {
+                    var input = ctrl.getInput();
 
-        //             input.$viewChangeListeners.push(function () {
-        //                 input.$setValidity('test', input.$modelValue !== 'test');
-        //             });
-        //         });
-        //     };
+                    input.$viewChangeListeners.push(function () {
+                        input.$setValidity('test', input.$modelValue !== 'test');
+                    });
+                });
+            };
 
-        //     $scope.toggleLimitOptions = function () {
-        //         $scope.limitOptions = $scope.limitOptions ? undefined : [5, 10, 15];
-        //     };
+            $scope.toggleLimitOptions = function () {
+                $scope.limitOptions = $scope.limitOptions ? undefined : [5, 10, 15];
+            };
 
-        //     $scope.getTypes = function () {
-        //         return ['Candy', 'Ice cream', 'Other', 'Pastry'];
-        //     };
+            $scope.getTypes = function () {
+                return ['Candy', 'Ice cream', 'Other', 'Pastry'];
+            };
 
-        //     $scope.loadStuff = function () {
-        //         $scope.promise = $timeout(function () {
-        //             // loading
-        //         }, 2000);
-        //     }
+            $scope.loadStuff = function () {
+                $scope.promise = $timeout(function () {
+                    // loading
+                }, 2000);
+            }
 
-        //     $scope.logItem = function (item) {
-        //         console.log(item.name, 'was selected');
-        //     };
+            $scope.logItem = function (item) {
+                console.log(item.name, 'was selected');
+            };
 
-        //     $scope.logOrder = function (order) {
-        //         console.log('order: ', order);
-        //     };
+            $scope.logOrder = function (order) {
+                console.log('order: ', order);
+            };
 
-        //     $scope.logPagination = function (page, limit) {
-        //         console.log('page: ', page);
-        //         console.log('limit: ', limit);
-        //     }
-
-
-        //     //fim do data-table
+            $scope.logPagination = function (page, limit) {
+                console.log('page: ', page);
+                console.log('limit: ', limit);
+            }
 
 
+            //fim do data-table
 
+            $scope.hide = function () {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
 
-
-
-        //     if (codbar) {
-        //         $scope.codbar = codbar;
-        //     }
-        //     if (erro) {
-        //         $scope.erro = erro;
-        //     }
-        //     $scope.hide = function () {
-        //         $mdDialog.hide();
-        //     };
-        //     $scope.cancel = function () {
-        //         $mdDialog.cancel();
-        //     };
-        //     $scope.ok = function (volume) {
-        //         console.log('ok')
-        //         if (!$scope.codbar) {
-        //             console.log('sem codbar')
-        //             $mdDialog.hide(volume);
-
-        //         } else {
-        //             console.log('com codbar')
-        //             if ($scope.codbar == volume.CODBAR) {
-        //                 $mdDialog.hide(volume)
-        //             } else {
-        //                 console.log('invalido', $scope.codbar, volume.CODBAR)
-        //                 $scope.volume.CODBAR = '';
-        //             }
-        //         }
-        //     };
-        // }
+        }
 
         function DialogController($scope, $mdDialog, codbar, erro) {
             console.log(codbar)
@@ -744,11 +725,11 @@
                         function (response) {
                             vm.servico = response;
                             if (!vm.servico.transito.ID_TRANSITO) {
-                                    $scope.desserts.data = [];             
+                                $scope.desserts.data = [];
                             }
                             if (vm.servico.transito.TIPO == 7) {
                                 pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
-                                    if(res) {
+                                    if (res) {
                                         $scope.desserts.data = res;
                                         console.log($scope.desserts)
                                     }
@@ -757,9 +738,10 @@
                                     }
                                 });
                             }
-                            if (vm.servico.transito.TIPO == 3) {
-                                pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
-                                    if(res) {
+                            if (vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 7) {
+                                alert('status 7, preparacao')
+                                pacoteSrvc.listaPacotes23(vm.servico.transito).then(function (res) {
+                                    if (res) {
                                         $scope.desserts.data = res;
                                         console.log($scope.desserts)
                                     }
@@ -848,11 +830,11 @@
             } else if (identificador === 'A') {
                 // procura pacote
                 console.log('pacote', codbar)
-
                 pacoteSrvc.movePacote(codbar).then(
                     function (response) {
+                        console.log('movepacoteres', response)
                         pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
-                            if(res) {
+                            if (res) {
                                 $scope.desserts.data = res;
                                 console.log($scope.desserts)
                             }
@@ -869,9 +851,9 @@
                                 console.log('não houve quebra', response)
                             }
                         }
-                        if (response.pacote.SITUACAO == 20 && response.pacote.IMAGEM) {
-                            console.log('situacao 3 p/ 20');
-                            vm.modalDemonstrativo();
+                        if (response.pacote.SITUACAO == 24) {
+                            console.log('situacao 23 p/ 24');
+                            vm.modalListaPacotes(response.pacote.CODIGO_FISCAL);
                         }
                         vm.servico = response;
                         audioOk();
@@ -903,7 +885,7 @@
                     pacoteSrvc.abreVolume(codbar).then(
                         function (response) {
                             pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
-                                if(res) {
+                                if (res) {
                                     $scope.desserts.data = res;
                                     console.log($scope.desserts)
                                 }
@@ -942,6 +924,6 @@
 
         ////////////////
 
-        function activate() {}
+        function activate() { }
     }
 })();

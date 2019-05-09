@@ -157,7 +157,7 @@
                         Firebird.attach(options, function (err, db) {
                             if (err)
                                 reject(new Error(err));
-                            db.query("select QTD21,CODPRO,DESCRICAO from OS_STATUS_1 where OS=? and QTD21 >0", transito.OS, function (err, res) {
+                            db.query("select QTD21 AS QTD,CODPRO,DESCRICAO from OS_STATUS_1 where OS=? and QTD21 >0", transito.OS, function (err, res) {
                                 if (err) {
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);
@@ -170,6 +170,44 @@
                         })
                     })
                 }
+                var listaPacotes23 = function (transito,codfiscal) {
+                    return new Promise((resolve, reject) => {
+                        Firebird.attach(options, function (err, db) {
+                            let consulta = "select QTD23 AS QTD,CODPRO,CODIGO_FISCAL,DESCRICAO from OS_STATUS_2 where OS=? and QTD23 >0 ";
+                            if (err)
+                                reject(new Error(err));
+                            if (codfiscal) { consulta += "and codigo_fiscal = codfiscal"}
+                            db.query(consulta, transito.OS, function (err, res) {
+                                if (err) {
+                                    servico.erro = new Error('ERRO DE CONEXÃO')
+                                    return reject(servico);
+                                }
+                                console.log(res)
+                                db.detach(function () {
+                                    resolve(res);
+                                });
+                            });
+                        })
+                    })
+                }  
+                var listaPacotes24 = function (transito, codfiscal) {
+                    return new Promise((resolve, reject) => {
+                        Firebird.attach(options, function (err, db) {
+                            if (err)
+                                reject(new Error(err));
+                            db.query("select PRODVENDA.QTD,PRODVENDA.CODPRO, PRODUTO.descricao,PRODUTO.CODBAR, PRODUTO.UNIDADE,PRODUTO.mult_qtd from PRODVENDA  JOIN PRODUTO ON PRODVENDA.codpro = PRODUTO.CODIGO  where ID_TRANSITO=? ", transito.ID_TRANSITO, function (err, res) {
+                                if (err) {
+                                    servico.erro = new Error('ERRO DE CONEXÃO')
+                                    return reject(servico);
+                                }
+                                console.log(res)
+                                db.detach(function () {
+                                    resolve(res);
+                                });
+                            });
+                        })
+                    })
+                } 
                 var listaProdvenda = function (transito) {
                     servico.erro = new Error();
                     // servico.pacote = new Pacote();
@@ -386,6 +424,10 @@
                                                 COR: 'blue',
                                                 SENTIDO: '20 => 20'
                                             };
+                                            resolve(servico);
+                                        } else if (res[0].TIPO == 3 && res[0].STATUS == 7) {
+                                            servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS, res[0].CODTRANSP, res[0].NFE, res[0].OSTIPO);
+                                            servico.erro = new Error('PREPARAÇÃO DE PACOTES DA LISTA')
                                             resolve(servico);
                                         } else if (res[0].TIPO == 3 && res[0].STATUS == 8) {
                                             // servico.transito = new Transito(res[0].ID_TRANSITO, res[0].EXPEDICAO, res[0].DOCUMENTO, res[0].TIPO, res[0].STATUS, res[0].OS, res[0].TIPOFRETE, res[0].OSSTATUS,res[0].CODTRANSP,res[0].NFE);
@@ -844,17 +886,17 @@
                                                 resolve(servico);
                                             })
                                         }
-                                    } else if (res[0].SITUACAO == 3) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO) 
+                                    } else if (res[0].SITUACAO == 3) { //PACOTE DENTRO DE VOLUME FECHADO, NÃO PODE MAIS SER LIDO 
                                         db.detach(function () {
                                             servico.erro = new Error('PACOTE 3 DENTRO DE VOLUME');
                                             reject(servico);
                                         });
-                                    } else if (res[0].SITUACAO == 20) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO) 
+                                    } else if (res[0].SITUACAO == 20) { //PACOTE DENTRO DE VOLUME ABERTO 
                                         db.detach(function () {
                                             servico.erro = new Error('PACOTE 20 DENTRO DE VOLUME');
                                             reject(servico);
                                         });
-                                    } else if (res[0].SITUACAO == 21) { //MATERIAL DE ESTOQUE (SAÍDA COM OS E ENDEREÇO) 
+                                    } else if (res[0].SITUACAO == 21) { //ENTRADA NOS VOLUMES 
                                         if (!servico.transito.EXPEDICAO) {
                                             db.detach(function () {
                                                 servico.erro = new Error('ABRA UM TRANSITO');
@@ -888,6 +930,37 @@
                                                 reject(servico);
                                             });
                                         }
+                                    } else if (res[0].SITUACAO == 23) { //PREPARAÇÃO DE MATERIAL DE REPOSIÇÃO 
+                                        if (!servico.transito.EXPEDICAO) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ABRA O TRANSITO');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.transito.ID_TRANSITO != res[0].ID_TRANSITO_S) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('PACOTE DE OUTRO TRANSITO');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.volume.CODBAR) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('PACOTE NÃO PODE SER LIDO EM VOLUME');
+                                                reject(servico);
+                                            });
+                                        } else if (servico.transito.ID_TRANSITO == res[0].ID_TRANSITO_S) {
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,OPERADOR=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [24, servico.operador.CODIGO, CodBarras], function (err, res) {
+                                                if (err) throw err;
+                                                console.log(res)
+                                                db.detach(function () {
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
+                                                    resolve(servico);
+                                                });
+                                            })
+                                        } else {
+                                            db.detach(function () {
+                                                servico.erro = new Error('ERRO DESCONHECIDO PACOTE 20');
+                                                reject(servico);
+                                            });
+                                        }
                                     } else {
                                         db.detach(function () {
                                             servico.erro = new Error('Erro deconhecido, chame suporte');
@@ -910,7 +983,9 @@
                     movePacote: movePacote,
                     criaVolume: criaVolume,
                     abreVolume: abreVolume,
-                    excluiVolume: excluiVolume
+                    excluiVolume: excluiVolume,
+                    listaPacotes23: listaPacotes23,
+                    listaPacotes24: listaPacotes24
                 }
             }]);
 })();
