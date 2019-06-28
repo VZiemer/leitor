@@ -101,6 +101,7 @@
                 templateUrl: './app/features/home/home.mdl.demonstrativo.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
+                escapeToClose :false,
                 locals: {
                     codbar: 'ok',
                     // erro: vm.servico.erro.message || ''
@@ -340,16 +341,24 @@
                 "count": 1,
                 "data": []
             };
+            $scope.testeAlerta = function () {
+                alert('teste bem sucedido');
+            }
             pacoteSrvc.listaPacotes24(vm.servico.transito).then(function (res) {
                 $scope.desserts.data = res;
                 console.log($scope.desserts)
             });
+            $scope.imprimeCodbar = (dados) => {
+                console.log(dados)
+                imprime('CODBAR', vm.servico, dados)
+                $scope.focusInput = true;
+
+            }
             $scope.editComment = function (event, dessert) {
                 event.stopPropagation(); // in case autoselect is enabled
-
                 var editDialog = {
                     modelValue: dessert.comment,
-                    placeholder: 'Add a comment',
+                    placeholder: 'QUANTIDADE',
                     save: function (input) {
                         if (input.$modelValue === 'Donald Trump') {
                             input.$invalid = true;
@@ -358,12 +367,13 @@
                         if (input.$modelValue === 'Bernie Sanders') {
                             return dessert.comment = 'FEEL THE BERN!'
                         }
-                        dessert.comment = input.$modelValue;
+                        dessert.qtdImprime = input.$modelValue;
+                        $scope.focusInput = true;
                     },
                     targetEvent: event,
-                    title: 'Add a comment',
+                    title: 'QUANTIDADE',
                     validators: {
-                        'md-maxlength': 30
+                        'md-maxlength': 3
                     }
                 };
 
@@ -400,6 +410,8 @@
 
             $scope.logItem = function (item) {
                 console.log(item.name, 'was selected');
+                $scope.selecionado = item.CODPRO;
+                console.log(item,$scope.selecionado)
             };
 
             $scope.logOrder = function (order) {
@@ -449,173 +461,173 @@
             };
         }
 
-        function DialogListaController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, codfiscal, erro) {
-            console.log(codfiscal)
-            //data-table-example
-            $scope.selected = [];
-            $scope.limitOptions = [5, 10, 15];
-            $scope.options = {
-                rowSelection: true,
-                multiSelect: false,
-                autoSelect: true,
-                decapitate: true,
-                largeEditDialog: false,
-                boundaryLinks: false,
-                limitSelect: true,
-                pageSelect: true
-            };
-            $scope.query = {
-                order: 'name',
-                limit: 5,
-                page: 1
-            };
-            $scope.desserts = {
-                "count": 1,
-                "data": []
-            };
-            pacoteSrvc.listaPacotes23(vm.servico.transito, codfiscal).then(function (res) {
-                $scope.desserts.data = res;
-                if (!res.length) {
-                    $mdDialog.hide()
-                }
-                console.log($scope.desserts)
-            });
-            $scope.consultaPacote = function () {
-                if (identificador === 'A') {
-                    // procura pacote
-                    console.log('pacote', codbar)
-                    pacoteSrvc.movePacote(codbar).then(
-                        function (response) {
-                            console.log('movepacoteres', response)
-                            pacoteSrvc.listaPacotes23(vm.servico.transito, codfiscal).then(function (res) {
-                                $scope.desserts.data = res;
-                                if (!res.length) {
-                                    $mdDialog.hide()
-                                }
-                                console.log($scope.desserts)
-                            });
+        // function DialogListaController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, codfiscal, erro) {
+        //     console.log(codfiscal)
+        //     //data-table-example
+        //     $scope.selected = [];
+        //     $scope.limitOptions = [5, 10, 15];
+        //     $scope.options = {
+        //         rowSelection: true,
+        //         multiSelect: false,
+        //         autoSelect: true,
+        //         decapitate: true,
+        //         largeEditDialog: false,
+        //         boundaryLinks: false,
+        //         limitSelect: true,
+        //         pageSelect: true
+        //     };
+        //     $scope.query = {
+        //         order: 'name',
+        //         limit: 5,
+        //         page: 1
+        //     };
+        //     $scope.desserts = {
+        //         "count": 1,
+        //         "data": []
+        //     };
+        //     pacoteSrvc.listaPacotes23(vm.servico.transito, codfiscal).then(function (res) {
+        //         $scope.desserts.data = res;
+        //         if (!res.length) {
+        //             $mdDialog.hide()
+        //         }
+        //         console.log($scope.desserts)
+        //     });
+        //     $scope.consultaPacote = function () {
+        //         if (identificador === 'A') {
+        //             // procura pacote
+        //             console.log('pacote', codbar)
+        //             pacoteSrvc.movePacote(codbar).then(
+        //                 function (response) {
+        //                     console.log('movepacoteres', response)
+        //                     pacoteSrvc.listaPacotes23(vm.servico.transito, codfiscal).then(function (res) {
+        //                         $scope.desserts.data = res;
+        //                         if (!res.length) {
+        //                             $mdDialog.hide()
+        //                         }
+        //                         console.log($scope.desserts)
+        //                     });
 
-                            vm.servico = response;
-                            audioOk();
-                        },
-                        function (response) {
-                            console.log(response)
-                            vm.servico = response;
-                            vm.modalConfirmaErro();
-                            audioError();
-                        }
-                    )
-                }
-            }
-            $scope.editComment = function (event, dessert) {
-                event.stopPropagation(); // in case autoselect is enabled
-                var editDialog = {
-                    modelValue: dessert.comment,
-                    placeholder: 'Add a comment',
-                    save: function (input) {
-                        // if (input.$modelValue === 'Donald Trump') {
-                        //     input.$invalid = true;
-                        //     return $q.reject();
-                        // }
-                        // if (input.$modelValue === 'Bernie Sanders') {
-                        //     return dessert.comment = 'FEEL THE BERN!'
-                        // }
-                        // dessert.comment = input.$modelValue;
-                    },
-                    targetEvent: event,
-                    title: 'Add a comment',
-                    validators: {
-                        'md-maxlength': 30
-                    }
-                };
+        //                     vm.servico = response;
+        //                     audioOk();
+        //                 },
+        //                 function (response) {
+        //                     console.log(response)
+        //                     vm.servico = response;
+        //                     vm.modalConfirmaErro();
+        //                     audioError();
+        //                 }
+        //             )
+        //         }
+        //     }
+        //     $scope.editComment = function (event, dessert) {
+        //         event.stopPropagation(); // in case autoselect is enabled
+        //         var editDialog = {
+        //             modelValue: dessert.comment,
+        //             placeholder: 'Add a comment',
+        //             save: function (input) {
+        //                 // if (input.$modelValue === 'Donald Trump') {
+        //                 //     input.$invalid = true;
+        //                 //     return $q.reject();
+        //                 // }
+        //                 // if (input.$modelValue === 'Bernie Sanders') {
+        //                 //     return dessert.comment = 'FEEL THE BERN!'
+        //                 // }
+        //                 // dessert.comment = input.$modelValue;
+        //             },
+        //             targetEvent: event,
+        //             title: 'Add a comment',
+        //             validators: {
+        //                 'md-maxlength': 30
+        //             }
+        //         };
 
-                var promise;
+        //         var promise;
 
-                if ($scope.options.largeEditDialog) {
-                    promise = $mdEditDialog.large(editDialog);
-                } else {
-                    promise = $mdEditDialog.small(editDialog);
-                }
+        //         if ($scope.options.largeEditDialog) {
+        //             promise = $mdEditDialog.large(editDialog);
+        //         } else {
+        //             promise = $mdEditDialog.small(editDialog);
+        //         }
 
-                promise.then(function (ctrl) {
-                    var input = ctrl.getInput();
+        //         promise.then(function (ctrl) {
+        //             var input = ctrl.getInput();
 
-                    input.$viewChangeListeners.push(function () {
-                        input.$setValidity('test', input.$modelValue !== 'test');
-                    });
-                });
-            };
+        //             input.$viewChangeListeners.push(function () {
+        //                 input.$setValidity('test', input.$modelValue !== 'test');
+        //             });
+        //         });
+        //     };
 
-            $scope.toggleLimitOptions = function () {
-                $scope.limitOptions = $scope.limitOptions ? undefined : [5, 10, 15];
-            };
+        //     $scope.toggleLimitOptions = function () {
+        //         $scope.limitOptions = $scope.limitOptions ? undefined : [5, 10, 15];
+        //     };
 
-            $scope.getTypes = function () {
-                return ['Candy', 'Ice cream', 'Other', 'Pastry'];
-            };
+        //     $scope.getTypes = function () {
+        //         return ['Candy', 'Ice cream', 'Other', 'Pastry'];
+        //     };
 
-            $scope.loadStuff = function () {
-                $scope.promise = $timeout(function () {
-                    // loading
-                }, 2000);
-            }
+        //     $scope.loadStuff = function () {
+        //         $scope.promise = $timeout(function () {
+        //             // loading
+        //         }, 2000);
+        //     }
 
-            $scope.logItem = function (item) {
-                console.log(item.name, 'was selected');
-            };
+        //     $scope.logItem = function (item) {
+        //         console.log(item.name, 'was selected');
+        //     };
 
-            $scope.logOrder = function (order) {
-                console.log('order: ', order);
-            };
+        //     $scope.logOrder = function (order) {
+        //         console.log('order: ', order);
+        //     };
 
-            $scope.logPagination = function (page, limit) {
-                console.log('page: ', page);
-                console.log('limit: ', limit);
-            }
+        //     $scope.logPagination = function (page, limit) {
+        //         console.log('page: ', page);
+        //         console.log('limit: ', limit);
+        //     }
 
 
-            //fim do data-table
+        //     //fim do data-table
 
-            $scope.hide = function () {
-                $mdDialog.hide();
-            };
-            $scope.cancel = function () {
-                $mdDialog.cancel();
-            };
+        //     $scope.hide = function () {
+        //         $mdDialog.hide();
+        //     };
+        //     $scope.cancel = function () {
+        //         $mdDialog.cancel();
+        //     };
 
-        }
+        // }
 
-        function DialogController($scope, $mdDialog, codbar, erro) {
-            console.log(codbar)
-            if (codbar) {
-                $scope.codbar = codbar;
-            }
-            if (erro) {
-                $scope.erro = erro;
-            }
-            $scope.hide = function () {
-                $mdDialog.hide();
-            };
-            $scope.cancel = function () {
-                $mdDialog.cancel();
-            };
-            $scope.ok = function (volume) {
-                console.log('ok')
-                if (!$scope.codbar) {
-                    console.log('sem codbar')
-                    $mdDialog.hide(volume);
+        // function DialogController($scope, $mdDialog, codbar, erro) {
+        //     console.log(codbar)
+        //     if (codbar) {
+        //         $scope.codbar = codbar;
+        //     }
+        //     if (erro) {
+        //         $scope.erro = erro;
+        //     }
+        //     $scope.hide = function () {
+        //         $mdDialog.hide();
+        //     };
+        //     $scope.cancel = function () {
+        //         $mdDialog.cancel();
+        //     };
+        //     $scope.ok = function (volume) {
+        //         console.log('ok')
+        //         if (!$scope.codbar) {
+        //             console.log('sem codbar')
+        //             $mdDialog.hide(volume);
 
-                } else {
-                    console.log('com codbar')
-                    if ($scope.codbar == volume.CODBAR) {
-                        $mdDialog.hide(volume)
-                    } else {
-                        console.log('invalido', $scope.codbar, volume.CODBAR)
-                        $scope.volume.CODBAR = '';
-                    }
-                }
-            };
-        }
+        //         } else {
+        //             console.log('com codbar')
+        //             if ($scope.codbar == volume.CODBAR) {
+        //                 $mdDialog.hide(volume)
+        //             } else {
+        //                 console.log('invalido', $scope.codbar, volume.CODBAR)
+        //                 $scope.volume.CODBAR = '';
+        //             }
+        //         }
+        //     };
+        // }
         //fim dialog
         function imprime(tipo, servico, dados) {
             return new Promise((resolve, reject) => {
@@ -663,6 +675,15 @@
                     texto += '121100000100030__________________________________________\n'
                     texto += 'E\nQ\n'
                 }
+                if (tipo === 'CODBAR') {
+                    console.log('Impressão de codigo de barras');
+
+                    texto = 'm\nC0026\nL\nH8\nD11\n'
+                    texto += '1E1208001300100' + dados.CODBAR + '\n'
+                    texto += '122200000400050' + 'teste123' + '\n'
+                    texto += '121100000100030__________________________________________\n'
+                    texto += 'E\nQ\n'
+                }                
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
                 if (tipo === 'VOLUMEINF') {
                     console.log('impressão volumeinf');
@@ -742,6 +763,8 @@
                                 alert('status 7, preparacao')
                                 pacoteSrvc.listaPacotes23(vm.servico.transito).then(function (res) {
                                     if (res) {
+                                        // vm.modalDemonstrativo() // teste de modal
+
                                         $scope.desserts.data = res;
                                         console.log($scope.desserts)
                                     }
@@ -833,17 +856,17 @@
                 pacoteSrvc.movePacote(codbar).then(
                     function (response) {
                         console.log('movepacoteres', response)
-                        pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
-                            if (res) {
-                                $scope.desserts.data = res;
-                                console.log($scope.desserts)
-                            }
-                            else {
-                                $scope.desserts.data = [];
-                            }
-                        });
                         if (response.pacote.SITUACAO == 7) {
                             console.log('situacao 12 p/ 7');
+                            pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                                if (res) {
+                                    $scope.desserts.data = res;
+                                    console.log($scope.desserts)
+                                }
+                                else {
+                                    $scope.desserts.data = [];
+                                }
+                            });
                             if (response.pacote.codbar !== codbar) {
                                 console.log('houve quebra', response)
                                 imprime('PACOTE', vm.servico, response)
@@ -853,7 +876,27 @@
                         }
                         if (response.pacote.SITUACAO == 24) {
                             console.log('situacao 23 p/ 24');
-                            vm.modalListaPacotes(response.pacote.CODIGO_FISCAL);
+                            pacoteSrvc.listaPacotes23(vm.servico.transito,response.pacote.CODFISCAL).then(function (res) {
+                                if (res.length) {
+                                    $scope.desserts.data = res;
+                                    console.log($scope.desserts)
+                                }
+                                else {
+                                    $scope.desserts.data = [];
+                                      vm.modalDemonstrativo();
+                                }
+                            });
+                        }
+                        else {
+                            pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                                if (res) {
+                                    $scope.desserts.data = res;
+                                    console.log($scope.desserts)
+                                }
+                                else {
+                                    $scope.desserts.data = [];
+                                }
+                            });
                         }
                         vm.servico = response;
                         audioOk();
