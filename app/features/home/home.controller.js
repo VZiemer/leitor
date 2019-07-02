@@ -235,9 +235,7 @@
                 });
         };
         vm.modalDemonstrativo = function (ev, produtos) {
-            alert('abriu demo modal');
-
-
+            // alert('abriu demo modal');
             console.log("modal demo")
             $mdDialog.show({
                 controller: DialogDemoController,
@@ -920,9 +918,9 @@
                     console.log('Impressão de codigo de barras');
 
                     texto = 'm\nC0026\nL\nH8\nD11\n'
-                    texto += '1E1208001300100' + dados.CODBAR + '\n'
-                    texto += '122200000400050' + 'teste123' + '\n'
-                    texto += '121100000100030__________________________________________\n'
+                    texto += '1F1307001000070' + dados.CODBAR + '\n'
+                    texto += '121100000500040' + dados.DESCRICAO + '\n'
+                    // texto += '121100000100030__________________________________________\n'
                     texto += 'E\nQ\n'
                 }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
