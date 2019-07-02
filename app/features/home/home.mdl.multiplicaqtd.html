@@ -1,0 +1,25 @@
+<md-dialog aria-label="DADOS DO VOLUME">
+  <form ng-submit="ok(volume)" name='controle' ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>QUANTIDADE</h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <md-input-container class="md-block">
+          <label>Qauntidade</label>
+          <input required md-no-asterisk  type="number" name="description" ng-model="volume.QTD"
+            md-autofocus>
+          <div ng-messages="controle.description.$error">
+            <div ng-message="required">falta valor</div>
+          </div>
+        </md-input-container>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <input class='hide' type='submit' value='enviar' />
+    </md-dialog-actions>
+  </form>
+</md-dialog>

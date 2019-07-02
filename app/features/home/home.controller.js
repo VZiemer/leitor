@@ -12,7 +12,133 @@
     };
     angular
         .module('leitorEstoque')
-        .controller('HomeCtrl', HomeController)
+        .constant("keyCodes", {
+            A: 65,
+            B: 66,
+            C: 67,
+            D: 68,
+            E: 69,
+            F: 70,
+            G: 71,
+            H: 72,
+            I: 73,
+            J: 74,
+            K: 75,
+            L: 76,
+            M: 77,
+            N: 78,
+            O: 79,
+            P: 80,
+            Q: 81,
+            R: 82,
+            S: 83,
+            T: 84,
+            U: 85,
+            V: 86,
+            W: 87,
+            X: 88,
+            Y: 89,
+            Z: 90,
+            ZERO: 48,
+            ONE: 49,
+            TWO: 50,
+            THREE: 51,
+            FOUR: 52,
+            FIVE: 53,
+            SIX: 54,
+            SEVEN: 55,
+            EIGHT: 56,
+            NINE: 57,
+            0: 96,
+            NUMPAD_1: 97,
+            NUMPAD_2: 98,
+            NUMPAD_3: 99,
+            NUMPAD_4: 100,
+            NUMPAD_5: 101,
+            NUMPAD_6: 102,
+            NUMPAD_7: 103,
+            NUMPAD_8: 104,
+            NUMPAD_9: 105,
+            NUMPAD_MULTIPLY: 106,
+            NUMPAD_ADD: 107,
+            NUMPAD_ENTER: 108,
+            NUMPAD_SUBTRACT: 109,
+            NUMPAD_DECIMAL: 110,
+            NUMPAD_DIVIDE: 111,
+            F1: 112,
+            F2: 113,
+            F3: 114,
+            F4: 115,
+            F5: 116,
+            F6: 117,
+            F7: 118,
+            F8: 119,
+            F9: 120,
+            F10: 121,
+            F11: 122,
+            F12: 123,
+            F13: 124,
+            F14: 125,
+            F15: 126,
+            COLON: 186,
+            EQUALS: 187,
+            UNDERSCORE: 189,
+            QUESTION_MARK: 191,
+            TILDE: 192,
+            OPEN_BRACKET: 219,
+            BACKWARD_SLASH: 220,
+            CLOSED_BRACKET: 221,
+            QUOTES: 222,
+            BACKSPACE: 8,
+            TAB: 9,
+            CLEAR: 12,
+            ENTER: 13,
+            SHIFT: 16,
+            CONTROL: 17,
+            ALT: 18,
+            CAPS_LOCK: 20,
+            ESC: 27,
+            SPACEBAR: 32,
+            PAGE_UP: 33,
+            PAGE_DOWN: 34,
+            END: 35,
+            HOME: 36,
+            LEFT: 37,
+            UP: 38,
+            RIGHT: 39,
+            DOWN: 40,
+            INSERT: 45,
+            DELETE: 46,
+            HELP: 47,
+            NUM_LOCK: 144
+        }).directive("keyboard", function ($document, keyCodes) {
+            return {
+                link: function (scope, element, attrs) {
+
+                    var keysToHandle = scope.$eval(attrs.keyboard);
+                    var keyHandlers = {};
+
+                    // Registers key handlers
+                    angular.forEach(keysToHandle, function (callback, keyName) {
+                        var keyCode = keyCodes[keyName];
+                        keyHandlers[keyCode] = { callback: callback, name: keyName };
+                    });
+                    // Bind to document keydown event
+                    $document.on("keydown", function (event) {
+                        var keyDown = keyHandlers[event.keyCode];
+                        // Handler is registered
+                        if (keyDown) {
+                            // event.preventDefault();
+                            // Invoke the handler and digest
+                            scope.$apply(function () {
+                                keyDown.callback(keyDown.name, event.keyCode);
+                                console.log(keyDown.name);
+                            })
+                        }
+                    });
+                }
+            };
+        })
         .directive('focusMe', function ($timeout) {
             return {
                 scope: {
@@ -30,11 +156,36 @@
                     });
                 }
             };
-        });
+        })
+        .controller('HomeCtrl', HomeController);
+
 
     HomeController.$inject = ['$scope', '$interval', '$mdDialog', 'pacoteSrvc'];
 
     function HomeController($scope, $interval, $mdDialog, pacoteSrvc) {
+        //shortcuts (atalhos de telhado)
+        var vm = this;
+        vm.servico = {};
+        $scope.focusInput = true;
+        vm.clock = {
+            time: "",
+            interval: 1000
+        };
+        $interval(function () {
+            vm.clock.time = Date.now();
+        },
+            vm.clock.interval);
+
+        vm.keys = {
+            F3: function (name, code) {
+                $scope.fnF3()
+            }
+        };
+
+        $scope.fnF3 = function () {
+            // alert('pressionou F3 na home')
+        }
+
         const screenElectron = electron.screen;
         $scope.mainScreen = screenElectron.getPrimaryDisplay().workAreaSize.height;
         $scope.selected = [];
@@ -60,17 +211,6 @@
         };
 
         console.log(os.platform())
-        var vm = this;
-        vm.servico = {};
-        $scope.focusInput = true;
-        vm.clock = {
-            time: "",
-            interval: 1000
-        };
-        $interval(function () {
-            vm.clock.time = Date.now();
-        },
-            vm.clock.interval);
 
         //dialogs
         vm.modalListaPacotes = function (ev, codfiscal) {
@@ -95,13 +235,16 @@
                 });
         };
         vm.modalDemonstrativo = function (ev, produtos) {
+            alert('abriu demo modal');
+
+
             console.log("modal demo")
             $mdDialog.show({
                 controller: DialogDemoController,
                 templateUrl: './app/features/home/home.mdl.demonstrativo.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
-                escapeToClose :false,
+                escapeToClose: true,
                 locals: {
                     codbar: 'ok',
                     // erro: vm.servico.erro.message || ''
@@ -112,8 +255,33 @@
             })
                 .then(function () {
                     $scope.focusInput = true;
+                    pacoteSrvc.listaPacotes23(vm.servico.transito).then(function (res) {
+                        if (res) {
+                            // vm.modalDemonstrativo() // teste de modal
+
+                            $scope.desserts.data = res;
+                            console.log($scope.desserts)
+                        }
+                        else {
+                            $scope.desserts.data = [];
+                            alert('fim dos volumes')
+                        }
+                    });
                 }, function () {
                     $scope.focusInput = true;
+                    pacoteSrvc.listaPacotes23(vm.servico.transito).then(function (res) {
+                        if (res) {
+                            // vm.modalDemonstrativo() // teste de modal
+
+                            $scope.desserts.data = res;
+                            console.log($scope.desserts)
+                        }
+                        else {
+                            $scope.desserts.data = [];
+                            alert('fim dos volumes')
+
+                        }
+                    });
                 });
         };
         vm.modalConfirmaErro = function (ev) {
@@ -218,6 +386,30 @@
                     )
                 }, function () { });
         };
+        vm.modalMultQtd = function (callback) {
+            console.log('abriu modal Multiplicado de quantidades')
+            $mdDialog.show({
+                controller: DialogController,
+                templateUrl: './app/features/home/home.mdl.multiplicaqtd.html',
+                // parent: angular.element(document.body),
+                // targetEvent: ev,
+                hasBackdrop: true,
+                locals: {
+                    codbar: '',
+                    erro: ''
+                },
+                clickOutsideToClose: false,
+                fullscreen: false, // Only for -xs, -sm breakpoints.
+                multiple: true
+            })
+                .then(function (dados) {
+                    console.log('then do modal')
+                    $scope.focusInput = true;
+                    callback(dados)
+
+                }, function () { });
+        };
+
         vm.modalFechaTransito = function (ev) {
             console.log('abriu modal fecha transito')
             $mdDialog.show({
@@ -315,6 +507,22 @@
         };
 
         function DialogDemoController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, codbar, erro) {
+            $scope.consulta = []
+            $scope.retornodaCall = function (dados) {
+                console.log('dentro da call')
+                $scope.multiplicador = dados.QTD;
+                // alert('dados da call '+dados.QTD)
+            }
+            $scope.keys = {
+                F3: function (name, code) {
+                    $scope.fnF3()
+                }
+            };
+            $scope.fnF3 = function () {
+                console.log("chamou modal")
+                console.log($scope.selecionado)
+                vm.modalMultQtd($scope.retornodaCall)
+            }
             console.log(codbar)
             //data-table-example
             $scope.selected = [];
@@ -354,6 +562,37 @@
                 $scope.focusInput = true;
 
             }
+            $scope.testefuncao = function () {
+                alert('teste')
+                console.log('postou leitor', codbar)
+                $scope.consulta.input = '';
+                // if (codbar != $scope.selected.CODBAR) {
+                //     alert('código de barras incorreto')
+                // }
+
+                console.log('dados corretos')
+                let dados = {
+                    'CODPRO': $scope.selected[0].CODPRO,
+                    'QTD': 1,
+                    'MULTIPLICADOR': $scope.multiplicador || 1
+                }
+                console.log(dados)
+                pacoteSrvc.criaPacote24(dados).then(function (result) {
+                    console.log('resultado', result)
+                    let pacotes = result.length;
+                    $scope.selected[0].QTD -= pacotes;
+                    $scope.multiplicador = 1;
+                    if ($scope.selected[0].QTD == 0) {
+                        $scope.selecionado = '';
+                        $scope.selected = [];
+
+                    }
+                }, function (err) { console.log(err) })
+            }
+            $scope.clicabotao = function () {
+                alert('botão clicado')
+            }
+
             $scope.editComment = function (event, dessert) {
                 event.stopPropagation(); // in case autoselect is enabled
                 var editDialog = {
@@ -409,9 +648,11 @@
             }
 
             $scope.logItem = function (item) {
-                console.log(item.name, 'was selected');
+
+                console.log(item.CODPRO, 'was selected');
                 $scope.selecionado = item.CODPRO;
-                console.log(item,$scope.selecionado)
+                console.log(item, $scope.selecionado)
+                console.log('selected', $scope.selected)
             };
 
             $scope.logOrder = function (order) {
@@ -597,37 +838,37 @@
 
         // }
 
-        // function DialogController($scope, $mdDialog, codbar, erro) {
-        //     console.log(codbar)
-        //     if (codbar) {
-        //         $scope.codbar = codbar;
-        //     }
-        //     if (erro) {
-        //         $scope.erro = erro;
-        //     }
-        //     $scope.hide = function () {
-        //         $mdDialog.hide();
-        //     };
-        //     $scope.cancel = function () {
-        //         $mdDialog.cancel();
-        //     };
-        //     $scope.ok = function (volume) {
-        //         console.log('ok')
-        //         if (!$scope.codbar) {
-        //             console.log('sem codbar')
-        //             $mdDialog.hide(volume);
+        function DialogController($scope, $mdDialog, codbar, erro) {
+            console.log(codbar)
+            if (codbar) {
+                $scope.codbar = codbar;
+            }
+            if (erro) {
+                $scope.erro = erro;
+            }
+            $scope.hide = function () {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
+            $scope.ok = function (volume) {
+                console.log('ok')
+                if (!$scope.codbar) {
+                    console.log('sem codbar')
+                    $mdDialog.hide(volume);
 
-        //         } else {
-        //             console.log('com codbar')
-        //             if ($scope.codbar == volume.CODBAR) {
-        //                 $mdDialog.hide(volume)
-        //             } else {
-        //                 console.log('invalido', $scope.codbar, volume.CODBAR)
-        //                 $scope.volume.CODBAR = '';
-        //             }
-        //         }
-        //     };
-        // }
+                } else {
+                    console.log('com codbar')
+                    if ($scope.codbar == volume.CODBAR) {
+                        $mdDialog.hide(volume)
+                    } else {
+                        console.log('invalido', $scope.codbar, volume.CODBAR)
+                        $scope.volume.CODBAR = '';
+                    }
+                }
+            };
+        }
         //fim dialog
         function imprime(tipo, servico, dados) {
             return new Promise((resolve, reject) => {
@@ -683,7 +924,7 @@
                     texto += '122200000400050' + 'teste123' + '\n'
                     texto += '121100000100030__________________________________________\n'
                     texto += 'E\nQ\n'
-                }                
+                }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
                 if (tipo === 'VOLUMEINF') {
                     console.log('impressão volumeinf');
@@ -760,7 +1001,7 @@
                                 });
                             }
                             if (vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 7) {
-                                alert('status 7, preparacao')
+                                // alert('status 7, preparacao')
                                 pacoteSrvc.listaPacotes23(vm.servico.transito).then(function (res) {
                                     if (res) {
                                         // vm.modalDemonstrativo() // teste de modal
@@ -876,14 +1117,14 @@
                         }
                         if (response.pacote.SITUACAO == 24) {
                             console.log('situacao 23 p/ 24');
-                            pacoteSrvc.listaPacotes23(vm.servico.transito,response.pacote.CODFISCAL).then(function (res) {
+                            pacoteSrvc.listaPacotes23(vm.servico.transito, response.pacote.CODFISCAL).then(function (res) {
                                 if (res.length) {
                                     $scope.desserts.data = res;
                                     console.log($scope.desserts)
                                 }
                                 else {
                                     $scope.desserts.data = [];
-                                      vm.modalDemonstrativo();
+                                    vm.modalDemonstrativo();
                                 }
                             });
                         }

@@ -170,13 +170,13 @@
                         })
                     })
                 }
-                var listaPacotes23 = function (transito,codfiscal) {
+                var listaPacotes23 = function (transito, codfiscal) {
                     return new Promise((resolve, reject) => {
                         Firebird.attach(options, function (err, db) {
                             let consulta = "select QTD23 AS QTD,CODPRO,CODIGO_FISCAL,DESCRICAO from OS_STATUS_2 where OS=? and QTD23 >0 ";
                             if (err)
                                 reject(new Error(err));
-                            if (codfiscal) { consulta += "and codigo_fiscal = codfiscal"}
+                            if (codfiscal) { consulta += "and codigo_fiscal = codfiscal" }
                             db.query(consulta, transito.OS, function (err, res) {
                                 if (err) {
                                     servico.erro = new Error('ERRO DE CONEXÃO')
@@ -189,7 +189,7 @@
                             });
                         })
                     })
-                }  
+                }
                 var listaPacotes24 = function (transito, codfiscal) {
                     return new Promise((resolve, reject) => {
                         Firebird.attach(options, function (err, db) {
@@ -207,7 +207,25 @@
                             });
                         })
                     })
-                } 
+                }
+                var criaPacote24 = function (_dados) { //criação de pacotes genéricos setor 24
+                    servico.erro = new Error();
+                    return new Promise((resolve, reject) => {
+                        Firebird.attach(options, function (err, db) {
+                            if (err) {
+                                servico.erro = new Error('ERRO DE CONEXÃO')
+                                return reject(servico);
+                            }   // ID,QTD,ID_TRANSITO,SITUACAO,MULTIPLICADOR,TIPO
+                            db.query("select * from CRIA_PACOTE (?,?,?,21,?,'S')", [_dados.CODPRO,_dados.QTD,servico.transito.EXPEDICAO,_dados.MULTIPLICADOR], function (err, res) {
+                                if (err) reject(new Error(err));
+                                db.detach(function () {
+                                    console.log('pacotes genéricos criados')
+                                    resolve(res);
+                                })
+                            });
+                        })
+                    })
+                }                
                 var listaProdvenda = function (transito) {
                     servico.erro = new Error();
                     // servico.pacote = new Pacote();
@@ -972,6 +990,7 @@
                         }
                     })
                 }
+
                 return {
                     consultaSituacao: consultaSituacao,
                     listaPacotes: listaPacotes,
@@ -985,7 +1004,8 @@
                     abreVolume: abreVolume,
                     excluiVolume: excluiVolume,
                     listaPacotes23: listaPacotes23,
-                    listaPacotes24: listaPacotes24
+                    listaPacotes24: listaPacotes24,
+                    criaPacote24: criaPacote24
                 }
             }]);
 })();

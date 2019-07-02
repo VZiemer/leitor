@@ -13,6 +13,14 @@ const BrowserWindow = electron.BrowserWindow
 // fechada automaticamente quando o objeto JavaScript for coletado pelo garbage collector.
 let mainWindow
 
+
+
+// globalShortcut.register('shift + f9', function () {
+//   console.log('Shift + f9 is pressed')
+//   mainWindow.webContents.openDevTools()
+// })
+
+
 function createWindow () {
   // Cria a janela do navegador.
   mainWindow = new BrowserWindow({width: 800, height: 600})

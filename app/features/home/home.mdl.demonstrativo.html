@@ -1,69 +1,66 @@
-<md-dialog class="fullscreen-dialog" aria-label="DADOS DO VOLUME">
-  <form ng-submit="ok(volume)" name='controle' ng-cloak>
-    <!-- <md-toolbar>
+<md-dialog class="fullscreen-dialog" aria-label="DADOS DO VOLUME" keyboard="keys" >
+  <form ng-submit="testefuncao(consulta.input)" name='controler' ng-cloak>
+  <!-- <md-toolbar>
       <div class="md-toolbar-tools">
         <h2>INSTRUÇÕES DA EMBALAGEM</h2>
         <span flex></span>
       </div>
     </md-toolbar> -->
-    <md-dialog-content>
-      <div class="md-dialog-content" layout='column'>
-        <md-card layout="row" flex='20'>
-          <!-- conteúdo inferior -->
-          <form name="projectForm" layout layout-margin ng-submit="vm.consultaPacote(consulta.input);consulta.input=''"
-            method="POST">
-            <div layout layout-align="center end" flex>
-              <md-input-container flex>
-                <label>LEITOR</label>
-                <input id="leitor" required md-no-asterisk name="description" ng-model="consulta.input"
-                  focus-me="focusInput">
-                <div ng-messages="projectForm.description.$error">
-                </div>
-              </md-input-container>
-            </div>
-            <div layout layout-align="center end" flex>
-              <md-input-container flex>
-                <label>OPERADOR</label>
-                <input ng-model="vm.servico.operador.NOME" readonly="readonly">
-              </md-input-container>
-              <input type='submit' class="hide" />
-            </div>
-          </form>
-        </md-card>
-        <md-card layout='row' flex>
-          <div layout="column" flex>
-            <md-table-container>
-              <table md-table md-row-select ng-model="selected" md-progress="promise">
-                <thead md-head md-order="query.order" md-on-reorder="getDesserts">
-                  <tr md-row>
-                    <th md-column md-order-by="IDPRODUTO"><span>ID</span></th>
-                    <th md-column md-numeric>QTD / UN</th>
-                    <th md-column colspan="4" md-order-by="DESCRICAO"><span>Descrição</span></th>
-                    <th md-column><span>codbar</span></th>
-                    <th md-column>IMPRESSÃO</th> 
-                    <td md-column></td> 
-                  </tr>
-                </thead>
-                <tbody md-body>
-                  <tr md-row md-select="dessert" md-select-id="name" md-auto-select md-on-select="logItem"
-                    ng-disabled="selecionado" ng-repeat="dessert in desserts.data">
-                    <td md-cell>{{dessert.CODPRO}}</td>
-                    <td md-cell>{{dessert.QTD}} emb. c/ {{dessert.MULT_QTD}} {{dessert.UNIDADE}}</td>
-                    <td md-cell colspan="4">{{dessert.DESCRICAO}}</td>
-                    <td md-cell>{{dessert.CODBAR}}</td>
-                    <td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">
-                      {{dessert.comment || '  QUANTIDADE'}}
-                    </td>
-                    <td><md-button ng-click="imprimeCodbar(dessert)">IMPRIMIR</md-button></td>
-                  </tr>
-                </tbody>
-              </table>
-            </md-table-container>
+  <md-dialog-content>
+    <div class="md-dialog-content" layout='column'>
+      <md-card layout="row" flex='20'>
+        <!-- conteúdo inferior -->
+        <!-- <form name="formmodal" layout layout-margin ng-submit="" method=" POST"> -->
+          <div layout layout-align="center end" flex>
+            <md-input-container flex>
+              <label>LEITOR</label>
+              <input id="leitor" required name="description" ng-model="consulta.input"
+                focus-me="focusInput">
+              <div ng-messages="controler.description.$error">
+              </div>
+            </md-input-container>
+
           </div>
-        </md-card>
-        <md-card layout="row" flex='60' layout-align="center bottom">
-          <img src='./{{selected[0].CODPRO}}.jpg' flex>
-        </md-card>
-    </md-dialog-content>
+        <input class='hide' type='submit' value='enviar' />
+
+        <!-- </form> -->
+      </md-card>
+      <md-card layout='row' flex>
+        <div layout="column" flex>
+          <md-table-container>
+            <table md-table md-row-select ng-model="selected" md-progress="promise">
+              <thead md-head md-order="query.order" md-on-reorder="getDesserts">
+                <tr md-row>
+                  <th md-column md-order-by="IDPRODUTO"><span>ID</span></th>
+                  <th md-column md-numeric>QTD / UN</th>
+                  <th md-column colspan="4" md-order-by="DESCRICAO"><span>Descrição</span></th>
+                  <th md-column><span>codbar</span></th>
+                  <th md-column>IMPRESSÃO</th>
+                  <td md-column></td>
+                </tr>
+              </thead>
+              <tbody md-body>
+                <tr md-row md-select="dessert" md-select-id="name" md-auto-select md-on-select="logItem"
+                  ng-disabled="selecionado || !dessert.QTD" ng-repeat="dessert in desserts.data">
+                  <td md-cell>{{dessert.CODPRO}}</td>
+                  <td md-cell>{{dessert.QTD}} emb. c/ {{dessert.MULT_QTD}} {{dessert.UNIDADE}}</td>
+                  <td md-cell colspan="4">{{dessert.DESCRICAO}}</td>
+                  <td md-cell>{{dessert.CODBAR}}</td>
+                  <td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">
+                    {{dessert.comment || '  QUANTIDADE'}}
+                  </td>
+                  <td>
+                    <md-button ng-click="imprimeCodbar(dessert)">IMPRIMIR</md-button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </md-table-container>
+        </div>
+      </md-card>
+      <md-card layout="row" flex='60' layout-align="center bottom">
+        <img src='./{{selected[0].CODPRO}}.jpg' flex>
+      </md-card>
+  </md-dialog-content>
   </form>
 </md-dialog>
