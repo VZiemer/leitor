@@ -21,9 +21,6 @@
       "owner": "VZiemer",
       "repo": "leitor"
     },
-    "linux": {
-      "target": "deb"
-    },
     "win": {
       "target": [
         {

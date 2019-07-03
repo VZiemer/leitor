@@ -24,6 +24,10 @@ md-dialog.fullscreen-dialog {
     height: 48px;
 }
 
+.fundoazul {
+    background: lightskyblue;  
+}
+
 md-whiteframe {
     background: #fff;
     margin: 3px;

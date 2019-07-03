@@ -1,4 +1,4 @@
-<md-dialog class="fullscreen-dialog" aria-label="DADOS DO VOLUME" keyboard="keys" >
+<md-dialog class="fullscreen-dialog" aria-label="DADOS DO PRODUTO" keyboard="keys" >
   <form ng-submit="testefuncao(consulta.input)" name='controler' ng-cloak>
   <!-- <md-toolbar>
       <div class="md-toolbar-tools">
@@ -11,7 +11,8 @@
       <md-card layout="row" flex='20'>
         <!-- conteúdo inferior -->
         <!-- <form name="formmodal" layout layout-margin ng-submit="" method=" POST"> -->
-          <div layout layout-align="center end" flex>
+          <div layout layout-align="center center" flex>
+            <span flex="5">{{multiplicador}} X</span>
             <md-input-container flex>
               <label>LEITOR</label>
               <input id="leitor" required name="description" ng-model="consulta.input"
@@ -46,11 +47,11 @@
                   <td md-cell>{{dessert.QTD}} emb. c/ {{dessert.MULT_QTD}} {{dessert.UNIDADE}}</td>
                   <td md-cell colspan="4">{{dessert.DESCRICAO}}</td>
                   <td md-cell>{{dessert.CODBAR}}</td>
-                  <td md-cell ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.comment}">
-                    {{dessert.comment || '  QUANTIDADE'}}
+                  <td md-cell ng-disabled="selecionado || !dessert.QTD" ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.QTDIMPRIME}">
+                    {{dessert.QTDIMPRIME || '  QUANTIDADE'}}
                   </td>
                   <td>
-                    <md-button ng-click="imprimeCodbar(dessert)">IMPRIMIR</md-button>
+                    <md-button ng-disabled="selecionado != dessert.CODPRO || !dessert.QTD"  ng-click="imprimeCodbar(dessert)">IMPRIMIR</md-button>
                   </td>
                 </tr>
               </tbody>

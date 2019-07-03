@@ -506,6 +506,7 @@
 
         function DialogDemoController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, codbar, erro) {
             $scope.consulta = []
+            $scope.multiplicador = 1
             $scope.retornodaCall = function (dados) {
                 console.log('dentro da call')
                 $scope.multiplicador = dados.QTD;
@@ -519,7 +520,12 @@
             $scope.fnF3 = function () {
                 console.log("chamou modal")
                 console.log($scope.selecionado)
-                vm.modalMultQtd($scope.retornodaCall)
+                if ($scope.selecionado) {
+                    vm.modalMultQtd($scope.retornodaCall)
+                }
+                else {
+                    alert('Selecione uma Opção')
+                }
             }
             console.log(codbar)
             //data-table-example
@@ -594,23 +600,23 @@
             $scope.editComment = function (event, dessert) {
                 event.stopPropagation(); // in case autoselect is enabled
                 var editDialog = {
-                    modelValue: dessert.comment,
+                    modelValue: dessert.QTDIMPRIME,
                     placeholder: 'QUANTIDADE',
                     save: function (input) {
-                        if (input.$modelValue === 'Donald Trump') {
-                            input.$invalid = true;
-                            return $q.reject();
-                        }
-                        if (input.$modelValue === 'Bernie Sanders') {
-                            return dessert.comment = 'FEEL THE BERN!'
-                        }
-                        dessert.qtdImprime = input.$modelValue;
+                        // if (input.$modelValue === 'Donald Trump') {
+                        //     input.$invalid = true;
+                        //     return $q.reject();
+                        // }
+                        // if (input.$modelValue === 'Bernie Sanders') {
+                        //     return dessert.comment = 'FEEL THE BERN!'
+                        // }
+                        dessert.QTDIMPRIME = input.$modelValue;
                         $scope.focusInput = true;
                     },
                     targetEvent: event,
                     title: 'QUANTIDADE',
                     validators: {
-                        'md-maxlength': 3
+                        'md-maxvalue': dessert.QTD
                     }
                 };
 
@@ -918,10 +924,10 @@
                     console.log('Impressão de codigo de barras');
 
                     texto = 'm\nC0026\nL\nH8\nD11\n'
-                    texto += '1F1307001000070' + dados.CODBAR + '\n'
-                    texto += '121100000500040' + dados.DESCRICAO + '\n'
-                    // texto += '121100000100030__________________________________________\n'
-                    texto += 'E\nQ\n'
+                    texto += '121100001400040' + dados.DESCRICAO.slice(0,29) + '\n'
+                    texto += '121100001100040' + dados.DESCRICAO.slice(29,0) + '\n'                    
+                    texto += '1F1307000200070' + dados.CODBAR + '\n'
+                    texto += 'E\nE'+dados.QTDIMPRIME | 1+'\nD\nQ\n'
                 }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
                 if (tipo === 'VOLUMEINF') {
