@@ -27,6 +27,7 @@
             'AJUDA': ''
         }
     }
+    var travaCod23 = '';
     angular.module('leitorEstoque')
         .factory(
             'pacoteSrvc', ['$http', function ($http) {
@@ -176,7 +177,11 @@
                             let consulta = "select QTD23 AS QTD,CODPRO,CODIGO_FISCAL,DESCRICAO from OS_STATUS_2 where OS=? and QTD23 >0 ";
                             if (err)
                                 reject(new Error(err));
-                            if (codfiscal) { consulta += "and codigo_fiscal = codfiscal" }
+                            if (codfiscal) { 
+                                consulta += "and codigo_fiscal = " + codfiscal;
+                                travaCod23 = codfiscal; 
+                                console.log('trava',travaCod23)
+                            }
                             db.query(consulta, transito.OS, function (err, res) {
                                 if (err) {
                                     servico.erro = new Error('ERRO DE CONEXÃO')
@@ -184,6 +189,7 @@
                                 }
                                 console.log(res)
                                 db.detach(function () {
+                                    if (!res.length) {travaCod23 = ''; console.log('destrava',travaCod23)}
                                     resolve(res);
                                 });
                             });
@@ -195,7 +201,7 @@
                         Firebird.attach(options, function (err, db) {
                             if (err)
                                 reject(new Error(err));
-                            db.query("select PRODVENDA.QTD,PRODVENDA.CODPRO, PRODUTO.descricao,PRODUTO.CODBAR, PRODUTO.UNIDADE,PRODUTO.MULT_QTD,PRODUTO.CODBAR from PRODVENDA  JOIN PRODUTO ON PRODVENDA.codpro = PRODUTO.CODIGO  where ID_TRANSITO=? ", transito.ID_TRANSITO, function (err, res) {
+                            db.query("select PRODVENDA.QTD,PRODVENDA.CODPRO, PRODUTO.descricao,PRODUTO.CODBAR, PRODUTO.UNIDADE,PRODUTO.MULT_QTD,PRODUTO.CODBAR from PRODVENDA  JOIN PRODUTO ON PRODVENDA.codpro = PRODUTO.CODIGO  where ID_TRANSITO=? and PRODVENDA.CODPRO_FISCAL = ? ", [transito.ID_TRANSITO,codfiscal], function (err, res) {
                                 if (err) {
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);
@@ -962,6 +968,13 @@
                                         } else if (servico.volume.CODBAR) {
                                             db.detach(function () {
                                                 servico.erro = new Error('PACOTE NÃO PODE SER LIDO EM VOLUME');
+                                                reject(servico);
+                                            });
+                                        } else if (travaCod23 && travaCod23 != res[0].CODIGO_FISCAL){
+                                            db.detach(function () {
+                                                console.log('travacod',travaCod23);
+                                                console.log('codverificado',res[0].CODIGO_FISCAL)
+                                                servico.erro = new Error('LEIA O PRODUTO DA LISTA');
                                                 reject(servico);
                                             });
                                         } else if (servico.transito.ID_TRANSITO == res[0].ID_TRANSITO_S) {

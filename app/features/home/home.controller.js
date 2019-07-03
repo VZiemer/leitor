@@ -234,18 +234,18 @@
                     vm.modalDemonstrativo() //HIDE
                 });
         };
-        vm.modalDemonstrativo = function (ev, produtos) {
+        vm.modalDemonstrativo = function (codfiscal) {
             // alert('abriu demo modal');
             console.log("modal demo")
             $mdDialog.show({
                 controller: DialogDemoController,
                 templateUrl: './app/features/home/home.mdl.demonstrativo.html',
                 parent: angular.element(document.body),
-                targetEvent: ev,
+                // targetEvent: ev,
                 escapeToClose: true,
                 locals: {
                     codbar: 'ok',
-                    // erro: vm.servico.erro.message || ''
+                    codfiscal: codfiscal,
                     erro: ''
                 },
                 clickOutsideToClose: false,
@@ -290,7 +290,8 @@
                 targetEvent: ev,
                 locals: {
                     codbar: 'SIM',
-                    erro: vm.servico.erro.message
+                    erro: vm.servico.erro.message,
+                    maxQtd:''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -312,7 +313,8 @@
                 targetEvent: ev,
                 locals: {
                     codbar: codbar,
-                    erro: ''
+                    erro: '',
+                    maxQtd:''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -342,7 +344,8 @@
                 targetEvent: ev,
                 locals: {
                     codbar: '',
-                    erro: ''
+                    erro: '',
+                    maxQtd:''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -384,7 +387,7 @@
                     )
                 }, function () { });
         };
-        vm.modalMultQtd = function (callback) {
+        vm.modalMultQtd = function (callback,maxQtd) {
             console.log('abriu modal Multiplicado de quantidades')
             $mdDialog.show({
                 controller: DialogController,
@@ -394,7 +397,8 @@
                 hasBackdrop: true,
                 locals: {
                     codbar: '',
-                    erro: ''
+                    erro: '',
+                    maxQtd: maxQtd
                 },
                 clickOutsideToClose: false,
                 fullscreen: false, // Only for -xs, -sm breakpoints.
@@ -417,7 +421,8 @@
                 targetEvent: ev,
                 locals: {
                     codbar: '',
-                    erro: ''
+                    erro: '',
+                    maxQtd:''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -458,7 +463,8 @@
                 targetEvent: ev,
                 locals: {
                     codbar: '',
-                    erro: ''
+                    erro: '',
+                    maxQtd:''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -484,7 +490,8 @@
                 targetEvent: ev,
                 locals: {
                     codbar: codbar,
-                    erro: ''
+                    erro: '',
+                    maxQtd:''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -504,7 +511,8 @@
                 });
         };
 
-        function DialogDemoController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, codbar, erro) {
+        function DialogDemoController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, locals) {
+            console.log(locals.codfiscal)
             $scope.consulta = []
             $scope.multiplicador = 1
             $scope.retornodaCall = function (dados) {
@@ -521,13 +529,13 @@
                 console.log("chamou modal")
                 console.log($scope.selecionado)
                 if ($scope.selecionado) {
-                    vm.modalMultQtd($scope.retornodaCall)
+                    vm.modalMultQtd($scope.retornodaCall,$scope.selected[0].QTD)
                 }
                 else {
                     alert('Selecione uma Opção')
                 }
             }
-            console.log(codbar)
+            // console.log(codbar)
             //data-table-example
             $scope.selected = [];
             $scope.limitOptions = [5, 10, 15];
@@ -556,7 +564,7 @@
             $scope.testeAlerta = function () {
                 alert('teste bem sucedido');
             }
-            pacoteSrvc.listaPacotes24(vm.servico.transito).then(function (res) {
+            pacoteSrvc.listaPacotes24(vm.servico.transito,locals.codfiscal).then(function (res) {
                 $scope.desserts.data = res;
                 console.log($scope.desserts)
             });
@@ -568,7 +576,7 @@
             }
             $scope.testefuncao = function () {
                 alert('teste')
-                console.log('postou leitor', codbar)
+                // console.log('postou leitor', codbar)
                 $scope.consulta.input = '';
                 // if (codbar != $scope.selected.CODBAR) {
                 //     alert('código de barras incorreto')
@@ -676,12 +684,12 @@
 
 
 
-            if (codbar) {
-                $scope.codbar = codbar;
-            }
-            if (erro) {
-                $scope.erro = erro;
-            }
+            // if (codbar) {
+            //     $scope.codbar = codbar;
+            // }
+            // if (erro) {
+            //     $scope.erro = erro;
+            // }
             $scope.hide = function () {
                 $mdDialog.hide();
             };
@@ -842,7 +850,7 @@
 
         // }
 
-        function DialogController($scope, $mdDialog, codbar, erro) {
+        function DialogController($scope, $mdDialog, codbar, erro,maxQtd) {
             console.log(codbar)
             if (codbar) {
                 $scope.codbar = codbar;
@@ -850,6 +858,7 @@
             if (erro) {
                 $scope.erro = erro;
             }
+                $scope.maxQtd = maxQtd || '';
             $scope.hide = function () {
                 $mdDialog.hide();
             };
@@ -858,7 +867,16 @@
             };
             $scope.ok = function (volume) {
                 console.log('ok')
-                if (!$scope.codbar) {
+                if ($scope.maxQtd) {
+                    if (volume.QTD > $scope.maxQtd ) {
+                        alert ('QUANTIDADE MAIOR QUE O TOTAL')
+                        $scope.volume.QTD = ''
+                    }
+                    else {
+                        $mdDialog.hide(volume);
+                    }
+                }
+                else if (!$scope.codbar) {
                     console.log('sem codbar')
                     $mdDialog.hide(volume);
 
@@ -922,14 +940,12 @@
                 }
                 if (tipo === 'CODBAR') {
                     console.log('Impressão de codigo de barras');
-
                     texto = 'm\nC0026\nL\nH8\nD11\n'
-                    texto += '121100001800040' + dados.DESCRICAO.slice(0,29) + '\n'
-                    texto += '121100001500040' + dados.DESCRICAO.slice(29,0) + '\n'    
-                    texto += '121200000600040' + dados.DESCRICAO.slice(29,0) + '\n'                    
-                
+                    texto += '121100001800040' + dados.DESCRICAO.slice(0,28) + '\n'
+                    texto += '121100001500040' + dados.DESCRICAO.slice(28) + '\n'    
+                    texto += '121200000600040cod.' + dados.CODPRO + '\n'                    
                     texto += '1E1100000100220' + dados.CODBAR + '\n'
-                    texto += 'E\nE'+dados.QTDIMPRIME || 1+'\nD\nQ\n'
+                    texto += 'E\nE'+(dados.QTDIMPRIME)+'\nG'
                 }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
                 if (tipo === 'VOLUMEINF') {
@@ -1123,14 +1139,14 @@
                         }
                         if (response.pacote.SITUACAO == 24) {
                             console.log('situacao 23 p/ 24');
-                            pacoteSrvc.listaPacotes23(vm.servico.transito, response.pacote.CODFISCAL).then(function (res) {
+                            pacoteSrvc.listaPacotes23(vm.servico.transito, response.pacote.CODIGO_FISCAL).then(function (res) {
                                 if (res.length) {
                                     $scope.desserts.data = res;
                                     console.log($scope.desserts)
                                 }
                                 else {
                                     $scope.desserts.data = [];
-                                    vm.modalDemonstrativo();
+                                    vm.modalDemonstrativo(response.pacote.CODIGO_FISCAL);
                                 }
                             });
                         }
