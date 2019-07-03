@@ -924,10 +924,12 @@
                     console.log('Impressão de codigo de barras');
 
                     texto = 'm\nC0026\nL\nH8\nD11\n'
-                    texto += '121100001400040' + dados.DESCRICAO.slice(0,29) + '\n'
-                    texto += '121100001100040' + dados.DESCRICAO.slice(29,0) + '\n'                    
-                    texto += '1F1307000200070' + dados.CODBAR + '\n'
-                    texto += 'E\nE'+dados.QTDIMPRIME | 1+'\nD\nQ\n'
+                    texto += '121100001800040' + dados.DESCRICAO.slice(0,29) + '\n'
+                    texto += '121100001500040' + dados.DESCRICAO.slice(29,0) + '\n'    
+                    texto += '121200000600040' + dados.DESCRICAO.slice(29,0) + '\n'                    
+                
+                    texto += '1E1100000100220' + dados.CODBAR + '\n'
+                    texto += 'E\nE'+dados.QTDIMPRIME || 1+'\nD\nQ\n'
                 }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
                 if (tipo === 'VOLUMEINF') {
