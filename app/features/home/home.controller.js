@@ -945,7 +945,7 @@
                     texto += '121100001500040' + dados.DESCRICAO.slice(28) + '\n'    
                     texto += '121200000600040cod.' + dados.CODPRO + '\n'                    
                     texto += '1E1100000100220' + dados.CODBAR + '\n'
-                    texto += 'E\nE'+(dados.QTDIMPRIME)+'\nG'
+                    texto += 'Q'+(dados.QTDIMPRIME || 1)+'E\nQ'
                 }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
                 if (tipo === 'VOLUMEINF') {
