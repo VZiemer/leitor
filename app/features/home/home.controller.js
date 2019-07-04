@@ -291,7 +291,7 @@
                 locals: {
                     codbar: 'SIM',
                     erro: vm.servico.erro.message,
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -314,7 +314,7 @@
                 locals: {
                     codbar: codbar,
                     erro: '',
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -345,7 +345,7 @@
                 locals: {
                     codbar: '',
                     erro: '',
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -387,7 +387,7 @@
                     )
                 }, function () { });
         };
-        vm.modalMultQtd = function (callback,maxQtd) {
+        vm.modalMultQtd = function (callback, maxQtd) {
             console.log('abriu modal Multiplicado de quantidades')
             $mdDialog.show({
                 controller: DialogController,
@@ -411,7 +411,28 @@
 
                 }, function () { });
         };
+        vm.modalCodbarGenerico = (callback, maxQtd) => {
+            console.log('abriu modal de codbar generico')
+            $mdDialog.show({
+                controller: DialogController,
+                templateUrl: './app/features/home/home.mdl.multiplicaqtd.html',
+                // parent: angular.element(document.body),
+                // targetEvent: ev,
+                hasBackdrop: true,
+                locals: {
+                    codbar: '',
+                },
+                clickOutsideToClose: false,
+                fullscreen: false, // Only for -xs, -sm breakpoints.
+                multiple: true
+            })
+                .then(function (dados) {
+                    console.log('then do modal')
+                    $scope.focusInput = true;
+                    callback(dados)
 
+                }, function () { });
+        };
         vm.modalFechaTransito = function (ev) {
             console.log('abriu modal fecha transito')
             $mdDialog.show({
@@ -422,7 +443,7 @@
                 locals: {
                     codbar: '',
                     erro: '',
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -464,7 +485,7 @@
                 locals: {
                     codbar: '',
                     erro: '',
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -491,7 +512,7 @@
                 locals: {
                     codbar: codbar,
                     erro: '',
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -529,7 +550,7 @@
                 console.log("chamou modal")
                 console.log($scope.selecionado)
                 if ($scope.selecionado) {
-                    vm.modalMultQtd($scope.retornodaCall,$scope.selected[0].QTD)
+                    vm.modalMultQtd($scope.retornodaCall, $scope.selected[0].QTD)
                 }
                 else {
                     alert('Selecione uma Opção')
@@ -564,7 +585,7 @@
             $scope.testeAlerta = function () {
                 alert('teste bem sucedido');
             }
-            pacoteSrvc.listaPacotes24(vm.servico.transito,locals.codfiscal).then(function (res) {
+            pacoteSrvc.listaPacotes24(vm.servico.transito, locals.codfiscal).then(function (res) {
                 $scope.desserts.data = res;
                 console.log($scope.desserts)
             });
@@ -850,7 +871,7 @@
 
         // }
 
-        function DialogController($scope, $mdDialog, codbar, erro,maxQtd) {
+        function DialogController($scope, $mdDialog, codbar, erro, maxQtd) {
             console.log(codbar)
             if (codbar) {
                 $scope.codbar = codbar;
@@ -858,7 +879,7 @@
             if (erro) {
                 $scope.erro = erro;
             }
-                $scope.maxQtd = maxQtd || '';
+            $scope.maxQtd = maxQtd || '';
             $scope.hide = function () {
                 $mdDialog.hide();
             };
@@ -868,8 +889,8 @@
             $scope.ok = function (volume) {
                 console.log('ok')
                 if ($scope.maxQtd) {
-                    if (volume.QTD > $scope.maxQtd ) {
-                        alert ('QUANTIDADE MAIOR QUE O TOTAL')
+                    if (volume.QTD > $scope.maxQtd) {
+                        alert('QUANTIDADE MAIOR QUE O TOTAL')
                         $scope.volume.QTD = ''
                     }
                     else {
@@ -924,11 +945,11 @@
                     texto += '121100000200190ID ' + id + '\n'
                     texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
                     texto += 'E\nQ\n'
-                } 
+                }
                 //impressão de volumes (etiqueta superior) //
-                if (tipo === 'VOLUMESUP') { 
+                if (tipo === 'VOLUMESUP') {
                     console.log('impressão volume sup');
-    
+
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '1E1208001300100' + dados.CODBAR + '\n'
                     texto += '122200000400050' + servico.transito.EXPEDICAO + '\n'
@@ -941,11 +962,11 @@
                 if (tipo === 'CODBAR') {
                     console.log('Impressão de codigo de barras');
                     texto = 'm\nC0026\nL\nH8\nD11\n'
-                    texto += '121100001800040' + dados.DESCRICAO.slice(0,28) + '\n'
-                    texto += '121100001500040' + dados.DESCRICAO.slice(28) + '\n'    
-                    texto += '121200000600040cod.' + dados.CODPRO + '\n'                    
+                    texto += '121100001800040' + dados.DESCRICAO.slice(0, 28) + '\n'
+                    texto += '121100001500040' + dados.DESCRICAO.slice(28) + '\n'
+                    texto += '121200000600040cod.' + dados.CODPRO + '\n'
                     texto += '1E1100000100220' + dados.CODBAR + '\n'
-                    texto += 'Q'+(dados.QTDIMPRIME || 1)+'E\nQ'
+                    texto += 'Q' + (dados.QTDIMPRIME || 1) + 'E\nQ'
                 }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
                 if (tipo === 'VOLUMEINF') {
