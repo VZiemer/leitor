@@ -924,11 +924,11 @@
                     texto += '121100000200190ID ' + id + '\n'
                     texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
                     texto += 'E\nQ\n'
-                }
-                //impressão de volumes (etiqueta superior)
-                if (tipo === 'VOLUMESUP') {
+                } 
+                //impressão de volumes (etiqueta superior) //
+                if (tipo === 'VOLUMESUP') { 
                     console.log('impressão volume sup');
-
+    
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '1E1208001300100' + dados.CODBAR + '\n'
                     texto += '122200000400050' + servico.transito.EXPEDICAO + '\n'
