@@ -608,6 +608,50 @@
                         })
                     })
                 }
+                var movePacoteGen = (CodBarras,multp) => {
+                    if (!multp) {multp = 1};
+                    servico.erro = new Error();
+                    servico.pacote = new Pacote();
+                    return new Promise((resolve, reject) => {
+                        if (!servico.operador.CODBAR) {
+                            servico.erro = new Error('LEIA O CRACHA DE IDENTIFICAÇÃO');
+                            reject(servico);
+                        } else {
+                            Firebird.attach(options, function (err, db) {
+                                if (err) {
+                                    servico.erro = new Error('ERRO DE CONEXÃO')
+                                    return reject(servico);
+                                }
+                                db.query("select first ? pacote.* from pacote join produto on pacote.id_produto = produto.codigo where pacote.id_transito_s=? and pacote.situacao=21 and produto.codbar = ?", [multp,servico.transito.ID_TRANSITO, CodBarras], function (err, res) {
+                                    // if (err) reject(new Error(err));
+                                    console.log(res)
+                                    if (!res.length) {
+                                        servico.erro = new Error('PRODUTO DESCONHECIDO');
+                                        reject(servico);
+                                    } else if (res.length < multp) { //QUANTIDADE GENERICA MAIOR QUE A DIGITADA
+                                            db.detach(function () {
+                                                servico.erro = new Error('QUANTIDADE MENOR QUE A DIGITADA');
+                                                reject(servico);
+                                            });
+                                    } else if (res.length >= multp) { //QUANTIDADE GENERICA OK
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,OPERADOR=?,ID_VOLUME=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [20, servico.operador.CODIGO, servico.volume.ID_VOLUME, CodBarras], function (err, res) {
+                                                db.detach(function () {
+                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
+                                                    resolve(servico);
+                                                });
+                                            })
+                                        
+                                    }  else {
+                                        db.detach(function () {
+                                            servico.erro = new Error('Erro deconhecido, chame suporte');
+                                            reject(servico);
+                                        })
+                                    }
+                                });
+                            })
+                        }
+                    })                    
+                }
                 var movePacote = function (CodBarras) {
                     servico.erro = new Error();
                     servico.pacote = new Pacote();
@@ -926,6 +970,11 @@
                                                 servico.erro = new Error('ABRA UM TRANSITO');
                                                 reject(servico);
                                             });
+                                        } else if (servico.transito.STATUS == 7) {
+                                            db.detach(function () {
+                                                servico.erro = new Error('LEIA OS ITENS DA LISTA');
+                                                reject(servico);
+                                            });
                                         } else if (servico.transito.ID_TRANSITO != res[0].ID_TRANSITO_S) {
                                             db.detach(function () {
                                                 servico.erro = new Error('PACOTE DE OUTRO TRANSITO');
@@ -992,10 +1041,24 @@
                                                 reject(servico);
                                             });
                                         }
-                                    } else {
+                                    } else if (res[0].SITUACAO == 24) { //PREPARAÇÃO DE MATERIAL DE REPOSIÇÃO 
+    
+                                            db.detach(function () {
+                                                servico.erro = new Error('PACOTE JA FOI LIDO');
+                                                reject(servico);
+                                            });
+                                        
+                                    } else if (res[0].SITUACAO == 15) { //PREPARAÇÃO DE MATERIAL DE REPOSIÇÃO 
+    
+                                        db.detach(function () {
+                                            servico.erro = new Error('PACOTE INEXISTENTE');
+                                            reject(servico);
+                                        });
+                                    
+                                } else {
                                         db.detach(function () {
                                             servico.erro = new Error('Erro deconhecido, chame suporte');
-                                            resolve(servico);
+                                            reject(servico);
                                         })
                                     }
                                 });
@@ -1013,6 +1076,7 @@
                     abreOrdem: abreOrdem,
                     abreTransito: abreTransito,
                     movePacote: movePacote,
+                    movePacoteGen: movePacoteGen,
                     criaVolume: criaVolume,
                     abreVolume: abreVolume,
                     excluiVolume: excluiVolume,

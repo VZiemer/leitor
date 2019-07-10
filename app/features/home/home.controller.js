@@ -941,10 +941,11 @@
                 if (tipo === 'CODBAR') {
                     console.log('Impressão de codigo de barras');
                     texto = 'm\nC0026\nL\nH8\nD11\n'
-                    texto += '121100001800040' + dados.DESCRICAO.slice(0,28) + '\n'
-                    texto += '121100001500040' + dados.DESCRICAO.slice(28) + '\n'    
-                    texto += '121200000600040cod.' + dados.CODPRO + '\n'                    
-                    texto += '1E1100000100220' + dados.CODBAR + '\n'
+                    texto += '121100001900040' + dados.DESCRICAO.slice(0,28) + '\n'
+                    texto += '121100001600040' + dados.DESCRICAO.slice(28) + '\n'    
+                    texto += '121100000400040' + dados.CODPRO + '\n'                    
+                    texto += '1e1100000400220' + dados.CODBAR + '\n'
+                    texto += '120000000100226' + dados.CODBAR + '\n'
                     texto += 'Q'+(dados.QTDIMPRIME || 1)+'E\nQ'
                 }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
