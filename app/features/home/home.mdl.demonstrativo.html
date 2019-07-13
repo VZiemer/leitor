@@ -36,7 +36,6 @@
                   <th md-column md-numeric>QTD / UN</th>
                   <th md-column colspan="4" md-order-by="DESCRICAO"><span>Descrição</span></th>
                   <th md-column><span>codbar</span></th>
-                  <th md-column>IMPRESSÃO</th>
                   <td md-column></td>
                 </tr>
               </thead>
@@ -49,9 +48,6 @@
                   <td md-cell>{{dessert.CODBAR}}</td>
                   <td md-cell ng-disabled="selecionado || !dessert.QTD" ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.QTDIMPRIME}">
                     {{dessert.QTDIMPRIME || '  QUANTIDADE'}}
-                  </td>
-                  <td>
-                    <md-button ng-disabled="selecionado != dessert.CODPRO || !dessert.QTD"  ng-click="imprimeCodbar(dessert)">IMPRIMIR</md-button>
                   </td>
                 </tr>
               </tbody>

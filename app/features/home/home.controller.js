@@ -164,6 +164,7 @@
 
     function HomeController($scope, $interval, $mdDialog, pacoteSrvc) {
         //shortcuts (atalhos de telhado)
+        $scope.multiplicador = 1;
         var vm = this;
         vm.servico = {};
         $scope.focusInput = true;
@@ -181,10 +182,16 @@
                 $scope.fnF3()
             }
         };
-
-        $scope.fnF3 = function () {
-            // alert('pressionou F3 na home')
+        $scope.retornodaCall = function (dados) {
+            console.log('dentro da call')
+            $scope.multiplicador = dados.QTD;
+            // alert('dados da call '+dados.QTD)
         }
+        $scope.fnF3 = function () {
+            console.log("chamou modal")
+                vm.modalMultQtd($scope.retornodaCall)
+        }
+
 
         const screenElectron = electron.screen;
         $scope.mainScreen = screenElectron.getPrimaryDisplay().workAreaSize.height;
@@ -231,7 +238,7 @@
                 .then(function () {
                     // vm.modalDemonstrativo() //CANCEL
                 }, function () {
-                    vm.modalDemonstrativo() //HIDE
+                    // vm.modalDemonstrativo() //HIDE
                 });
         };
         vm.modalDemonstrativo = function (codfiscal) {
@@ -254,23 +261,24 @@
                 .then(function () {
                     $scope.focusInput = true;
                     pacoteSrvc.listaPacotes23(vm.servico.transito).then(function (res) {
-                        if (res) {
-                            // vm.modalDemonstrativo() // teste de modal
-
+                        if (res.length) {
                             $scope.desserts.data = res;
                             console.log($scope.desserts)
                         }
                         else {
                             $scope.desserts.data = [];
                             alert('fim dos volumes')
+                            pacoteSrvc.atualizaTransito().then(function(){
+                                alert('feche o transito')
+                            },function(){
+                                alert('erros no transito')
+                            })
                         }
                     });
                 }, function () {
                     $scope.focusInput = true;
                     pacoteSrvc.listaPacotes23(vm.servico.transito).then(function (res) {
-                        if (res) {
-                            // vm.modalDemonstrativo() // teste de modal
-
+                        if (res.length) {
                             $scope.desserts.data = res;
                             console.log($scope.desserts)
                         }
@@ -282,6 +290,7 @@
                     });
                 });
         };
+
         vm.modalConfirmaErro = function (ev) {
             $mdDialog.show({
                 controller: DialogController,
@@ -510,7 +519,6 @@
                     // $scope.status = 'You cancelled the dialog.';
                 });
         };
-
         function DialogDemoController($scope, $mdDialog, $mdEditDialog, pacoteSrvc, locals) {
             console.log(locals.codfiscal)
             $scope.consulta = []
@@ -539,7 +547,6 @@
             //data-table-example
             $scope.selected = [];
             $scope.limitOptions = [5, 10, 15];
-
             $scope.options = {
                 rowSelection: true,
                 multiSelect: false,
@@ -550,20 +557,15 @@
                 limitSelect: true,
                 pageSelect: true
             };
-
             $scope.query = {
                 order: 'name',
                 limit: 5,
                 page: 1
             };
-
             $scope.desserts = {
                 "count": 1,
                 "data": []
             };
-            $scope.testeAlerta = function () {
-                alert('teste bem sucedido');
-            }
             pacoteSrvc.listaPacotes24(vm.servico.transito,locals.codfiscal).then(function (res) {
                 $scope.desserts.data = res;
                 console.log($scope.desserts)
@@ -572,39 +574,37 @@
                 console.log(dados)
                 imprime('CODBAR', vm.servico, dados)
                 $scope.focusInput = true;
-
             }
-            $scope.testefuncao = function () {
-                alert('teste')
-                // console.log('postou leitor', codbar)
-                $scope.consulta.input = '';
-                // if (codbar != $scope.selected.CODBAR) {
-                //     alert('código de barras incorreto')
-                // }
+            // $scope.testefuncao = function () {
+            //     // alert('teste')
+            //     // console.log('postou leitor', codbar)
+            //     $scope.consulta.input = '';
+            //     // if (codbar != $scope.selected.CODBAR) {
+            //     //     alert('código de barras incorreto')
+            //     // }
+            //     console.log('dados corretos')
+            //     let dados = {
+            //         'CODPRO': $scope.selected[0].CODPRO,
+            //         'QTD': 1,
+            //         'MULTIPLICADOR': $scope.multiplicador || 1
+            //     }
+            //     console.log(dados)
+            //     pacoteSrvc.criaPacote24(dados).then(function (result) {
+            //         console.log('resultado', result)
+            //         let pacotes = result.length;
+            //         $scope.selected[0].QTD -= pacotes;
+            //         $scope.multiplicador = 1;
+            //         if ($scope.selected[0].QTD == 0) {
+            //             $scope.selecionado = '';
+            //             $scope.selected = [];
+            //             console.log('restante',$scope.dessert.reduce((total,linha) => total+linha.QTD ,0))
+            //            if(!$scope.dessert.reduce((total,linha) => total+linha.QTD ,0)) {
+            //             $scope.hide()
+            //            }
 
-                console.log('dados corretos')
-                let dados = {
-                    'CODPRO': $scope.selected[0].CODPRO,
-                    'QTD': 1,
-                    'MULTIPLICADOR': $scope.multiplicador || 1
-                }
-                console.log(dados)
-                pacoteSrvc.criaPacote24(dados).then(function (result) {
-                    console.log('resultado', result)
-                    let pacotes = result.length;
-                    $scope.selected[0].QTD -= pacotes;
-                    $scope.multiplicador = 1;
-                    if ($scope.selected[0].QTD == 0) {
-                        $scope.selecionado = '';
-                        $scope.selected = [];
-
-                    }
-                }, function (err) { console.log(err) })
-            }
-            $scope.clicabotao = function () {
-                alert('botão clicado')
-            }
-
+            //         }
+            //     }, function (err) { console.log(err) })
+            // }
             $scope.editComment = function (event, dessert) {
                 event.stopPropagation(); // in case autoselect is enabled
                 var editDialog = {
@@ -620,6 +620,7 @@
                         // }
                         dessert.QTDIMPRIME = input.$modelValue;
                         $scope.focusInput = true;
+                        $scope.imprimeCodbar(dessert);
                     },
                     targetEvent: event,
                     title: 'QUANTIDADE',
@@ -627,15 +628,12 @@
                         'md-maxvalue': dessert.QTD
                     }
                 };
-
                 var promise;
-
                 if ($scope.options.largeEditDialog) {
                     promise = $mdEditDialog.large(editDialog);
                 } else {
                     promise = $mdEditDialog.small(editDialog);
                 }
-
                 promise.then(function (ctrl) {
                     var input = ctrl.getInput();
 
@@ -644,52 +642,30 @@
                     });
                 });
             };
-
             $scope.toggleLimitOptions = function () {
                 $scope.limitOptions = $scope.limitOptions ? undefined : [5, 10, 15];
             };
-
             $scope.getTypes = function () {
                 return ['Candy', 'Ice cream', 'Other', 'Pastry'];
             };
-
             $scope.loadStuff = function () {
                 $scope.promise = $timeout(function () {
                     // loading
                 }, 2000);
             }
-
             $scope.logItem = function (item) {
-
                 console.log(item.CODPRO, 'was selected');
                 $scope.selecionado = item.CODPRO;
                 console.log(item, $scope.selecionado)
                 console.log('selected', $scope.selected)
             };
-
             $scope.logOrder = function (order) {
                 console.log('order: ', order);
             };
-
             $scope.logPagination = function (page, limit) {
                 console.log('page: ', page);
                 console.log('limit: ', limit);
             }
-
-
-            //fim do data-table
-
-
-
-
-
-
-            // if (codbar) {
-            //     $scope.codbar = codbar;
-            // }
-            // if (erro) {
-            //     $scope.erro = erro;
-            // }
             $scope.hide = function () {
                 $mdDialog.hide();
             };
@@ -941,11 +917,12 @@
                 if (tipo === 'CODBAR') {
                     console.log('Impressão de codigo de barras');
                     texto = 'm\nC0026\nL\nH8\nD11\n'
-                    texto += '121100001900040' + dados.DESCRICAO.slice(0,28) + '\n'
-                    texto += '121100001600040' + dados.DESCRICAO.slice(28) + '\n'    
-                    texto += '121100000400040' + dados.CODPRO + '\n'                    
-                    texto += '1e1100000400220' + dados.CODBAR + '\n'
-                    texto += '120000000100226' + dados.CODBAR + '\n'
+                    texto += '102200002200040' + dados.DESCRICAO.slice(0,17) + '\n' // descricao linha 1
+                    texto += '102200001900040' + dados.DESCRICAO.slice(17,34) + '\n' // descricao linha 2
+                    texto += '102200001900040' + dados.DESCRICAO.slice(34) + '\n'  // descricao linha 3 
+                    texto += '102200000000140' + dados.CODPRO + '\n' // id do produto                   
+                    texto += '1e1105000600040' + dados.CODBAR + '\n' // codigo de barras
+                    texto += '102200000300040' + dados.CODBAR + '\n' // texto do codigo de barras
                     texto += 'Q'+(dados.QTDIMPRIME || 1)+'E\nQ'
                 }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
@@ -992,6 +969,7 @@
         }
 
         vm.consultaPacote = function (codbar) {
+            console.log('consulta pacote ',codbar)
             var reg = new RegExp('^[0-9]+$');
             var identificador = codbar.slice(0, 1);
             var dig2 = codbar.slice(1, 2);
@@ -1002,8 +980,36 @@
                     if (vm.servico.transito.ID_TRANSITO == codbar) {
                         vm.modalFechaTransito();
                     } else {
-                        vm.erro = new Error('LEIA UM PACOTE');
-                        audioError();
+                        // vm.erro = new Error('LEIA UM PACOTE');
+                        // audioError();
+                        pacoteSrvc.movePacoteGen(codbar,$scope.multiplicador).then(
+                            function (response) {
+                            vm.servico = response;
+                            pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                                if (res) {
+                                    $scope.desserts.data = res;
+                                    console.log($scope.desserts)
+                                }
+                                else {
+                                    $scope.desserts.data = [];
+                                }
+                            });                            
+                            audioOk();
+                        },
+                        function (response) {
+                            console.log(response)
+                            vm.servico = response;
+                            pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                                if (res) {
+                                    $scope.desserts.data = res;
+                                    console.log($scope.desserts)
+                                }
+                                else {
+                                    $scope.desserts.data = [];
+                                }
+                            });                            
+                            audioError()
+                        })
                     }
                 } else {
                     pacoteSrvc.abreTransito(codbar).then(
@@ -1039,9 +1045,27 @@
                             }
                             audioOk();
                             if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'ENTREGA') {
+                                pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                                    if (res) {
+                                        $scope.desserts.data = res;
+                                        console.log($scope.desserts)
+                                    }
+                                    else {
+                                        $scope.desserts.data = [];
+                                    }
+                                });                          
                                 vm.modalCriaVolume();
                                 // imprime(0,0,V00000,0,0,123456,10)
                             } else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO != 'ENTREGA ') {
+                                pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                                    if (res) {
+                                        $scope.desserts.data = res;
+                                        console.log($scope.desserts)
+                                    }
+                                    else {
+                                        $scope.desserts.data = [];
+                                    }
+                                });
                                 pacoteSrvc.criaVolume({
                                     'comprimento': 1,
                                     'largura': 1,
@@ -1227,6 +1251,7 @@
                 vm.servico.erro = new Error('COMANDO NÃO RECONHECIDO')
             }
             console.log(vm.servico)
+            $scope.multiplicador=1;
         }
 
         ////////////////

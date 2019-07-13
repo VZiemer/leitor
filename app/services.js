@@ -158,7 +158,7 @@
                         Firebird.attach(options, function (err, db) {
                             if (err)
                                 reject(new Error(err));
-                            db.query("select QTD21 AS QTD,CODPRO,DESCRICAO from OS_STATUS_1 where OS=? and QTD21 >0", transito.OS, function (err, res) {
+                            db.query("select QTD21 AS QTD,CODPRO,DESCRICAO from OS_STATUS_3 where OS=? and QTD21 >0", transito.OS, function (err, res) {
                                 if (err) {
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);
@@ -174,7 +174,7 @@
                 var listaPacotes23 = function (transito, codfiscal) {
                     return new Promise((resolve, reject) => {
                         Firebird.attach(options, function (err, db) {
-                            let consulta = "select QTD23 AS QTD,CODPRO,CODIGO_FISCAL,DESCRICAO from OS_STATUS_2 where OS=? and QTD23 >0 ";
+                            let consulta = "select QTD23 AS QTD,CODPRO,CODIGO_FISCAL,DESCRICAO from OS_STATUS_3 where OS=? and QTD23 >0 ";
                             if (err)
                                 reject(new Error(err));
                             if (codfiscal) { 
@@ -222,7 +222,7 @@
                                 servico.erro = new Error('ERRO DE CONEXÃO')
                                 return reject(servico);
                             }   // ID,QTD,ID_TRANSITO,SITUACAO,MULTIPLICADOR,TIPO
-                            db.query("select * from CRIA_PACOTE (?,?,?,21,?,'S')", [_dados.CODPRO,_dados.QTD,servico.transito.EXPEDICAO,_dados.MULTIPLICADOR], function (err, res) {
+                            db.query("select * from CRIA_PACOTE (?,?,?,21,?,'S',0)", [_dados.CODPRO,_dados.QTD,servico.transito.EXPEDICAO,_dados.MULTIPLICADOR], function (err, res) {
                                 if (err) reject(new Error(err));
                                 db.detach(function () {
                                     console.log('pacotes genéricos criados')
@@ -589,6 +589,25 @@
                         })
                     })
                 }
+                var atualizaTransito =  () => {
+                    servico.erro = new Error();
+                    return new Promise((resolve, reject) => {
+                        Firebird.attach(options, function (err, db) {
+                            if (err) {
+                                servico.erro = new Error('ERRO DE CONEXÃO')
+                                return reject(servico);
+                            }
+                            db.query("update transito set situacao = 2 where id_trnasito = ?", [servico.transito.ID_TRANSITO], function (err, res) {
+                                if (err) reject(new Error(err));
+                                db.detach(function () {
+                                    servico.transito.STATUS = 2;
+                                    servico.erro = new Error('PREPARAÇÃO TERMINADA')
+                                    resolve(servico.volume);
+                                })
+                            });
+                        })
+                    })
+                }
                 var excluiVolume = function (CodBarras) {
                     servico.erro = new Error();
                     return new Promise((resolve, reject) => {
@@ -609,6 +628,7 @@
                     })
                 }
                 var movePacoteGen = (CodBarras,multp) => {
+                    console.log('carrega pacote gen')
                     if (!multp) {multp = 1};
                     servico.erro = new Error();
                     servico.pacote = new Pacote();
@@ -634,9 +654,11 @@
                                                 reject(servico);
                                             });
                                     } else if (res.length >= multp) { //QUANTIDADE GENERICA OK
-                                            db.query("UPDATE PACOTE SET SITUACAO=?,OPERADOR=?,ID_VOLUME=? WHERE CODBAR= ? returning ID_PACOTE,CODIGO_FISCAL,CODBAR,ID_PRODUTO,QTD,UNIDADE,SITUACAO,DESCRICAO,CODINTERNO,OS", [20, servico.operador.CODIGO, servico.volume.ID_VOLUME, CodBarras], function (err, res) {
+                                        console.log('qtd gen ok')
+                                            db.query("UPDATE PACOTE SET SITUACAO=?,OPERADOR=?,ID_VOLUME=? WHERE ID_TRANSITO_S =? AND SITUACAO=21 AND ID_PRODUTO = ? ROWS ? ", [20, servico.operador.CODIGO, servico.volume.ID_VOLUME,servico.transito.ID_TRANSITO,res[0].ID_PRODUTO,multp], function (err, res1) {
+                                                if (err) reject(new Error(err));
                                                 db.detach(function () {
-                                                    servico.pacote = new Pacote(res.ID_PACOTE, res.CODBAR, res.ID_PRODUTO, res.CODIGO_FISCAL, res.QTD, res.UNIDADE, res.SITUACAO, res.DESCRICAO, res.CODINTERNO, res.OS, res.IMAGEM, res.MULT_QTD);
+                                                    servico.pacote = new Pacote(res[0].ID_PACOTE, res[0].CODBAR, res[0].ID_PRODUTO, res[0].CODIGO_FISCAL, res[0].QTD, res[0].UNIDADE, res[0].SITUACAO, res[0].DESCRICAO, res[0].CODINTERNO, res[0].OS, res[0].IMAGEM, res[0].MULT_QTD);
                                                     resolve(servico);
                                                 });
                                             })
@@ -1077,6 +1099,7 @@
                     abreTransito: abreTransito,
                     movePacote: movePacote,
                     movePacoteGen: movePacoteGen,
+                    atualizaTransito: atualizaTransito,
                     criaVolume: criaVolume,
                     abreVolume: abreVolume,
                     excluiVolume: excluiVolume,
