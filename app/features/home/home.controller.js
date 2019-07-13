@@ -300,7 +300,7 @@
                 locals: {
                     codbar: 'SIM',
                     erro: vm.servico.erro.message,
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -323,7 +323,7 @@
                 locals: {
                     codbar: codbar,
                     erro: '',
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -354,7 +354,7 @@
                 locals: {
                     codbar: '',
                     erro: '',
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -396,7 +396,7 @@
                     )
                 }, function () { });
         };
-        vm.modalMultQtd = function (callback,maxQtd) {
+        vm.modalMultQtd = function (callback, maxQtd) {
             console.log('abriu modal Multiplicado de quantidades')
             $mdDialog.show({
                 controller: DialogController,
@@ -420,7 +420,28 @@
 
                 }, function () { });
         };
+        vm.modalCodbarGenerico = (callback, maxQtd) => {
+            console.log('abriu modal de codbar generico')
+            $mdDialog.show({
+                controller: DialogController,
+                templateUrl: './app/features/home/home.mdl.multiplicaqtd.html',
+                // parent: angular.element(document.body),
+                // targetEvent: ev,
+                hasBackdrop: true,
+                locals: {
+                    codbar: '',
+                },
+                clickOutsideToClose: false,
+                fullscreen: false, // Only for -xs, -sm breakpoints.
+                multiple: true
+            })
+                .then(function (dados) {
+                    console.log('then do modal')
+                    $scope.focusInput = true;
+                    callback(dados)
 
+                }, function () { });
+        };
         vm.modalFechaTransito = function (ev) {
             console.log('abriu modal fecha transito')
             $mdDialog.show({
@@ -431,7 +452,7 @@
                 locals: {
                     codbar: '',
                     erro: '',
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -473,7 +494,7 @@
                 locals: {
                     codbar: '',
                     erro: '',
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -500,7 +521,7 @@
                 locals: {
                     codbar: codbar,
                     erro: '',
-                    maxQtd:''
+                    maxQtd: ''
                 },
                 clickOutsideToClose: false,
                 fullscreen: true // Only for -xs, -sm breakpoints.
@@ -537,7 +558,7 @@
                 console.log("chamou modal")
                 console.log($scope.selecionado)
                 if ($scope.selecionado) {
-                    vm.modalMultQtd($scope.retornodaCall,$scope.selected[0].QTD)
+                    vm.modalMultQtd($scope.retornodaCall, $scope.selected[0].QTD)
                 }
                 else {
                     alert('Selecione uma Opção')
@@ -826,7 +847,7 @@
 
         // }
 
-        function DialogController($scope, $mdDialog, codbar, erro,maxQtd) {
+        function DialogController($scope, $mdDialog, codbar, erro, maxQtd) {
             console.log(codbar)
             if (codbar) {
                 $scope.codbar = codbar;
@@ -834,7 +855,7 @@
             if (erro) {
                 $scope.erro = erro;
             }
-                $scope.maxQtd = maxQtd || '';
+            $scope.maxQtd = maxQtd || '';
             $scope.hide = function () {
                 $mdDialog.hide();
             };
@@ -844,8 +865,8 @@
             $scope.ok = function (volume) {
                 console.log('ok')
                 if ($scope.maxQtd) {
-                    if (volume.QTD > $scope.maxQtd ) {
-                        alert ('QUANTIDADE MAIOR QUE O TOTAL')
+                    if (volume.QTD > $scope.maxQtd) {
+                        alert('QUANTIDADE MAIOR QUE O TOTAL')
                         $scope.volume.QTD = ''
                     }
                     else {
@@ -901,7 +922,7 @@
                     texto += '121100000200030 ' + qtd + ' ' + unidade + '\n'
                     texto += 'E\nQ\n'
                 }
-                //impressão de volumes (etiqueta superior)
+                //impressão de volumes (etiqueta superior) //
                 if (tipo === 'VOLUMESUP') {
                     console.log('impressão volume sup');
 

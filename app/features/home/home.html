@@ -76,7 +76,7 @@
                 <span flex='5' ng-if="multiplicador > 1">{{multiplicador}} X </span>
                 <md-input-container flex>
                     <label>LEITOR</label>
-                    <input id="leitor" required md-no-asterisk name="description" ng-model="consulta.input"
+                    <input id="leitor" autofocus required md-no-asterisk name="description" ng-model="consulta.input"
                         focus-me="focusInput">
                     <div ng-messages="projectForm.description.$error">
                     </div>
