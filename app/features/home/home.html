@@ -73,6 +73,7 @@
         <form name="projectForm" layout layout-margin ng-submit="vm.consultaPacote(consulta.input);consulta.input=''"
             method="POST">
             <div layout layout-align="center end" flex>
+                <span flex='5' ng-if="multiplicador > 1">{{multiplicador}} X </span>
                 <md-input-container flex>
                     <label>LEITOR</label>
                     <input id="leitor" autofocus required md-no-asterisk name="description" ng-model="consulta.input"
