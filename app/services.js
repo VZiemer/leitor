@@ -660,7 +660,7 @@
                                 servico.erro = new Error('ERRO DE CONEXÃO')
                                 return reject(servico);
                             }
-                            db.query("update transito set situacao = 2 where id_trnasito = ?", [servico.transito.ID_TRANSITO], function (err, res) {
+                            db.query("update transito set situacao = 2 where id_transito = ?", [servico.transito.ID_TRANSITO], function (err, res) {
                                 if (err) reject(new Error(err));
                                 db.detach(function () {
                                     servico.transito.STATUS = 2;

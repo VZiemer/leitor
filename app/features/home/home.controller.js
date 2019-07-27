@@ -596,36 +596,36 @@
                 imprime('CODBAR', vm.servico, dados)
                 $scope.focusInput = true;
             }
-            // $scope.testefuncao = function () {
-            //     // alert('teste')
-            //     // console.log('postou leitor', codbar)
-            //     $scope.consulta.input = '';
-            //     // if (codbar != $scope.selected.CODBAR) {
-            //     //     alert('código de barras incorreto')
-            //     // }
-            //     console.log('dados corretos')
-            //     let dados = {
-            //         'CODPRO': $scope.selected[0].CODPRO,
-            //         'QTD': 1,
-            //         'MULTIPLICADOR': $scope.multiplicador || 1
-            //     }
-            //     console.log(dados)
-            //     pacoteSrvc.criaPacote24(dados).then(function (result) {
-            //         console.log('resultado', result)
-            //         let pacotes = result.length;
-            //         $scope.selected[0].QTD -= pacotes;
-            //         $scope.multiplicador = 1;
-            //         if ($scope.selected[0].QTD == 0) {
-            //             $scope.selecionado = '';
-            //             $scope.selected = [];
-            //             console.log('restante',$scope.dessert.reduce((total,linha) => total+linha.QTD ,0))
-            //            if(!$scope.dessert.reduce((total,linha) => total+linha.QTD ,0)) {
-            //             $scope.hide()
-            //            }
+            $scope.testefuncao = function () {
+                // alert('teste')
+                // console.log('postou leitor', codbar)
+                $scope.consulta.input = '';
+                // if (codbar != $scope.selected.CODBAR) {
+                //     alert('código de barras incorreto')
+                // }
+                console.log('dados corretos')
+                let dados = {
+                    'CODPRO': $scope.selected[0].CODPRO,
+                    'QTD': 1,
+                    'MULTIPLICADOR': $scope.multiplicador || 1
+                }
+                console.log(dados)
+                pacoteSrvc.criaPacote24(dados).then(function (result) {
+                    console.log('resultado', result)
+                    let pacotes = result.length;
+                    $scope.selected[0].QTD -= pacotes;
+                    $scope.multiplicador = 1;
+                    if ($scope.selected[0].QTD == 0) {
+                        $scope.selecionado = '';
+                        $scope.selected = [];
+                        console.log('restante',$scope.desserts.reduce((total,linha) => total+linha.QTD ,0))
+                       if(!$scope.desserts.reduce((total,linha) => total+linha.QTD ,0)) {
+                        $scope.hide()
+                       }
 
-            //         }
-            //     }, function (err) { console.log(err) })
-            // }
+                    }
+                }, function (err) { console.log(err) })
+            }
             $scope.editComment = function (event, dessert) {
                 event.stopPropagation(); // in case autoselect is enabled
                 var editDialog = {
@@ -732,7 +732,7 @@
         //         page: 1
         //     };
         //     $scope.desserts = {
-        //         "count": 1,
+        //         "count": 1,E
         //         "data": []
         //     };
         //     pacoteSrvc.listaPacotes23(vm.servico.transito, codfiscal).then(function (res) {
@@ -940,7 +940,7 @@
                     texto = 'm\nC0026\nL\nH8\nD11\n'
                     texto += '102200002200040' + dados.DESCRICAO.slice(0,17) + '\n' // descricao linha 1
                     texto += '102200001900040' + dados.DESCRICAO.slice(17,34) + '\n' // descricao linha 2
-                    texto += '102200001900040' + dados.DESCRICAO.slice(34) + '\n'  // descricao linha 3 
+                    texto += '102200001600040' + dados.DESCRICAO.slice(34) + '\n'  // descricao linha 3 
                     texto += '102200000000140' + dados.CODPRO + '\n' // id do produto                   
                     texto += '1e1105000600040' + dados.CODBAR + '\n' // codigo de barras
                     texto += '102200000300040' + dados.CODBAR + '\n' // texto do codigo de barras
@@ -1268,8 +1268,34 @@
                     )
                 }
             } else {
-                audioError();
-                vm.servico.erro = new Error('COMANDO NÃO RECONHECIDO')
+                pacoteSrvc.movePacoteGen(codbar,$scope.multiplicador).then(
+                    function (response) {
+                    vm.servico = response;
+                    pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                        if (res) {
+                            $scope.desserts.data = res;
+                            console.log($scope.desserts)
+                        }
+                        else {
+                            $scope.desserts.data = [];
+                        }
+                    });                            
+                    audioOk();
+                },
+                function (response) {
+                    console.log(response)
+                    vm.servico = response;
+                    pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                        if (res) {
+                            $scope.desserts.data = res;
+                            console.log($scope.desserts)
+                        }
+                        else {
+                            $scope.desserts.data = [];
+                        }
+                    });                            
+                    audioError()
+                })
             }
             console.log(vm.servico)
             $scope.multiplicador=1;
