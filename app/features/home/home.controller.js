@@ -180,6 +180,9 @@
         vm.keys = {
             F3: function (name, code) {
                 $scope.fnF3()
+            },
+            F4: function (name, code) {
+                vm.modalCodbarGenerico( )
             }
         };
         $scope.retornodaCall = function (dados) {
@@ -419,17 +422,19 @@
                     callback(dados)
 
                 }, function () { });
-        };
-        vm.modalCodbarGenerico = (callback, maxQtd) => {
-            console.log('abriu modal de codbar generico')
+        };     
+        vm.modalCodbarGenerico = function () {
+            console.log('abriu modal Multiplicado de quantidades')
             $mdDialog.show({
                 controller: DialogController,
-                templateUrl: './app/features/home/home.mdl.multiplicaqtd.html',
+                templateUrl: './app/features/home/home.mdl.insereid.html',
                 // parent: angular.element(document.body),
                 // targetEvent: ev,
                 hasBackdrop: true,
                 locals: {
                     codbar: '',
+                    erro: '',
+                    maxQtd: 9999999
                 },
                 clickOutsideToClose: false,
                 fullscreen: false, // Only for -xs, -sm breakpoints.
@@ -437,11 +442,11 @@
             })
                 .then(function (dados) {
                     console.log('then do modal')
-                    $scope.focusInput = true;
-                    callback(dados)
+                    // $scope.focusInput = true;
+                    vm.modalDemonstrativo(dados.ID)
 
                 }, function () { });
-        };
+        };  
         vm.modalFechaTransito = function (ev) {
             console.log('abriu modal fecha transito')
             $mdDialog.show({

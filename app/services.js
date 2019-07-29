@@ -201,8 +201,11 @@
                         Firebird.attach(options, function (err, db) {
                             if (err)
                                 reject(new Error(err));
-                            db.query("select PRODVENDA.QTD,PRODVENDA.CODPRO, PRODUTO.descricao,PRODUTO.CODBAR, PRODUTO.UNIDADE,PRODUTO.MULT_QTD,PRODUTO.CODBAR from PRODVENDA  JOIN PRODUTO ON PRODVENDA.codpro = PRODUTO.CODIGO  where ID_TRANSITO=? and PRODVENDA.CODPRO_FISCAL = ? ", [transito.ID_TRANSITO,codfiscal], function (err, res) {
+                            let consulta = "select PRODVENDA.QTD,PRODVENDA.CODPRO, PRODUTO.descricao,PRODUTO.CODBAR, PRODUTO.UNIDADE,PRODUTO.MULT_QTD,PRODUTO.CODBAR from PRODVENDA  JOIN PRODUTO ON PRODVENDA.codpro = PRODUTO.CODIGO  where ID_TRANSITO=? and PRODVENDA.CODPRO_FISCAL = ? ";
+                            if(!transito) consulta = "select PRODUTO.CODIGO AS CODPRO, PRODUTO.descricao,PRODUTO.CODBAR, PRODUTO.UNIDADE,PRODUTO.MULT_QTD,PRODUTO.CODBAR from PRODUTO WHERE PRODUTO.CODIGO_FISCAL = ? "
+                            db.query(consulta, [codfiscal], function (err, res) {
                                 if (err) {
+                                    reject(new Error(err));
                                     servico.erro = new Error('ERRO DE CONEXÃO')
                                     return reject(servico);
                                 }
