@@ -41,12 +41,12 @@
               </thead>
               <tbody md-body>
                 <tr md-row md-select="dessert" md-select-id="name" md-auto-select md-on-select="logItem"
-                  ng-disabled="selecionado || !dessert.QTD" ng-repeat="dessert in desserts.data">
+                  ng-disabled="selecionado && dessert.QTD || !dessert.QTD && servico.transito.ID_TRANSITO " ng-repeat="dessert in desserts.data">
                   <td md-cell>{{dessert.CODPRO}}</td>
                   <td md-cell>{{dessert.QTD}} emb. c/ {{dessert.MULT_QTD}} {{dessert.UNIDADE}}</td>
                   <td md-cell colspan="4">{{dessert.DESCRICAO}}</td>
                   <td md-cell>{{dessert.CODBAR}}</td>
-                  <td md-cell ng-disabled="selecionado || !dessert.QTD" ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.QTDIMPRIME}">
+                  <td md-cell  ng-click="editComment($event, dessert)" ng-class="{'md-placeholder': !dessert.QTDIMPRIME}">
                     {{dessert.QTDIMPRIME || '  QUANTIDADE'}}
                   </td>
                 </tr>
