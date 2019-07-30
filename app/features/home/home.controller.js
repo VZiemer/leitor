@@ -181,7 +181,7 @@
             F3: function (name, code) {
                 $scope.fnF3()
             },
-            F4: function (name, code) {
+            F2: function (name, code) {
                 vm.modalCodbarGenerico( )
             }
         };

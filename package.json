@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "release": "build",
-    "dist": "build"
+    "dist": "build -p always"
   },
   "build": {
     "appId": "leitorestoque",
@@ -15,11 +15,6 @@
     "directories": {
       "buildResources": "build",
       "output": "dist"
-    },
-    "publish": {
-      "provider": "github",
-      "owner": "VZiemer",
-      "repo": "leitor"
     },
     "win": {
       "target": [
@@ -53,7 +48,7 @@
   "homepage": "https://github.com/electron/electron-quick-start#readme",
   "devDependencies": {
     "electron": "^2.0.8",
-    "electron-builder": "^20.28.2"
+    "electron-builder": "^20.44.4"
   },
   "dependencies": {
     "font-awesome": "^4.7.0",
