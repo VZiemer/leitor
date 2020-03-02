@@ -178,12 +178,13 @@
             vm.clock.interval);
 
         vm.keys = {
-            F3: function (name, code) {
-                $scope.fnF3()
-            },
             F2: function (name, code) {
                 vm.modalCodbarGenerico( )
+            },
+            F3: function (name, code) {
+                $scope.fnF3()
             }
+
         };
         $scope.retornodaCall = function (dados) {
             console.log('dentro da call')
@@ -270,7 +271,7 @@
                         }
                         else {
                             $scope.desserts.data = [];
-                            alert('fim dos volumes')
+                            // alert('fim dos volumes')
                             pacoteSrvc.atualizaTransito().then(function(){
                                 alert('feche o transito')
                             },function(){
@@ -287,8 +288,12 @@
                         }
                         else {
                             $scope.desserts.data = [];
-                            alert('fim dos volumes')
-
+                            // alert('fim dos volumes')
+                            pacoteSrvc.atualizaTransito().then(function(){
+                                alert('feche o transito')
+                            },function(){
+                                alert('erros no transito')
+                            })
                         }
                     });
                 });
@@ -385,9 +390,20 @@
                                         })
                                     })
                                     // imprime(0,0,V00000,0,0,123456,10)
-                                } else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'RETIRA') {
+                                }  else if (vm.servico.transito.TIPO == 8 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR) {
+                                    pacoteSrvc.criaVolume({
+                                        'comprimento': 1,
+                                        'largura': 1,
+                                        'altura': 1
+                                    }).then(function (response) {
+                                        imprime('VOLUMESUP', vm.servico, response).then(function () {
+                                            vm.modalConfirmaEtiqueta('', response.CODBAR)
+                                        }, function () {
 
-                                }
+                                        })
+                                    })
+                                    // imprime(0,0,V00000,0,0,123456,10)
+                                }                              
                             }
                         },
                         function (response) {
@@ -601,36 +617,36 @@
                 imprime('CODBAR', vm.servico, dados)
                 $scope.focusInput = true;
             }
-            // $scope.testefuncao = function () {
-            //     // alert('teste')
-            //     // console.log('postou leitor', codbar)
-            //     $scope.consulta.input = '';
-            //     // if (codbar != $scope.selected.CODBAR) {
-            //     //     alert('código de barras incorreto')
-            //     // }
-            //     console.log('dados corretos')
-            //     let dados = {
-            //         'CODPRO': $scope.selected[0].CODPRO,
-            //         'QTD': 1,
-            //         'MULTIPLICADOR': $scope.multiplicador || 1
-            //     }
-            //     console.log(dados)
-            //     pacoteSrvc.criaPacote24(dados).then(function (result) {
-            //         console.log('resultado', result)
-            //         let pacotes = result.length;
-            //         $scope.selected[0].QTD -= pacotes;
-            //         $scope.multiplicador = 1;
-            //         if ($scope.selected[0].QTD == 0) {
-            //             $scope.selecionado = '';
-            //             $scope.selected = [];
-            //             console.log('restante',$scope.dessert.reduce((total,linha) => total+linha.QTD ,0))
-            //            if(!$scope.dessert.reduce((total,linha) => total+linha.QTD ,0)) {
-            //             $scope.hide()
-            //            }
+            $scope.testefuncao = function () {
+                // alert('teste')
+                // console.log('postou leitor', codbar)
+                $scope.consulta.input = '';
+                // if (codbar != $scope.selected.CODBAR) {
+                //     alert('código de barras incorreto')
+                // }
+                console.log('dados corretos')
+                let dados = {
+                    'CODPRO': $scope.selected[0].CODPRO,
+                    'QTD': 1,
+                    'MULTIPLICADOR': $scope.multiplicador || 1
+                }
+                console.log(dados)
+                pacoteSrvc.criaPacote24(dados).then(function (result) {
+                    console.log('resultado', result)
+                    let pacotes = result.length;
+                    $scope.selected[0].QTD -= pacotes;
+                    $scope.multiplicador = 1;
+                    if ($scope.selected[0].QTD == 0) {
+                        $scope.selecionado = '';
+                        $scope.selected = [];
+                        console.log('restante',$scope.desserts.reduce((total,linha) => total+linha.QTD ,0))
+                       if(!$scope.desserts.reduce((total,linha) => total+linha.QTD ,0)) {
+                        $scope.hide()
+                       }
 
-            //         }
-            //     }, function (err) { console.log(err) })
-            // }
+                    }
+                }, function (err) { console.log(err) })
+            }
             $scope.editComment = function (event, dessert) {
                 event.stopPropagation(); // in case autoselect is enabled
                 var editDialog = {
@@ -932,42 +948,79 @@
                     console.log('impressão volume sup');
 
                     texto = 'm\nC0026\nL\nH8\nD11\n'
-                    texto += '1E1208001300100' + dados.CODBAR + '\n'
-                    texto += '122200000400050' + servico.transito.EXPEDICAO + '\n'
+                    texto += '1E1108001300050' + dados.CODBAR + '\n'
+                    texto += '121100000800050' + servico.transito.EXPEDICAO + '\n'
                     if (dados.ALTURA && dados.LARGURA && dados.PROFUNDIDADE) {
-                        texto += '121100000400450' + dados.ALTURA + 'x' + dados.LARGURA + 'x' + dados.PROFUNDIDADE + 'cm\n'
+                        texto += '121100000400050' + dados.ALTURA + 'x' + dados.LARGURA + 'x' + dados.PROFUNDIDADE + 'cm\n'
                     }
-                    texto += '121100000100030__________________________________________\n'
+                    texto += '121100000200030__________________\n'
                     texto += 'E\nQ\n'
+
+
                 }
+
+
                 if (tipo === 'CODBAR') {
+
+// volume sup
+
+
+
+
+
+                    //impressao de pacote loja
+                    // texto = 'm\nC0026\nL\nH8\nD11\n'
+                    // texto += '1W1d4301000200020' + dados.CODBAR + '\n'
+                    // texto += '101200001350025' + dados.CODBAR + '\n'
+                    // texto += '102200002200025' + dados.DESCRICAO.slice(0,16) + '\n' // descricao linha 1
+                    // texto += '102200001900025' + dados.DESCRICAO.slice(16,33) + '\n' // descricao linha 2
+                    // texto += '102200001600025' + dados.DESCRICAO.slice(33) + '\n'  // descricao linha 3 
+                    // texto += '121100000700150' + dados.CODPRO + '\n' // id do produto  
+                    // texto += '1211000002001501000 PC\n'
+                    // texto += 'E\nQ\n'
+
+
+
                     console.log('Impressão de codigo de barras');
                     texto = 'm\nC0026\nL\nH8\nD11\n'
-                    texto += '102200002200040' + dados.DESCRICAO.slice(0,17) + '\n' // descricao linha 1
-                    texto += '102200001900040' + dados.DESCRICAO.slice(17,34) + '\n' // descricao linha 2
-                    texto += '102200001900040' + dados.DESCRICAO.slice(34) + '\n'  // descricao linha 3 
-                    texto += '102200000000140' + dados.CODPRO + '\n' // id do produto                   
-                    texto += '1e1105000600040' + dados.CODBAR + '\n' // codigo de barras
-                    texto += '102200000300040' + dados.CODBAR + '\n' // texto do codigo de barras
+                    texto += '102200002200025' + dados.DESCRICAO.slice(0,16) + '\n' // descricao linha 1
+                    texto += '102200001900025' + dados.DESCRICAO.slice(16,33) + '\n' // descricao linha 2
+                    texto += '102200001600025' + dados.DESCRICAO.slice(33) + '\n'  // descricao linha 3 
+                    texto += '102200000000125' + dados.CODPRO + '\n' // id do produto                   
+                    texto += '1e1105000600025' + dados.CODBAR + '\n' // codigo de barras
+                    texto += '102200000300025' + dados.CODBAR + '\n' // texto do codigo de barras
                     texto += 'Q'+(dados.QTDIMPRIME || 1)+'E\nQ'
                 }
+                // if (tipo === 'CODBAR') {
+                //     console.log('Impressão de codigo de barras');
+                //     texto = 'm\nC0026\nL\nH8\nD11\n'
+                //     texto += '102200002200025' + dados.DESCRICAO.slice(0,16) + '\n' // descricao linha 1
+                //     texto += '102200001900025' + dados.DESCRICAO.slice(16,33) + '\n' // descricao linha 2
+                //     texto += '102200001600025' + dados.DESCRICAO.slice(33) + '\n'  // descricao linha 3 
+                //     texto += '102200000000125' + dados.CODPRO + '\n' // id do produto                   
+                //     texto += '1e1105000600025' + dados.CODBAR + '\n' // codigo de barras
+                //     texto += '102200000300025' + dados.CODBAR + '\n' // texto do codigo de barras
+                //     texto += 'Q'+(dados.QTDIMPRIME || 1)+'E\nQ'
+                // }
                 //impressão de volumes (etiqueta inferior CONFERÊNCIA)
                 if (tipo === 'VOLUMEINF') {
                     console.log('impressão volumeinf');
 
                     texto = 'm\nC0026\nL\nH8\nD11\n'
-                    texto += '121100002300030__________________________________________\n'
-                    texto += '123400001100050' + (servico.transito.NFE ? 'NF ' + servico.transito.NFE : servico.transito.DOCUMENTO) + '\n'
-                    texto += '122300001300440' + zeroEsq(servico.volume.POSICAO, 2, 0) + '/' + zeroEsq(servico.volume.TOTAL, 2, 0) + '\n'
-                    texto += '1e1206000180050' + zeroEsq(servico.volume.ID_VOLUME, 8, 0) + '\n'
-                    texto += '121100000400500' + servico.volume.PESO + ' Kg\n'
+                    texto += '121100002300030________________\n'
+                    texto += '122200001600030' + (servico.transito.NFE ? 'NF ' + servico.transito.NFE : servico.transito.DOCUMENTO) + '\n'
+                    texto += '121200000900030' + zeroEsq(servico.volume.POSICAO, 2, 0) + '/' + zeroEsq(servico.volume.TOTAL, 2, 0) + '\n'
+                    texto += '1e2105000180050' + zeroEsq(servico.volume.ID_VOLUME, 8, 0) + '\n'
+                    texto += '121200000900170' + servico.volume.PESO + ' Kg\n'
                     texto += 'E\nQ\n'
+
                 }
                 fs.writeFile('zzz.txt', texto, function () {
                     // windows print
+                    const computerName = os.hostname()
                     if (os.platform() === 'win32') {
                         console.log('impressão windows')
-                        exec('copy zzz.txt \\\\pc10\\argox', function (error, stdout, stderr) {
+                        exec('copy zzz.txt \\\\'+computerName+'\\argox', function (error, stdout, stderr) {
                             if (error) resolve(stderr);
                             resolve(stdout);
                         });
@@ -1002,7 +1055,7 @@
             if (reg.test(identificador)) {
                 // procura transito
                 console.log('transito', vm.servico)
-                if (vm.servico.transito && vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 2 && vm.servico.volume.CODBAR) {
+                if (vm.servico.transito && vm.servico.transito.TIPO == 8 && vm.servico.transito.STATUS == 2 && vm.servico.volume.CODBAR) {
                     if (vm.servico.transito.ID_TRANSITO == codbar) {
                         vm.modalFechaTransito();
                     } else {
@@ -1055,7 +1108,7 @@
                                     }
                                 });
                             }
-                            if (vm.servico.transito.TIPO == 3 && vm.servico.transito.STATUS == 7) {
+                            if (vm.servico.transito.TIPO == 8 && vm.servico.transito.STATUS == 7) {
                                 // alert('status 7, preparacao')
                                 pacoteSrvc.listaPacotes23(vm.servico.transito).then(function (res) {
                                     if (res) {
@@ -1104,9 +1157,29 @@
                                     })
                                 })
                                 // imprime(0,0,V00000,0,0,123456,10)
-                            } else if (vm.servico.transito.TIPO == 3 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR && vm.servico.transito.OSTIPO == 'RETIRA') {
+                            } else if (vm.servico.transito.TIPO == 8 && (vm.servico.transito.STATUS == 2 || vm.servico.transito.STATUS == 5) && !vm.servico.volume.CODBAR) {
+                                pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                                    if (res) {
+                                        $scope.desserts.data = res;
+                                        console.log($scope.desserts)
+                                    }
+                                    else {
+                                        $scope.desserts.data = [];
+                                    }
+                                });
+                                pacoteSrvc.criaVolume({
+                                    'comprimento': 1,
+                                    'largura': 1,
+                                    'altura': 1
+                                }).then(function (response) {
+                                    imprime('VOLUMESUP', vm.servico, response).then(function () {
+                                        vm.modalConfirmaEtiqueta('', response.CODBAR)
+                                    }, function () {
 
-                            }
+                                    })
+                                })
+                                // imprime(0,0,V00000,0,0,123456,10)
+                            }                            
 
                         },
                         function (response) {
@@ -1273,8 +1346,34 @@
                     )
                 }
             } else {
-                audioError();
-                vm.servico.erro = new Error('COMANDO NÃO RECONHECIDO')
+                pacoteSrvc.movePacoteGen(codbar,$scope.multiplicador).then(
+                    function (response) {
+                    vm.servico = response;
+                    pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                        if (res) {
+                            $scope.desserts.data = res;
+                            console.log($scope.desserts)
+                        }
+                        else {
+                            $scope.desserts.data = [];
+                        }
+                    });                            
+                    audioOk();
+                },
+                function (response) {
+                    console.log(response)
+                    vm.servico = response;
+                    pacoteSrvc.listaPacotes(vm.servico.transito).then(function (res) {
+                        if (res) {
+                            $scope.desserts.data = res;
+                            console.log($scope.desserts)
+                        }
+                        else {
+                            $scope.desserts.data = [];
+                        }
+                    });                            
+                    audioError()
+                })
             }
             console.log(vm.servico)
             $scope.multiplicador=1;

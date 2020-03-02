@@ -1,8 +1,0 @@
-{
-    "javascript.implicitProjectConfig.experimentalDecorators": true,
-    "breadcrumbs.enabled": true,
-    "editor.cursorBlinking": "phase",
-    "editor.cursorStyle": "block",
-    "editor.fontFamily": "'Fira Code'",
-    "editor.fontLigatures": true
-}

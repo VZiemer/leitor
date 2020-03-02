@@ -17,14 +17,14 @@ let mainWindow
 
 // globalShortcut.register('shift + f9', function () {
 //   console.log('Shift + f9 is pressed')
-//   mainWindow.webContents.openDevTools()
+
 // })
 
 
 function createWindow () {
   // Cria a janela do navegador.
   mainWindow = new BrowserWindow({width: 800, height: 600})
-
+  mainWindow.webContents.openDevTools()
   // Agora carregamos o index.html do aplicativo.
   mainWindow.loadURL(`file://${__dirname}/index.html`)
 
